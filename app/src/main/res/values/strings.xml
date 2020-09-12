@@ -1,3 +1,10 @@
 <resources>
-    <string name="app_name">androidApp</string>
+    <string name="app_name">MyApplication</string>
+
+    <string name="shName">SharedPreferencesName</string>
+    <string name="shUserName_key">userName</string>
+    <string name="shPasswordName_key">password</string>
+    <string name="userNameHint">用户名</string>
+    <string name="passwordHint">密码</string>
+    <string name="pictrue">头像图片</string>
 </resources>
