@@ -2,17 +2,24 @@ package com.demo.androidapp.view;
 
 import androidx.lifecycle.ViewModelProvider;
 
+import android.graphics.DashPathEffect;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavAction;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.demo.androidapp.R;
+import com.demo.androidapp.model.Auth;
+import com.demo.androidapp.util.DataSP;
 import com.demo.androidapp.viewmodel.HomeViewModel;
 
 public class HomeFragment extends Fragment {
@@ -26,14 +33,25 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.home_fragment, container, false);
+        View view = inflater.inflate(R.layout.home_fragment, container, false);
+        return view;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
-        // TODO: Use the ViewModel
+
+        DataSP dataSP = new DataSP(getContext());
+        Log.d("MyView", "onCreateView1: ");
+        Auth auth = dataSP.load();
+        if(auth.getUserName().equals("userName")){
+            Log.d("MyView", "onCreateView2: ");
+            NavController navController = Navigation.findNavController(requireView());
+            navController.navigate(R.id.action_homeFragment_to_loginFragment);
+        }
+        Log.d("MyView",auth.toString());
+        Log.d("MyView", "onCreateView3: ");
     }
 
 }

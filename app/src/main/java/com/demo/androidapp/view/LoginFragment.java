@@ -14,7 +14,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.demo.androidapp.R;
+import com.demo.androidapp.view.myView.MyImageView;
 import com.demo.androidapp.viewmodel.LoginViewModel;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 public class LoginFragment extends Fragment {
 
@@ -27,14 +29,22 @@ public class LoginFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.login_fragment, container, false);
+        View view = inflater.inflate(R.layout.login_fragment, container, false);
+        return view;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mViewModel = new ViewModelProvider(this).get(LoginViewModel.class);
-        // TODO: Use the ViewModel
+        MyImageView myImageView = new MyImageView(getContext());
+        myImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(getContext());
+//                bottomSheetDialog.set
+            }
+        });
     }
 
 }
