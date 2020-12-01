@@ -13,6 +13,12 @@
         <action
             android:id="@+id/action_loginFragment_to_registerFragment"
             app:destination="@id/registerFragment" />
+        <action
+            android:id="@+id/action_loginFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+        <action
+            android:id="@+id/action_loginFragment_to_retrievePasswordFragment"
+            app:destination="@id/retrievePasswordFragment" />
     </fragment>
     <fragment
         android:id="@+id/homeFragment"
@@ -27,5 +33,18 @@
         android:id="@+id/registerFragment"
         android:name="com.demo.androidapp.view.RegisterFragment"
         android:label="register_fragment"
-        tools:layout="@layout/register_fragment" />
+        tools:layout="@layout/register_fragment" >
+        <action
+            android:id="@+id/action_registerFragment_to_activeFragment"
+            app:destination="@id/activeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/activeFragment"
+        android:name="com.demo.androidapp.view.ActiveFragment"
+        android:label="active_fragment"
+        tools:layout="@layout/active_fragment" />
+    <fragment
+        android:id="@+id/retrievePasswordFragment"
+        android:name="com.demo.androidapp.view.RetrievePasswordFragment"
+        android:label="RetrievePasswordFragment" />
 </navigation>

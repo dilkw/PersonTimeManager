@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="view"
+            type="com.demo.androidapp.view.myView.IdentifyCodeView" />
+        <variable
+            name="activeViewModel"
+            type="com.demo.androidapp.viewmodel.ActiveViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".view.ActiveFragment">
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:text="@string/activeFragmentTip"
+            app:layout_constraintBottom_toTopOf="@+id/identifyCodeView"
+            app:layout_constraintStart_toStartOf="@+id/identifyCodeView"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0" />
+
+        <com.demo.androidapp.view.myView.IdentifyCodeView
+            android:id="@+id/identifyCodeView"
+            android:layout_width="352dp"
+            android:layout_height="78dp"
+            android:layout_marginTop="10dp"
+            app:codes="@={view.codes}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.26999998" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/activeButton"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:enabled="false"
+            android:text="@string/activeBtnText"
+            android:textColor="#333232"
+            app:cornerRadius="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/identifyCodeView"
+            app:layout_constraintStart_toStartOf="@+id/identifyCodeView"
+            app:layout_constraintTop_toBottomOf="@+id/identifyCodeView"
+            app:layout_constraintVertical_bias="0.19"
+            app:rippleColor="#5BB0F3" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

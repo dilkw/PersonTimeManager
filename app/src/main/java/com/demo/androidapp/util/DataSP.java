@@ -1,5 +1,6 @@
 package com.demo.androidapp.util;
 
+import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 
@@ -19,8 +20,8 @@ public class DataSP {
 
     public DataSP(Context context) {
         this.context = context;
-        sharedPreferences = context.getSharedPreferences(shName,Context.MODE_PRIVATE);
-        shName = context.getResources().getString(R.string.shName);
+        shName = this.context.getResources().getString(R.string.shName);
+        sharedPreferences = this.context.getSharedPreferences(shName,Context.MODE_PRIVATE);
     }
 
     //保存数据
@@ -37,5 +38,7 @@ public class DataSP {
         String password = this.sharedPreferences.getString(context.getResources().getString(R.string.shPasswordName_key),"password");
         return new Auth(userName,password);
     }
+
+
 
 }

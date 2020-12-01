@@ -7,6 +7,11 @@ public class Auth {
 
     private String password;    //密码
 
+    public Auth() {
+        this.userName = "yokaimeow";
+        this.password = "ljm123456.";
+    }
+
     public Auth(String userName, String password) {
         this.userName = userName;
         this.password = password;

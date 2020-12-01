@@ -10,39 +10,77 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import com.demo.androidapp.MyApplication;
 import com.demo.androidapp.R;
 import com.demo.androidapp.model.Auth;
+import com.demo.androidapp.model.common.RCodeEnum;
+import com.demo.androidapp.model.common.ReturnData;
+import com.demo.androidapp.repository.AuthRepository;
 import com.google.android.material.textfield.TextInputLayout;
 
 public class LoginViewModel extends AndroidViewModel {
 
-    public final int resId = R.id.action_loginFragment_to_registerFragment;
+    public final int registerFragmentId = R.id.action_loginFragment_to_registerFragment;
 
-    private LiveData<Auth> auth;
+    private MutableLiveData<Auth> authLiveData;
+
+    private AuthRepository authRepository;
 
     public LoginViewModel(@NonNull Application application) {
         super(application);
+        this.authLiveData = new MutableLiveData<Auth>();
+        this.authLiveData.setValue(new Auth());
+        this.authRepository = new AuthRepository();
     }
     // TODO: Implement the ViewModel
 
 
-    public LiveData<Auth> getAuth() {
-        return auth;
+    public MutableLiveData<ReturnData> getReturnLiveData() {
+        return authRepository.getReturnDataLiveData();
     }
 
-    //跳转方法
-    public void skipping(View view) {
-        Log.d("imageView","跳转");
-        NavController navController = Navigation.findNavController(view);
-        navController.navigate(resId);
+    public MutableLiveData<Auth> getAuthLiveData() {
+        return authLiveData;
     }
 
-    public String login() {
+    //登录方法
+    public void login() {
+        Log.d("imageView","ViewModel-----login");
         StringBuilder token = new StringBuilder();
-        return token.toString();
+        Log.d("imageView",authLiveData.getValue().getUserName() + authLiveData.getValue().getPassword());
+        this.authRepository.login(authLiveData.getValue().getUserName(),authLiveData.getValue().getPassword());
     }
+
+    //重写点击监听事件的方法
+    public View.OnClickListener loginClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Log.d("imageView","ViewModel-----login");
+            StringBuilder token = new StringBuilder();
+            AuthRepository authRepository = new AuthRepository();
+            Log.d("imageView",authLiveData.getValue().getUserName() + authLiveData.getValue().getPassword());
+            authRepository.login(authLiveData.getValue().getUserName(),authLiveData.getValue().getPassword());
+        }
+    };
+
+    //跳转注册页面方法
+    public void jumpToRegisterFragment(View view) {
+        Log.d("imageView","跳转注册页面");
+        NavController navController = Navigation.findNavController(view);
+        navController.navigate(registerFragmentId);
+    }
+
+    //登陆成功跳转主页面方法
+    public void jumpToHomeFragment(View view) {
+        Log.d("imageView","跳转主页面");
+        NavController navController = Navigation.findNavController(view);
+       navController.navigateUp();        //返回上一级
+    }
+
+
 }

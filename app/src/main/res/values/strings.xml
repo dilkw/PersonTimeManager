@@ -6,10 +6,20 @@
     <string name="shPasswordName_key">password</string>
     <string name="userNameHint">用户名</string>
     <string name="passwordHint">密码</string>
-    <string name="pictrue">头像图片</string>
-    <string name="textview">content</string>
+    <string name="picture">头像图片</string>
+    <string name="textView">content</string>
     <string name="login_button">登录</string>
     <string name="register_button">新用户注册</string>
     <string name="nick_name">昵称</string>
     <string name="email">邮箱</string>
+    <string name="passwordConfirm">确认密码</string>
+    <string name="registerTitle">新用户注册</string>
+    <string name="registerButton">注册</string>
+    <string name="forgetPwd">忘记密码？</string>
+    <string name="pwdFormat_tips">提示：密码(6–18)由数字、字母（至少有一位大写字母）、特殊符号</string>
+    <string name="paste">paste</string>
+    <string name="copy">copy</string>
+    <string name="clear">clear</string>
+    <string name="activeFragmentTip">验证码已发送到您的邮箱</string>
+    <string name="activeBtnText">激活</string>
 </resources>
