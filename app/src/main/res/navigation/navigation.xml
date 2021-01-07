@@ -8,8 +8,8 @@
     <fragment
         android:id="@+id/loginFragment"
         android:name="com.demo.androidapp.view.LoginFragment"
-        android:label="login_fragment"
-        tools:layout="@layout/login_fragment" >
+        android:label="登录"
+        tools:layout="@layout/login_fragment">
         <action
             android:id="@+id/action_loginFragment_to_registerFragment"
             app:destination="@id/registerFragment" />
@@ -23,8 +23,8 @@
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.demo.androidapp.view.HomeFragment"
-        android:label="home_fragment"
-        tools:layout="@layout/home_fragment" >
+        android:label="主页面"
+        tools:layout="@layout/home_fragment">
         <action
             android:id="@+id/action_homeFragment_to_loginFragment"
             app:destination="@id/loginFragment" />
@@ -32,8 +32,8 @@
     <fragment
         android:id="@+id/registerFragment"
         android:name="com.demo.androidapp.view.RegisterFragment"
-        android:label="register_fragment"
-        tools:layout="@layout/register_fragment" >
+        android:label="注册"
+        tools:layout="@layout/register_fragment">
         <action
             android:id="@+id/action_registerFragment_to_activeFragment"
             app:destination="@id/activeFragment" />
@@ -41,10 +41,10 @@
     <fragment
         android:id="@+id/activeFragment"
         android:name="com.demo.androidapp.view.ActiveFragment"
-        android:label="active_fragment"
+        android:label="帐号激活"
         tools:layout="@layout/active_fragment" />
     <fragment
         android:id="@+id/retrievePasswordFragment"
         android:name="com.demo.androidapp.view.RetrievePasswordFragment"
-        android:label="RetrievePasswordFragment" />
+        android:label="找回密码" />
 </navigation>

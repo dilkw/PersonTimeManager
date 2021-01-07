@@ -17,29 +17,20 @@
         tools:context=".view.RegisterFragment">
 
 
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
-            android:text="@string/registerTitle"
-            android:textColor="#000000"
-            android:textSize="26sp"
-            app:layout_constraintBottom_toTopOf="@+id/textInputLayout4"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputLayout4"
             android:layout_width="250dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
+            android:layout_marginStart="81dp"
+            android:layout_marginLeft="81dp"
+            android:layout_marginEnd="80dp"
+            android:layout_marginRight="80dp"
             app:boxBackgroundColor="#00000000"
-            app:layout_constraintBottom_toTopOf="@+id/textInputLayout3"
-            app:layout_constraintEnd_toEndOf="@+id/textView"
-            app:layout_constraintStart_toStartOf="@+id/textView"
-            app:layout_constraintTop_toBottomOf="@+id/textView">
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.16000003">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/registerUserName"

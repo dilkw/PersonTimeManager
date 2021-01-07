@@ -22,4 +22,9 @@
     <string name="clear">clear</string>
     <string name="activeFragmentTip">验证码已发送到您的邮箱</string>
     <string name="activeBtnText">激活</string>
+    <string name="resetPwd_title">重置密码</string>
+    <string name="resetPwd_email">邮箱号</string>
+    <string name="resetPwd_code">验证码</string>
+    <string name="resetPwdBtn">重置</string>
+    <string name="loginfragment_title">登录</string>
 </resources>

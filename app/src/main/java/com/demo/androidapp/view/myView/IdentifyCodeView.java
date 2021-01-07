@@ -10,7 +10,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Build;
-import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.ActionMode;
@@ -21,20 +20,12 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.TextView;
-
 import androidx.annotation.RequiresApi;
 import androidx.databinding.BindingAdapter;
 import androidx.databinding.InverseBindingAdapter;
 import androidx.databinding.InverseBindingListener;
-
-import com.demo.androidapp.MainActivity;
 import com.demo.androidapp.R;
-import com.demo.androidapp.view.ActiveFragment;
-
-import java.util.Objects;
-
-public class IdentifyCodeView extends androidx.appcompat.widget.AppCompatTextView {
+public class IdentifyCodeView extends View {
 
     private Paint mPaint;
 
@@ -47,7 +38,7 @@ public class IdentifyCodeView extends androidx.appcompat.widget.AppCompatTextVie
     private StringBuilder codes;
 
     public interface CodesChangedListener {
-        public void textChanged(String codes);
+        void textChanged(String codes);
     }
 
     private CodesChangedListener codesChangedListener;
@@ -67,7 +58,7 @@ public class IdentifyCodeView extends androidx.appcompat.widget.AppCompatTextVie
         invalidate();
     }
 
-    @BindingAdapter(value = "codes", requireAll = true)
+    @BindingAdapter(value = "codes")
     public static void setCodes(IdentifyCodeView v, String codes) {
         Log.d("imageView", "setCodes: 数据改变");
         v.setCodes(codes);
@@ -79,29 +70,18 @@ public class IdentifyCodeView extends androidx.appcompat.widget.AppCompatTextVie
         return v.getCodes();
     }
 
+    private InverseBindingListener inverseBindingListener;
+
     //app:codesAttrChanged="@={view}"
     @BindingAdapter(value = {"codesAttrChanged"}, requireAll = false)
     public static void codesAttrChanged(IdentifyCodeView v, InverseBindingListener listener) {
         Log.d("imageView", "codesAttrChanged: 数据改变");
-        listener.onChange();
-        v.addCodesChangeListener(new CodesChangedListener() {
-            @Override
-            public void textChanged(String codes) {
-                Log.d("imageView", "textChanged: 数据改变");
-                listener.onChange();
-            }
-        });
+        v.inverseBindingListener = listener;
+//        v.addCodesChangeListener(codes -> {
+//            Log.d("imageView", "textChanged: 数据改变" + codes);
+//            listener.onChange();
+//        });
     }
-
-//    private InverseBindingListener inverseBindingListener = new InverseBindingListener() {
-//
-//        /**
-//         * Notifies the data binding system that the attribute value has changed.
-//         */
-//        @Override
-//        public void onChange() {
-//        }
-//    };
 
     public IdentifyCodeView(Context context) {
         this(context, null);
@@ -117,9 +97,9 @@ public class IdentifyCodeView extends androidx.appcompat.widget.AppCompatTextVie
         this.setClickable(true);
         this.setFocusableInTouchMode(true);
         codes = new StringBuilder();
-        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.IdentifyCodeView);
-        codes.append(typedArray.getString(R.styleable.IdentifyCodeView_codes));
-        typedArray.recycle();
+//        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.IdentifyCodeView);
+//        codes.append(typedArray.getString(R.styleable.IdentifyCodeView_codes));
+//        typedArray.recycle();
 
     }
 
@@ -244,8 +224,13 @@ public class IdentifyCodeView extends androidx.appcompat.widget.AppCompatTextVie
                 Log.d("imageView", "按下删除键");
                 if (codes.length() > 0) {
                     codes.deleteCharAt(codes.length() - 1);
+                    //若codes监听器不为空，触发监听器texChanged()方法
                     if (codesChangedListener != null) {
                         codesChangedListener.textChanged(codes.toString());
+                        //dataBinding数据改变
+                        if (inverseBindingListener != null) {
+                            inverseBindingListener.onChange();
+                        }
                     }
                     invalidate();
                 }
@@ -256,8 +241,13 @@ public class IdentifyCodeView extends androidx.appcompat.widget.AppCompatTextVie
             default:
                 if (codes.length() < 6) {
                     codes.append((char) event.getUnicodeChar());
+                    //若codes监听器不为空，触发监听器texChanged()方法
                     if (codesChangedListener != null) {
                         codesChangedListener.textChanged(codes.toString());
+                        //dataBinding数据改变
+                        if (inverseBindingListener != null) {
+                            inverseBindingListener.onChange();
+                        }
                     }
                     Log.d("imageView", "更新view" + codes.charAt(codes.length() - 1));
                     invalidate();
@@ -363,12 +353,5 @@ public class IdentifyCodeView extends androidx.appcompat.widget.AppCompatTextVie
         if (mActionMode != null) {
             mActionMode.finish();
         }
-    }
-
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent event) {
-        if (event.getY() > getBottom()) {
-        }
-        return super.dispatchTouchEvent(event);
     }
 }

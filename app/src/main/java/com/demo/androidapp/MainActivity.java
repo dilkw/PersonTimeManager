@@ -1,57 +1,71 @@
 package com.demo.androidapp;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
+import androidx.appcompat.widget.ActivityChooserView;
+import androidx.appcompat.widget.Toolbar;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
+import androidx.navigation.NavHostController;
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import android.annotation.SuppressLint;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.MotionEvent;
-import android.view.View;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.demo.androidapp.view.ActiveFragment;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationView;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.zip.Inflater;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
     private Date date1,date2;
 
-    NavController controller;
+    private NavController controller;
 
-    private List<FragmentTouchListener> fragmentTouchListenerList = new ArrayList<>();
+    private AppBarConfiguration appBarConfiguration;
 
     @Override
     public boolean onSupportNavigateUp() {
+        Log.d("imageView", "onSupportNavigateUp: 侧滑布局");
         final InputMethodManager inputMethodManager = (InputMethodManager)this.getSystemService(Context.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(findViewById(R.id.fragment).getWindowToken(),0);
-        NavController controller = Navigation.findNavController(this,R.id.fragment);
-        return controller.navigateUp();
+        return NavigationUI.navigateUp(controller, appBarConfiguration) || super.onSupportNavigateUp();
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        controller = Navigation.findNavController(this,R.id.fragment);
-        NavigationUI.setupActionBarWithNavController(this,controller);
-//        NavigationUI.setupWithNavController();
+        NavHostFragment navHostFragment = (NavHostFragment)getSupportFragmentManager().findFragmentById(R.id.fragment);
+        assert navHostFragment != null;
+        DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
+        controller = navHostFragment.getNavController();
+        appBarConfiguration = new AppBarConfiguration.Builder(controller.getGraph()).setDrawerLayout(drawerLayout).build();
+        NavigationView navView = findViewById(R.id.nav_view);
+        NavigationUI.setupActionBarWithNavController(this,controller,appBarConfiguration);
+        NavigationUI.setupWithNavController(navView,controller);
     }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if(keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
-            Toast.makeText(this,"双击返回键退出程序",Toast.LENGTH_SHORT).show();
             if (date1 != null) {
                 date2 = new Date();
                 if((date2.getTime()-date1.getTime()) < 1000) {
@@ -60,11 +74,14 @@ public class MainActivity extends AppCompatActivity {
                     //onDestroy();
                 }
                 else {
-                    date1 = date2;
+
+                    date1 = null;
                     date2 = null;
+                    return super.onKeyDown(keyCode, event);
                 }
             }
             else {
+                Toast.makeText(this,"双击返回键退出程序",Toast.LENGTH_SHORT).show();
                 date1 = new Date();
             }
             return true;
@@ -83,28 +100,4 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-//    @Override
-//    public boolean onTouchEvent(MotionEvent event) {
-//        return super.onTouchEvent(event);
-//    }
-
-//    @Override
-//    public boolean dispatchTouchEvent(MotionEvent ev) {
-//        for (FragmentTouchListener listener : fragmentTouchListenerList) {
-//            listener.fragmentTouchEvent(ev);
-//        }
-//        return super.dispatchTouchEvent(ev);
-//    }
-
-    public interface FragmentTouchListener{
-        boolean fragmentTouchEvent(MotionEvent event);
-    }
-
-    public void addFragmentTouchListener(FragmentTouchListener fragmentTouchListener) {
-        fragmentTouchListenerList.add(fragmentTouchListener);
-    }
-
-    public void rmFragmentTouchListener(FragmentTouchListener fragmentTouchListener) {
-        fragmentTouchListenerList.remove(fragmentTouchListener);
-    }
 }

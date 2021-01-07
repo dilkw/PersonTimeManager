@@ -24,6 +24,10 @@ public interface Api {
     @POST("user/signup")
     Call<RegisterReturn> signUp(@Body RegisterCommit registerCommit);
 
+    //获取验证码（返回字符串）
+    @POST("user/active/code")
+    Call<ResponseBody> getActiveCodes(@Field("email") String email);
+
     //注册完成后激活帐号
     @FormUrlEncoded
     @POST("user/active")

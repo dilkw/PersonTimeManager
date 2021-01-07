@@ -10,7 +10,10 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
+import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -21,6 +24,7 @@ import android.widget.Toast;
 import com.demo.androidapp.MainActivity;
 import com.demo.androidapp.R;
 import com.demo.androidapp.databinding.ActiveFragmentBinding;
+import com.demo.androidapp.model.common.ReturnData;
 import com.demo.androidapp.view.myView.IdentifyCodeView;
 import com.demo.androidapp.viewmodel.ActiveViewModel;
 
@@ -31,8 +35,6 @@ public class ActiveFragment extends Fragment implements IdentifyCodeView.CodesCh
     public static ActiveFragment newInstance() {
         return new ActiveFragment();
     }
-
-    private MainActivity.FragmentTouchListener fragmentTouchListener;
 
     private ActiveFragmentBinding binding;
 
@@ -60,21 +62,53 @@ public class ActiveFragment extends Fragment implements IdentifyCodeView.CodesCh
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mViewModel = new ViewModelProvider(this).get(ActiveViewModel.class);
+        assert getArguments() != null;
+        mViewModel.setEmail(getArguments().getString("email"));
+        Log.d("imageView", "onActivityCreated: " + getArguments().getString("email"));
         binding.setActiveViewModel(mViewModel);
         binding.setView(binding.identifyCodeView);
-        binding.identifyCodeView.addCodesChangeListener(new IdentifyCodeView.CodesChangedListener() {
-            @Override
-            public void textChanged(String codes) {
-
+        binding.identifyCodeView.addCodesChangeListener(codes -> {
+            Log.d("imageView", "activityFragment:textChange" + codes);
+            if (codes.length() == 6) {
+                binding.activeButton.setEnabled(true);
+                Log.d("imageView", "activityFragment:textChange" + "按键有效");
+            }else {
+                binding.activeButton.setEnabled(false);
             }
         });
         binding.identifyCodeView.setOnLongClickListener();
-        binding.identifyCodeView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        binding.identifyCodeView.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus) {
+                binding.identifyCodeView.hideSoftInputOutOfVonClick();
+            }
+        });
+
+        CountDownTimer countDownTimer = new CountDownTimer(60000,1000) {
+            @SuppressLint("SetTextI18n")
             @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    binding.identifyCodeView.hideSoftInputOutOfVonClick();
-                }
+            public void onTick(long millisUntilFinished) {
+                Log.d("imageView", "倒计时：");
+                binding.getCodeTipsTextView.setClickable(false);
+                binding.getCodeTipsTextView.setTextColor(getResources().getColor(R.color.colorTextFalse));
+                binding.getCodeTipsTextView.setText((millisUntilFinished / 1000) + "s后重新获取验证码");
+            }
+
+            @Override
+            public void onFinish() {
+                binding.getCodeTipsTextView.setText("重新获取验证码");
+                binding.getCodeTipsTextView.setTextColor(getResources().getColor(R.color.colorTextTrue));
+                binding.getCodeTipsTextView.setClickable(true);
+            }
+        };
+
+        countDownTimer.start();
+
+        //重新获取验证码（访问获取验证码接口）
+        binding.getCodeTipsTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mViewModel.getActiveCodes();
+                countDownTimer.start();
             }
         });
 
@@ -82,24 +116,20 @@ public class ActiveFragment extends Fragment implements IdentifyCodeView.CodesCh
             @Override
             public void onChanged(String s) {
                 Log.d("imageView", "onChanged: mViewModel观察者" + s);
-                Toast.makeText(getContext(),"changed",Toast.LENGTH_SHORT).show();
-                if (s.length() == 6) {
-                    binding.activeButton.setEnabled(true);
+            }
+        });
+
+        mViewModel.getReturnLiveData().observe(getViewLifecycleOwner(), new Observer<ReturnData>() {
+            @Override
+            public void onChanged(ReturnData returnData) {
+                if (returnData.getCode() == 200) {
+                    NavController navController = Navigation.findNavController(binding.activeButton);
+                    navController.navigate(R.id.login_fragment);
+                } else {
+                    Toast.makeText(requireActivity(),"激活失败",Toast.LENGTH_SHORT).show();
                 }
             }
         });
-//        this.fragmentTouchListener = new MainActivity.FragmentTouchListener() {
-//            @Override
-//            public boolean fragmentTouchEvent(MotionEvent event) {
-//                Log.d("imageView", "fragmentTouchEvent: 收起键盘");
-//                //if (event)
-//                binding.identifyCodeView.hideSoftInputOutOfVonClick();
-//                return false;
-//            }
-//        };
-
-        //((MainActivity)getActivity()).addFragmentTouchListener(this.fragmentTouchListener);
-        // TODO: Use the ViewModel
     }
 
 

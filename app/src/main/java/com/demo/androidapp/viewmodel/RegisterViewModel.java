@@ -1,6 +1,7 @@
 package com.demo.androidapp.viewmodel;
 
 import android.app.Application;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
@@ -50,7 +51,14 @@ public class RegisterViewModel extends AndroidViewModel {
     public void jumpToActiveFragment(View view) {
         //跳转激活页面
         NavController navController = Navigation.findNavController(view);
-        navController.navigate(R.id.action_registerFragment_to_activeFragment);
+        Bundle bundle = new Bundle();
+        bundle.putString("email",registerCommitLiveData.getValue().getEmail());
+        navController.navigate(R.id.action_registerFragment_to_activeFragment,bundle);
     }
 
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        Log.d("imageView", "RegisterViewModel------onCleared: ");
+    }
 }

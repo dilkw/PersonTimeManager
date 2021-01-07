@@ -33,7 +33,7 @@
             android:layout_width="352dp"
             android:layout_height="78dp"
             android:layout_marginTop="10dp"
-            app:codes="@={view.codes}"
+            app:codes="@={activeViewModel.codesLiveData}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
@@ -49,12 +49,21 @@
             android:text="@string/activeBtnText"
             android:textColor="#333232"
             app:cornerRadius="20dp"
+            android:onClick="@{()->activeViewModel.sendCodes()}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/identifyCodeView"
             app:layout_constraintStart_toStartOf="@+id/identifyCodeView"
             app:layout_constraintTop_toBottomOf="@+id/identifyCodeView"
             app:layout_constraintVertical_bias="0.19"
             app:rippleColor="#5BB0F3" />
+
+        <TextView
+            android:id="@+id/getCodeTipsTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            app:layout_constraintEnd_toEndOf="@+id/identifyCodeView"
+            app:layout_constraintTop_toBottomOf="@+id/identifyCodeView" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

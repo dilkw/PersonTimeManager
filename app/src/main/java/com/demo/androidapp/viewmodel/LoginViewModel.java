@@ -79,8 +79,21 @@ public class LoginViewModel extends AndroidViewModel {
     public void jumpToHomeFragment(View view) {
         Log.d("imageView","跳转主页面");
         NavController navController = Navigation.findNavController(view);
-       navController.navigateUp();        //返回上一级
+        navController.navigateUp();        //返回上一级
     }
 
+    //忘记密码跳转重置密码页面方法
+    public void jumpToRetrievePasswordFragment(View view) {
+        Log.d("imageView","跳转重置密码页面");
+        NavController navController = Navigation.findNavController(view);
+        navController.navigate(R.id.retrievePasswordFragment);
+    }
+
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        Log.d("imageView", "LoginViewModel------onCleared: ");
+    }
 
 }
