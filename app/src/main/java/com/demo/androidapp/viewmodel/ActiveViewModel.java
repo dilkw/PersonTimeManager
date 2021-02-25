@@ -62,9 +62,12 @@ public class ActiveViewModel extends AndroidViewModel {
      * email:帐号关联的邮箱
      */
     public void getActiveCodes() {
-        if (email != null && Objects.requireNonNull(codesLiveData.getValue()).length() == 6) {
+        if (email != null) {
+            Log.d("imageView", "getActiveCodes: email不为空");
             authRepository.getActiveCode(this.email);
+            return;
         }
+        Log.d("imageView", "getActiveCodes: email为空");
     }
 
     @Override

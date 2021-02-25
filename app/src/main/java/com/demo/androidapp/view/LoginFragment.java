@@ -9,6 +9,9 @@ import android.content.Context;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,8 +21,9 @@ import android.widget.Toast;
 import com.demo.androidapp.MyApplication;
 import com.demo.androidapp.R;
 import com.demo.androidapp.databinding.LoginFragmentBinding;
-import com.demo.androidapp.model.Auth;
+import com.demo.androidapp.model.common.RCodeEnum;
 import com.demo.androidapp.model.common.ReturnData;
+import com.demo.androidapp.model.returnObject.LoginAndRegisterReturn;
 import com.demo.androidapp.view.commom.MethodCommon;
 import com.demo.androidapp.view.commom.MyTextWatcher;
 import com.demo.androidapp.viewmodel.LoginViewModel;
@@ -27,6 +31,7 @@ import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class LoginFragment extends Fragment {
 
@@ -45,8 +50,8 @@ public class LoginFragment extends Fragment {
         Log.d("imageView","onCreateView");
         binding = DataBindingUtil.inflate(inflater,R.layout.login_fragment,container,false);
 //        binding = LoginFragmentBinding.inflate(inflater);
-        binding.textInputLayoutPwd.setEndIconDrawable(R.drawable.pwdn);
-        binding.textInputLayoutPwd.setEndIconCheckable(false);
+//        binding.textInputLayoutPwd.setEndIconDrawable(R.drawable.pwdn);
+//        binding.textInputLayoutPwd.setEndIconCheckable(false);
         return binding.getRoot();
     }
 
@@ -60,45 +65,34 @@ public class LoginFragment extends Fragment {
             public void onClick(View v) {
             }
         });
+        TextWatcher textWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-        MethodCommon methodCommon = new MethodCommon();
-        methodCommon.setEndIconOnClickListener(binding.textInputLayoutPwd);
+            }
 
-//        binding.textInputLayoutPwd.setEndIconOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if(binding.textInputLayoutPwd.isEndIconCheckable()){
-//                    //设置文本框末尾的图标
-//                    binding.textInputLayoutPwd.setEndIconDrawable(R.drawable.pwdn);
-//                    binding.textInputLayoutPwd.setEndIconCheckable(false);
-//                    //隐藏密码
-//                    binding.textInputLayoutPwd.getEditText().setTransformationMethod(PasswordTransformationMethod.getInstance());
-//                }else {
-//                    Log.d("imageView","显示密码");
-//                    //设置文本框末尾的图标
-//                    binding.textInputLayoutPwd.setEndIconDrawable(R.drawable.pwd);
-//                    binding.textInputLayoutPwd.setEndIconCheckable(true);
-//                    //显示密码
-//                    binding.textInputLayoutPwd.getEditText().setTransformationMethod(null);
-//                }
-//                //设置光标移至最后
-//                binding.textInputLayoutPwd.getEditText().setSelection(binding.textInputLayoutPwd.getEditText().getText().length());
-//            }
-//        });
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (Objects.requireNonNull(binding.loginUserName.getText()).length() > 0
+                        && Objects.requireNonNull(binding.loginPassword.getText()).length() > 0) {
+                    binding.loginButton.setEnabled(true);
+                }else {
+                    binding.loginButton.setEnabled(false);
+                }
+            }
 
-        //对页面所有TextInputEditText进行监听，所有的TextInputEditText不为空登录按钮才有效
-        List<TextInputEditText> textInputEditTexts = new ArrayList<>();
-        textInputEditTexts.add(binding.loginUserName);
-        textInputEditTexts.add(binding.loginPassword);
-        MyTextWatcher myTextWatcher = new MyTextWatcher(textInputEditTexts,binding.loginButton);
-        myTextWatcher.addEditTextsChangeListener();
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        };
+        binding.loginUserName.addTextChangedListener(textWatcher);
+        binding.loginPassword.addTextChangedListener(textWatcher);
     }
 
     //fragment实现物理返回按键监听事件思路：
     //通过在Activity中重写返回键监听事件函数
     //在fragment中调用
-
-
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -109,30 +103,27 @@ public class LoginFragment extends Fragment {
         loginViewModel.getReturnLiveData().observe(this,new Observer<ReturnData>() {
             @Override
             public void onChanged(ReturnData returnData) {
-                Log.d("imageView", "ReturnData------onchange()" + returnData.getCode() + returnData.getContent());
-                if (returnData.getCode() == 200) {
+                Log.d("imageView", "ReturnData------onchange()" + returnData.getCode() + returnData.getData());
+                if (returnData.getCode() == RCodeEnum.OK.getCode()) {
                     Toast.makeText(getActivity(), "登录成功", Toast.LENGTH_SHORT).show();
 
                     //上传数据，更新MyApplication中的数据
-                    Auth auth = loginViewModel.getAuthLiveData().getValue();
-                    if (auth != null) {
-                        MyApplication.getApplication().saveData(requireContext(),
-                                                                auth.getUserName(),
-                                                                auth.getPassword());
-                    }
+                    LoginAndRegisterReturn loginAndRegisterReturn = (LoginAndRegisterReturn)loginViewModel.getReturnLiveData().getValue().getData();
+                    Log.d("imageView", "returnData000000000000000" + loginAndRegisterReturn.toString());
+                    MyApplication.getApplication().saveData(loginAndRegisterReturn.getName(),
+                            loginViewModel.getAuthLiveData().getValue().getPassword(),
+                            loginAndRegisterReturn.getUid());
 
                     Log.d("imageView", String.valueOf(returnData.getCode()));
 
                     //跳转主页
                     loginViewModel.jumpToHomeFragment(getView());
                 } else {
-                    Toast.makeText(getActivity(), "用户名或密码错误", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), returnData.getMsg(), Toast.LENGTH_SHORT).show();
                     Log.d("imageView", "用户名或密码错误");
                 }
-                //loginViewModel.getReturnLiveData().setValue(null);
             }
         });
-        Log.d("imageView","onAttach");
     }
 
     @Override

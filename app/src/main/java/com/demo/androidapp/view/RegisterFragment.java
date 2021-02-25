@@ -3,8 +3,10 @@ package com.demo.androidapp.view;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
 
+import android.annotation.SuppressLint;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -13,7 +15,10 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,20 +27,34 @@ import android.widget.Toast;
 import com.demo.androidapp.MyApplication;
 import com.demo.androidapp.R;
 import com.demo.androidapp.databinding.RegisterFragmentBinding;
+import com.demo.androidapp.model.common.RCodeEnum;
 import com.demo.androidapp.model.common.ReturnData;
 import com.demo.androidapp.view.commom.MethodCommon;
 import com.demo.androidapp.view.commom.MyTextWatcher;
 import com.demo.androidapp.viewmodel.RegisterViewModel;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class RegisterFragment extends Fragment {
 
     private RegisterViewModel registerViewModel;
 
     private RegisterFragmentBinding registerBinding;
+
+    private List<TextInputEditText> textInputEditTexts = new ArrayList<>();
+
+    private int isActive = 0;
+
+    private boolean isNull = true;
+
+    private boolean isNotOk = true;
+
+    private int userNameTextEditId = R.id.registerUserName;
+    private int passwordConfirmTextEditId = R.id.registerPasswordConfirm;
 
     public static RegisterFragment newInstance() {
         return new RegisterFragment();
@@ -45,11 +64,6 @@ public class RegisterFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         registerBinding = DataBindingUtil.inflate(inflater,R.layout.register_fragment,container,false);
-//        registerBinding = RegisterFragmentBinding.inflate(inflater);
-        registerBinding.registerPwd.setEndIconDrawable(R.drawable.pwdn);
-        registerBinding.registerPwd.setEndIconCheckable(false);
-        registerBinding.registerPwdConfirm.setEndIconDrawable(R.drawable.pwdn);
-        registerBinding.registerPwdConfirm.setEndIconCheckable(false);
         return registerBinding.getRoot();
     }
 
@@ -61,46 +75,146 @@ public class RegisterFragment extends Fragment {
         registerViewModel.getReturnData().observe(getViewLifecycleOwner(), new Observer<ReturnData>() {
             @Override
             public void onChanged(ReturnData returnData) {
-                Log.d("imageView","ReturnData------onchange()" + returnData.getCode() + returnData.getContent());
-                if(returnData.getCode() == 200) {
-                    MyApplication.getApplication().loadData(requireContext());
+                Log.d("imageView","ReturnData------onchange()" + returnData.getCode() + returnData.getData());
+                if(returnData.getCode() == RCodeEnum.OK.getCode()) {
+                    MyApplication.getApplication().loadData();
                     //跳转激活页面
-                    //NavController navController = Navigation.findNavController(getView());
-                    //navController.navigate(R.id.action_registerFragment_to_activeFragment);
+                    NavController navController = Navigation.findNavController(registerBinding.registerButton);
+                    navController.navigate(R.id.action_registerFragment_to_activeFragment);
                     registerViewModel.jumpToActiveFragment(getView());
                 }else {
-                    Toast.makeText(getActivity(),"用户名已被注册",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(),returnData.getMsg(),Toast.LENGTH_SHORT).show();
                     Log.d("imageView","注册失败");
                 }
             }
         });
 
-        MethodCommon methodCommon = new MethodCommon();
-        methodCommon.setEndIconOnClickListener(registerBinding.registerPwd);
-        methodCommon.setEndIconOnClickListener(registerBinding.registerPwdConfirm);
-
+//        MethodCommon methodCommon = new MethodCommon();
+//        methodCommon.setEndIconOnClickListener(registerBinding.textInputLayoutPassword);
+//        methodCommon.setEndIconOnClickListener(registerBinding.textInputLayoutPwdConfirm);
 
         //对页面所有TextInputEditText进行监听，所有的TextInputEditText不为空登录按钮才有效
-        List<TextInputEditText> textInputEditTexts = new ArrayList<>();
         textInputEditTexts.add(registerBinding.registerUserName);
         textInputEditTexts.add(registerBinding.registerEmail);
         textInputEditTexts.add(registerBinding.registerPassword);
         textInputEditTexts.add(registerBinding.registerPasswordConfirm);
-        MyTextWatcher myTextWatcher = new MyTextWatcher(textInputEditTexts,registerBinding.registerButton);
-        myTextWatcher.addEditTextsChangeListener();
-//        registerBinding.registerPassword.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-//            @Override
-//            public void onFocusChange(View v, boolean hasFocus) {
-//                if(registerBinding.registerPassword.isInEditMode()) {
-//                    registerBinding.registerPwd.setHelperTextEnabled(true);
-//                }else {
-//                    registerBinding.registerPwd.setHelperTextEnabled(false);
-//                }
-//            }
-//
-//        });
-
-
+        addTextWatcher();
     }
 
+    private void addTextWatcher() {
+
+        registerBinding.textInputLayoutEmail.setErrorIconDrawable(null);
+        registerBinding.textInputLayoutPassword.setErrorIconDrawable(null);
+        registerBinding.textInputLayoutPwdConfirm.setErrorIconDrawable(null);
+
+        registerBinding.registerUserName.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                afterTextChange();
+            }
+        });
+
+        registerBinding.registerEmail.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Log.d("imageView", "onTextChanged: 不为空" + s.length());
+                if (!s.toString().matches(getResources().getString(R.string.emailCheckStr)) && s.length() > 0) {
+                    registerBinding.textInputLayoutEmail.setError("邮箱格式错误");
+                }else {
+                    isNotOk = !(s.length() > 0);
+                    registerBinding.textInputLayoutEmail.setErrorEnabled(false);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                afterTextChange();
+            }
+        });
+
+        registerBinding.registerPassword.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Log.d("imageView", "onTextChanged: 不为空" + s);
+                if ((s.length() < 6 || s.length() > 18) && s.length() > 0) {
+                    registerBinding.textInputLayoutPassword.setError("密码格式错误");
+                }else {
+                    isNotOk = !(s.length() > 0);
+                    if (!isNotOk &&
+                            (registerBinding.registerPasswordConfirm.getText()!=null && registerBinding.registerPasswordConfirm.getText().length() > 0)) {
+                        registerBinding.textInputLayoutPwdConfirm.setError("两次密码不一样");
+                    }else {
+                        registerBinding.textInputLayoutPwdConfirm.setErrorEnabled(false);
+                    }
+                    registerBinding.textInputLayoutPassword.setErrorEnabled(false);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                afterTextChange();
+            }
+        });
+
+        registerBinding.registerPasswordConfirm.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Log.d("imageView", "onTextChanged: 不为空" + s);
+                if ( !s.toString().equals(Objects.requireNonNull(registerBinding.registerPassword.getText()).toString())
+                    && s.length() > 0) {
+                    registerBinding.textInputLayoutPwdConfirm.setError("两次密码不一样");
+                }else {
+                    isNotOk = !(s.length() > 0);
+                    registerBinding.textInputLayoutPwdConfirm.setErrorEnabled(false);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                afterTextChange();
+            }
+        });
+    }
+
+    private void afterTextChange() {
+        if (isNotOk) {
+            registerBinding.registerButton.setEnabled(false);
+            return;
+        }
+        for (TextInputEditText textInputEditText : textInputEditTexts) {
+            if (textInputEditText.getText() == null ||
+                    textInputEditText.getText().length() == 0) {
+                isNotOk = true;
+                break;
+            }else {
+                isNotOk = false;
+            }
+        }
+        registerBinding.registerButton.setEnabled(!isNotOk);
+    }
 }

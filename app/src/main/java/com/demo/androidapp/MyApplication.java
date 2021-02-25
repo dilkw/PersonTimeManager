@@ -11,10 +11,14 @@ import com.demo.androidapp.util.DataSP;
 
 public class MyApplication extends Application {
 
-    private static String USER_NAME;   //用户名
-    private static String PASSWORD;    //密码
+    private static String USER_NAME = "";    //用户名
+    private static String PASSWORD = "";     //密码
+    private static String UID = "";          //uid
+    private static String COOKIE = "";       //cookie校验码
 
     private static Api api;
+
+    private DataSP dataSP;
 
     @SuppressLint("StaticFieldLeak")
     private static MyApplication myApplication;
@@ -27,7 +31,8 @@ public class MyApplication extends Application {
         super.onCreate();
         mContext = getApplicationContext();
         myApplication = getApplication();
-        loadData(mContext);
+        dataSP = new DataSP(mContext);
+        loadData();
         api = RetrofitClient.getInstance().getApi();
     }
 
@@ -39,26 +44,42 @@ public class MyApplication extends Application {
         return PASSWORD;
     }
 
+    public String getUID() {
+        return UID;
+    }
+
+    public String getCOOKIE() {
+        return COOKIE;
+    }
+
     public static Api getApi() {
         return api;
     }
 
-    public void loadData(Context context) {
-        USER_NAME = "";
-        PASSWORD = "";
-        DataSP dataSP = new DataSP(context);
+    public void loadData() {
         Auth auth = dataSP.load();
         if(auth != null) {
             USER_NAME = auth.getUserName();
             PASSWORD = auth.getPassword();
+            UID = auth.getUid();
         }
+        COOKIE = dataSP.getCookie();
     }
 
-    public void saveData(Context context, String userName, String password) {
-        USER_NAME = userName;
-        PASSWORD = password;
-        DataSP dataSP = new DataSP(context);
-        dataSP.save(USER_NAME,PASSWORD);
+    public void saveCookie(String cookieStr) {
+        MyApplication.COOKIE = cookieStr;
+        if (dataSP == null)
+            dataSP = new DataSP(mContext);
+        dataSP.saveCookie(cookieStr);
+    }
+
+    public void saveData(String userName, String password,String uid) {
+        MyApplication.USER_NAME = userName;
+        MyApplication.PASSWORD = password;
+        MyApplication.UID = uid;
+        if (dataSP == null)
+            dataSP = new DataSP(mContext);
+        dataSP.save(USER_NAME,PASSWORD,UID);
     }
 
     public static MyApplication getApplication() {
@@ -66,5 +87,20 @@ public class MyApplication extends Application {
             myApplication = new MyApplication();
         }
         return myApplication;
+    }
+
+    public static Context getMyApplicationContext() {
+        return mContext;
+    }
+
+    public void signOut() {
+        USER_NAME = "userName";
+        PASSWORD = "";
+        UID = "";
+        COOKIE = "";
+        if (dataSP == null) {
+            dataSP = new DataSP(mContext);
+        }
+        dataSP.delete();
     }
 }

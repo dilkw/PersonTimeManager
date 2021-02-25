@@ -1,9 +1,14 @@
 <resources>
     <string name="app_name">MyApplication</string>
 
+    <!--SharedPreferencesName key-->
     <string name="shName">SharedPreferencesName</string>
     <string name="shUserName_key">userName</string>
     <string name="shPasswordName_key">password</string>
+    <string name="shUid_key">uid</string>
+    <string name="shCookie_key">Set-Cookie</string>
+
+
     <string name="userNameHint">用户名</string>
     <string name="passwordHint">密码</string>
     <string name="picture">头像图片</string>
@@ -20,11 +25,66 @@
     <string name="paste">paste</string>
     <string name="copy">copy</string>
     <string name="clear">clear</string>
-    <string name="activeFragmentTip">验证码已发送到您的邮箱</string>
+    <string name="activeFragmentTip">验证码发送到您的邮箱,请注意查收</string>
     <string name="activeBtnText">激活</string>
+    <string name="loginfragment_title">登录</string>
+
+    <!--主页面字符串-->
+    <string name="signOutBtnText">退出登录</string>
+    <string name="homeFragmentToolBarSearchMenuTitle">搜索</string>
+    <string name="addTaskFragmentToolBarSaveBtnTitle">搜索</string>
+
+
+    <!--重置密码页面字符串-->
     <string name="resetPwd_title">重置密码</string>
     <string name="resetPwd_email">邮箱号</string>
     <string name="resetPwd_code">验证码</string>
+    <string name="resetPwd_password">密码</string>
+    <string name="resetPwd_passwordConfirm">确认密码</string>
+    <string name="resetPwd_getCodeBtnText">获取验证码</string>
     <string name="resetPwdBtn">重置</string>
-    <string name="loginfragment_title">登录</string>
+
+
+    <!--任务列表中每一个item中的的显示字段-->
+    <string name="tasklist_item_icon">左上角图标</string>
+    <string name="tasklist_item_createtime">创建时间:</string>
+    <string name="tasklist_item_endtime">结束时间:</string>
+    <string name="tasklist_item_state">状态:</string>
+    <string name="tasklist_item_content">内容:</string>
+    <string name="headerCookie_name">Set-Cookie</string>
+    <string name="emailCheckStr">^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\\.[a-zA-Z0-9_-]+)+$</string>
+    <string name="btn_enter">确定</string>
+    <string name="activeGetCodeBtnText">获取验证码</string>
+
+    <!--添加任务页面是控件显示字符-->
+    <string name="addTask_title">标题</string>
+    <string name="addTask_content">内容(500)</string>
+    <string name="addTask_selectTimeBtnContentDescription">时间选择</string>
+    <string name="addTask_taskCategory">分类</string>
+    <string name="addTask_DeleteImgContentDescription">任务类别列表删除按钮图标</string>
+    <string name="mySpinnerImgBtnContent">下拉框触发图片按钮</string>
+    <string name="mySpinnerAddItemBtnText">新建</string>
+    <string name="mySpinnerItemDefaultText">未分类</string>
+    <string name="addCategoryDialogTitle">新建分类</string>
+    <string name="addCategoryTextEditTextHint">分类名称（50）</string>
+    <string name="addCategoryCancelButtonText">取消</string>
+    <string name="addCategoryEnterButtonText">确定</string>
+    <string name="addTaskCreateTimeImgContentDescription">任务创建时间图标</string>
+    <string name="addTaskSelectEndTimeTextTip">结束时间:</string>
+    <string name="addTaskEndTimeDefault">----------</string>
+    <string name="addTaskIsRedo">重复做</string>
+    <string name="addTaskSpinnerImgContentDescription">分类图标</string>
+
+    //时间选择对话框
+    <string name="dateTimePickerImgBtnContentDescription">关闭对话框按钮图片</string>
+
+
+    <string-array name="languages">
+        <item>c语言</item>
+        <item>java </item>
+        <item>php</item>
+        <item>xml</item>
+        <item>html</item>
+    </string-array>
+
 </resources>

@@ -10,10 +10,6 @@ import com.demo.androidapp.model.Auth;
 //SharedPreferences存取数据操作类
 public class DataSP {
 
-//    private String userName;    //用户名
-//
-//    private String password;    //密码
-
     private Context context;
     private SharedPreferences sharedPreferences;
     private String shName;
@@ -24,11 +20,31 @@ public class DataSP {
         sharedPreferences = this.context.getSharedPreferences(shName,Context.MODE_PRIVATE);
     }
 
-    //保存数据
-    public void save(String userName,String password) {
+    //保存cookie
+    public void saveCookie(String cookieStr) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(context.getResources().getString(R.string.shCookie_key),cookieStr);
+        editor.apply();
+    }
+
+    //删除cookie
+    public void deleteCookie() {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove(context.getResources().getString(R.string.shCookie_key));
+        editor.apply();
+    }
+
+    //获取cookie
+    public String getCookie() {
+        return sharedPreferences.getString(context.getResources().getString(R.string.shCookie_key),"");
+    }
+
+    //保存/删除数据
+    public void save(String userName,String password,String uid) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(context.getResources().getString(R.string.shUserName_key),userName);
         editor.putString(context.getResources().getString(R.string.shPasswordName_key),password);
+        editor.putString(context.getResources().getString(R.string.shUid_key),uid);
         editor.apply();
     }
 
@@ -36,9 +52,19 @@ public class DataSP {
     public Auth load() {
         String userName = this.sharedPreferences.getString(context.getResources().getString(R.string.shUserName_key),"userName");
         String password = this.sharedPreferences.getString(context.getResources().getString(R.string.shPasswordName_key),"password");
-        return new Auth(userName,password);
+        String uid = this.sharedPreferences.getString(context.getResources().getString(R.string.shUid_key),"uid");
+        String cookieStr = this.sharedPreferences.getString(context.getResources().getString(R.string.shCookie_key),"");
+        return new Auth(userName,password,uid,cookieStr);
     }
 
-
+    //删除数据
+    public void delete() {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove(context.getResources().getString(R.string.shUserName_key));
+        editor.remove(context.getResources().getString(R.string.shPasswordName_key));
+        editor.remove(context.getResources().getString(R.string.shUid_key));
+        deleteCookie();
+        editor.apply();
+    }
 
 }

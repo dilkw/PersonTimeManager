@@ -8,10 +8,8 @@ import com.demo.androidapp.api.Api;
 import com.demo.androidapp.model.commitObject.RegisterCommit;
 import com.demo.androidapp.model.common.RCodeEnum;
 import com.demo.androidapp.model.common.ReturnData;
-import com.demo.androidapp.model.returnObject.LoginReturn;
-import com.demo.androidapp.model.returnObject.RegisterReturn;
+import com.demo.androidapp.model.returnObject.LoginAndRegisterReturn;
 
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -40,27 +38,25 @@ public class AuthRepository {
     public void login(String userName, String password) {
         Log.d("imageView","authRepository层：repository----login");
         Log.d("imageView","authRepository层：登录信息" + "用户名：" + userName + "密码：" + password);
-        api.signIn(userName,password).enqueue(new Callback<LoginReturn>() {
+        api.signIn(userName,password).enqueue(new Callback<ReturnData<LoginAndRegisterReturn>>() {
             @Override
-            public void onResponse(Call<LoginReturn> call, Response<LoginReturn> response) {
+            public void onResponse(Call<ReturnData<LoginAndRegisterReturn>> call, Response<ReturnData<LoginAndRegisterReturn>> response) {
                 Log.d("imageView","authRepository层：登录成功" );
                 Log.d("response", "onResponse:");
                 if (response.body() == null) {
                     Log.d("response", "onResponse: null");
-                    returnDataLiveData.postValue(new ReturnData(RCodeEnum.ERROE));
+                    returnDataLiveData.postValue(new ReturnData(RCodeEnum.ERROR));
                     return;
                 }
-                Log.d("response", "onResponse: notNull" + response.body().getCreated_at());
-                LoginReturn loginReturn = response.body();
-                ReturnData returnData = new ReturnData(loginReturn);
-                returnDataLiveData.postValue(returnData);
+                Log.d("response", "onResponse: notNull=========" + response.body().getData());
+                returnDataLiveData.postValue(response.body());
             }
 
             @Override
-            public void onFailure(Call<LoginReturn> call, Throwable t) {
+            public void onFailure(Call<ReturnData<LoginAndRegisterReturn>> call, Throwable t) {
                 Log.d("imageView","authRepository层：登录失败" );
                 t.printStackTrace();
-                returnDataLiveData.postValue(new ReturnData(RCodeEnum.ERROE));
+                returnDataLiveData.postValue(new ReturnData(RCodeEnum.ERROR));
                 //Log.d("imageView","authRepository层：登陆失败" + returnDataLiveData.getValue().getCode());
             }
         });
@@ -74,16 +70,16 @@ public class AuthRepository {
             return;
         }
         Log.d("imageView","authRepository层：注册信息：" + registerCommit.toString());
-        api.signUp(registerCommit).enqueue(new Callback<RegisterReturn>() {
+        api.signUp(registerCommit).enqueue(new Callback<ReturnData<LoginAndRegisterReturn>>() {
             @Override
-            public void onResponse(Call<RegisterReturn> call, Response<RegisterReturn> response) {
+            public void onResponse(Call<ReturnData<LoginAndRegisterReturn>> call, Response<ReturnData<LoginAndRegisterReturn>> response) {
                 Log.d("imageView","authRepository层：注册成功" );
-                ReturnData returnData = new ReturnData(response);
-                returnDataLiveData.postValue(returnData);
+                //ReturnData returnData = new ReturnData(response);
+                returnDataLiveData.postValue(response.body());
             }
             @Override
-            public void onFailure(Call<RegisterReturn> call, Throwable t) {
-                returnDataLiveData.postValue(new ReturnData(RCodeEnum.ERROE));
+            public void onFailure(Call<ReturnData<LoginAndRegisterReturn>> call, Throwable t) {
+                returnDataLiveData.postValue(new ReturnData(RCodeEnum.ERROR));
                 Log.d("imageView","authRepository层：注册失败" + t.toString());
                 t.printStackTrace();
             }
@@ -91,7 +87,7 @@ public class AuthRepository {
     }
 
 
-    //获取验证码
+    //帐号激活获取验证码
     public void getActiveCode(String email) {
         Log.d("imageView","authRepository层：repository----getActiveCode");
         if (email == null) {
@@ -99,19 +95,37 @@ public class AuthRepository {
             return;
         }
         Log.d("imageView","authRepository层：注册信息：" + email);
-        api.getActiveCodes(email).enqueue(new Callback<ResponseBody>() {
+        api.getActiveCodes(email).enqueue(new Callback<ReturnData>() {
             @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+            public void onResponse(Call<ReturnData> call, Response<ReturnData> response) {
                 Log.d("imageView","authRepository层：获取验证码成功" );
-                ReturnData returnData = new ReturnData(response);
-                returnDataLiveData.postValue(returnData);
+                returnDataLiveData.postValue(response.body());
             }
 
             @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
+            public void onFailure(Call<ReturnData> call, Throwable t) {
                 Log.d("imageView","authRepository层：获取验证码失败");
                 t.printStackTrace();
-                ReturnData returnData = new ReturnData(RCodeEnum.ERROE);
+                ReturnData returnData = new ReturnData(RCodeEnum.ERROR);
+                returnDataLiveData.postValue(returnData);
+            }
+        });
+    }
+
+    //重置密码获取验证码
+    public void resetPwdGetCode(String email) {
+        api.getResetPwdCode(email).enqueue(new Callback<ReturnData>() {
+            @Override
+            public void onResponse(Call<ReturnData> call, Response<ReturnData> response) {
+                Log.d("imageView","authRepository层：重置密码获取验证码成功" );
+                returnDataLiveData.postValue(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<ReturnData> call, Throwable t) {
+                Log.d("imageView","authRepository层：重置密码获取验证码失败");
+                t.printStackTrace();
+                ReturnData returnData = new ReturnData(RCodeEnum.ERROR);
                 returnDataLiveData.postValue(returnData);
             }
         });
@@ -128,17 +142,17 @@ public class AuthRepository {
      * codes:接收到的帐号激活码
      */
     public void active(String email,String codes) {
-        api.active(email,codes).enqueue(new Callback<ResponseBody>() {
+        api.active(email,codes).enqueue(new Callback<ReturnData>() {
             @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+            public void onResponse(Call<ReturnData> call, Response<ReturnData> response) {
                 Log.d("imageView","authRepository层：激活账号成功" );
-                ReturnData returnData = new ReturnData(response);
-                returnDataLiveData.postValue(returnData);
+                //ReturnData returnData = new ReturnData(response);
+                returnDataLiveData.postValue(response.body());
             }
 
             @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                returnDataLiveData.postValue(new ReturnData(RCodeEnum.ERROE));
+            public void onFailure(Call<ReturnData> call, Throwable t) {
+                returnDataLiveData.postValue(new ReturnData(RCodeEnum.ERROR));
                 Log.d("imageView","authRepository层：激活失败" + t.toString());
                 t.printStackTrace();
             }

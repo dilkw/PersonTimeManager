@@ -1,5 +1,7 @@
 package com.demo.androidapp.model;
 
+import androidx.room.Entity;
+
 //用户实体类
 public class Auth {
 
@@ -7,14 +9,22 @@ public class Auth {
 
     private String password;    //密码
 
+    private String uid;         //uid
+
+    private String cookieStr;   //cookie
+
     public Auth() {
-        this.userName = "yokaimeow";
-        this.password = "ljm123456.";
+        this.userName = "aaaaa";
+        this.password = "aaaaaaaa";
+        this.uid = "123456";
+        this.cookieStr = "";
     }
 
-    public Auth(String userName, String password) {
+    public Auth(String userName, String password,String uid,String cookieStr) {
         this.userName = userName;
         this.password = password;
+        this.uid = uid;
+        this.cookieStr = cookieStr;
     }
 
     public String getUserName() {
@@ -33,11 +43,28 @@ public class Auth {
         this.password = password;
     }
 
+    public String getUid() {
+        return uid;
+    }
+
+    public String getCookieStr() {
+        return cookieStr;
+    }
+
+    public void setCookieStr(String cookieStr) {
+        this.cookieStr = cookieStr;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
     @Override
     public String toString() {
         return "Auth{" +
                 "userName='" + userName + '\'' +
                 ", password='" + password + '\'' +
+                ", uid='" + uid + '\'' +
                 '}';
     }
 }

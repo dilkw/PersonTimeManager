@@ -1,40 +1,44 @@
 package com.demo.androidapp.model.common;
 
-import com.demo.androidapp.model.common.RCodeEnum;
-
-public class ReturnData {
+public class ReturnData<T> {
 
     //响应码
-   private int code;
+    private int code;
 
-   //响应状态
-   private String msg;
+    //响应状态
+    private String msg;
 
-   //相应返回数据
-   private Object content;
+    //相应返回数据
+    private T data;
 
-    public ReturnData(Object content) {
-        this.code = RCodeEnum.OK.getCode();
-        this.msg = RCodeEnum.OK.getMessage();
-        this.content = content;
+    public ReturnData(int code, String msg, T data) {
+        this.code = code;
+        this.msg = msg;
+        this.data = data;
     }
 
-    public ReturnData(RCodeEnum rCodeEnum, Object content) {
+    public ReturnData(T data) {
+        this.code = RCodeEnum.OK.getCode();
+        this.msg = RCodeEnum.OK.getMessage();
+        this.data = data;
+    }
+
+    public ReturnData(RCodeEnum rCodeEnum, T data) {
         this.code = rCodeEnum.getCode();
         this.msg = rCodeEnum.getMessage();
-        this.content = content;
+        this.data = data;
     }
 
     public ReturnData(RCodeEnum rCodeEnum) {
         this.code = rCodeEnum.getCode();
         this.msg = rCodeEnum.getMessage();
-        this.content = null;
+        this.data = null;
     }
 
     public ReturnData() {
         this.code = RCodeEnum.OK.getCode();
         this.msg = RCodeEnum.OK.getMessage();
-        this.content = null;
+        this.data = null;
     }
 
     public int getCode() {
@@ -53,11 +57,22 @@ public class ReturnData {
         this.msg = msg;
     }
 
-    public Object getContent() {
-        return content;
+    public T getData() {
+//        Gson gson = new Gson();
+//        return gson.fromJson(data,Object.class);
+        return data;
     }
 
-    public void setContent(Object content) {
-        this.content = content;
+    public void setData(T data) {
+        this.data = data;
+    }
+
+    @Override
+    public String toString() {
+        return "ReturnData{" +
+                "code=" + code +
+                ", msg='" + msg + '\'' +
+                ", data=" + data +
+                '}';
     }
 }

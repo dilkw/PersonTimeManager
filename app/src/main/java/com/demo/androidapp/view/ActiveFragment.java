@@ -14,6 +14,8 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import android.os.CountDownTimer;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -24,9 +26,12 @@ import android.widget.Toast;
 import com.demo.androidapp.MainActivity;
 import com.demo.androidapp.R;
 import com.demo.androidapp.databinding.ActiveFragmentBinding;
+import com.demo.androidapp.model.common.RCodeEnum;
 import com.demo.androidapp.model.common.ReturnData;
 import com.demo.androidapp.view.myView.IdentifyCodeView;
 import com.demo.androidapp.viewmodel.ActiveViewModel;
+
+import java.util.Objects;
 
 public class ActiveFragment extends Fragment implements IdentifyCodeView.CodesChangedListener {
 
@@ -37,6 +42,9 @@ public class ActiveFragment extends Fragment implements IdentifyCodeView.CodesCh
     }
 
     private ActiveFragmentBinding binding;
+
+    private CountDownTimer countDownTimer;      //
+    private CountDownTimer countDownTimer2;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -83,34 +91,11 @@ public class ActiveFragment extends Fragment implements IdentifyCodeView.CodesCh
             }
         });
 
-        CountDownTimer countDownTimer = new CountDownTimer(60000,1000) {
-            @SuppressLint("SetTextI18n")
-            @Override
-            public void onTick(long millisUntilFinished) {
-                Log.d("imageView", "倒计时：");
-                binding.getCodeTipsTextView.setClickable(false);
-                binding.getCodeTipsTextView.setTextColor(getResources().getColor(R.color.colorTextFalse));
-                binding.getCodeTipsTextView.setText((millisUntilFinished / 1000) + "s后重新获取验证码");
-            }
-
-            @Override
-            public void onFinish() {
-                binding.getCodeTipsTextView.setText("重新获取验证码");
-                binding.getCodeTipsTextView.setTextColor(getResources().getColor(R.color.colorTextTrue));
-                binding.getCodeTipsTextView.setClickable(true);
-            }
-        };
-
-        countDownTimer.start();
-
-        //重新获取验证码（访问获取验证码接口）
-        binding.getCodeTipsTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mViewModel.getActiveCodes();
-                countDownTimer.start();
-            }
-        });
+        if (mViewModel.getEmail() == null) {
+            NotFromRegisterFragment();
+        }else {
+            fromRegisterFragment();
+        }
 
         mViewModel.getCodesLiveData().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
@@ -122,16 +107,120 @@ public class ActiveFragment extends Fragment implements IdentifyCodeView.CodesCh
         mViewModel.getReturnLiveData().observe(getViewLifecycleOwner(), new Observer<ReturnData>() {
             @Override
             public void onChanged(ReturnData returnData) {
-                if (returnData.getCode() == 200) {
+                if (returnData.getCode() == RCodeEnum.OK.getCode()) {
+                    if (returnData.getData() == null) {
+                        Toast.makeText(requireActivity(),"验证码已发送至您的邮箱",Toast.LENGTH_SHORT).show();
+                        return;
+                    }
                     NavController navController = Navigation.findNavController(binding.activeButton);
                     navController.navigate(R.id.login_fragment);
                 } else {
-                    Toast.makeText(requireActivity(),"激活失败",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireActivity(),returnData.getMsg() + "或者帐号已被注册并激活了",Toast.LENGTH_SHORT).show();
                 }
             }
         });
     }
 
+    //从注册页面跳转过来激活帐号（带有email）
+    private void fromRegisterFragment() {
+        binding.getCodeTipsTextView.setVisibility(View.VISIBLE);
+        countDownTimer = new CountDownTimer(60000,1000) {
+            @SuppressLint("SetTextI18n")
+            @Override
+            public void onTick(long millisUntilFinished) {
+                Log.d("imageView", "倒计时：");
+                binding.getCodeTipsTextView.setClickable(false);
+                binding.getCodeTipsTextView.setTextColor(getResources().getColor(R.color.colorTextFalse));
+                binding.getCodeTipsTextView.setText((millisUntilFinished / 1000) + "s获取验证码");
+            }
+
+            @Override
+            public void onFinish() {
+                binding.getCodeTipsTextView.setText("获取验证码");
+                binding.getCodeTipsTextView.setTextColor(getResources().getColor(R.color.colorTextTrue));
+                binding.getCodeTipsTextView.setClickable(true);
+            }
+        };
+        countDownTimer.start();
+        //重新获取验证码（访问获取验证码接口）
+        binding.getCodeTipsTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mViewModel.getActiveCodes();
+                countDownTimer.start();
+            }
+        });
+    }
+
+
+    //从注册页面跳转过来激活帐号（带有email）
+    private void NotFromRegisterFragment() {
+        binding.activeGetCodeBtn.setVisibility(View.VISIBLE);
+        binding.activeTextInputLayoutEmail.setVisibility(View.VISIBLE);
+        binding.activeGetCodeBtn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                mViewModel.setEmail(Objects.requireNonNull(binding.activeTextInputEditEmail.getText()).toString());
+                mViewModel.getActiveCodes();
+                Log.d("imageView", "getActiveCodes: 获取验证码");
+            }
+        });
+
+        binding.activeTextInputEditEmail.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (!s.toString().matches(getResources().getString(R.string.emailCheckStr)) && s.length() > 0) {
+                    binding.activeTextInputLayoutEmail.setError("邮箱格式错误");
+                }else {
+                    binding.activeGetCodeBtn.setEnabled(s.length() > 0);
+                    binding.activeTextInputLayoutEmail.setErrorEnabled(false);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+        //按钮
+        countDownTimer2 = new CountDownTimer(60000,1000) {
+            @SuppressLint("SetTextI18n")
+            @Override
+            public void onTick(long millisUntilFinished) {
+                Log.d("imageView", "倒计时：");
+                binding.activeGetCodeBtn.setEnabled(false);
+                binding.activeGetCodeBtn.setText((millisUntilFinished / 1000) + "s获取验证码");
+            }
+
+            @Override
+            public void onFinish() {
+                binding.activeGetCodeBtn.setText("获取验证码");
+                binding.activeGetCodeBtn.setEnabled(true);
+            }
+        };
+
+        mViewModel.getReturnLiveData().observe(requireActivity(), new Observer<ReturnData>() {
+            @Override
+            public void onChanged(ReturnData returnData) {
+                if (returnData.getCode() == RCodeEnum.OK.getCode()) {
+                    Log.d("imageView", "getActiveCodes: 获取验证码成功");
+                    countDownTimer2.start();
+                    binding.codeHasBeenSentText.setVisibility(View.VISIBLE);
+                }else {
+                    Log.d("imageView", "getActiveCodes: 获取验证码失败");
+                    Toast.makeText(getActivity(),returnData.getMsg(),Toast.LENGTH_SHORT).show();
+                    binding.activeGetCodeBtn.setEnabled(false);
+                    binding.activeTextInputLayoutEmail.setError(returnData.getMsg());
+                }
+            }
+        });
+    }
 
     @Override
     public void textChanged(String codes) {

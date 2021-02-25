@@ -18,7 +18,7 @@
 
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/textInputLayout4"
+            android:id="@+id/textInputLayoutUserName"
             android:layout_width="250dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="81dp"
@@ -36,19 +36,22 @@
                 android:id="@+id/registerUserName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:inputType="number"
                 android:hint="@string/userNameHint"
                 android:text="@={registerViewModel.getRegisterCommitLiveData().name}" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/textInputLayout3"
+            android:id="@+id/textInputLayoutEmail"
             android:layout_width="250dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
             app:boxBackgroundColor="#00000000"
-            app:layout_constraintEnd_toEndOf="@+id/textInputLayout4"
-            app:layout_constraintStart_toStartOf="@+id/textInputLayout4"
-            app:layout_constraintTop_toBottomOf="@+id/textInputLayout4">
+            app:errorEnabled="true"
+            app:counterMaxLength="255"
+            app:layout_constraintEnd_toEndOf="@+id/textInputLayoutUserName"
+            app:layout_constraintStart_toStartOf="@+id/textInputLayoutUserName"
+            app:layout_constraintTop_toBottomOf="@+id/textInputLayoutUserName">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/registerEmail"
@@ -60,7 +63,7 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/registerPwd"
+            android:id="@+id/textInputLayoutPassword"
             android:layout_width="250dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
@@ -69,12 +72,11 @@
             app:endIconMode="password_toggle"
             android:focusable="true"
             app:helperTextEnabled="true"
-            app:counterMaxLength="18"
             app:errorEnabled="true"
             app:helperText="@string/pwdFormat_tips"
-            app:layout_constraintEnd_toEndOf="@+id/textInputLayout3"
-            app:layout_constraintStart_toStartOf="@+id/textInputLayout3"
-            app:layout_constraintTop_toBottomOf="@+id/textInputLayout3">
+            app:layout_constraintEnd_toEndOf="@+id/textInputLayoutEmail"
+            app:layout_constraintStart_toStartOf="@+id/textInputLayoutEmail"
+            app:layout_constraintTop_toBottomOf="@+id/textInputLayoutEmail">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/registerPassword"
@@ -82,20 +84,21 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/passwordHint"
                 android:inputType="textPassword"
-                android:text="@={registerViewModel.getRegisterCommitLiveData().password}" />
+                android:text="@={registerViewModel.getRegisterCommitLiveData().password}"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/registerPwdConfirm"
+            android:id="@+id/textInputLayoutPwdConfirm"
             android:layout_width="250dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
             app:boxBackgroundColor="#00000000"
             app:endIconCheckable="true"
             app:endIconMode="password_toggle"
-            app:layout_constraintEnd_toEndOf="@+id/registerPwd"
-            app:layout_constraintStart_toStartOf="@+id/registerPwd"
-            app:layout_constraintTop_toBottomOf="@+id/registerPwd">
+            app:errorEnabled="true"
+            app:layout_constraintEnd_toEndOf="@+id/textInputLayoutPassword"
+            app:layout_constraintStart_toStartOf="@+id/textInputLayoutPassword"
+            app:layout_constraintTop_toBottomOf="@+id/textInputLayoutPassword">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/registerPasswordConfirm"
@@ -117,9 +120,9 @@
         app:cornerRadius="50dp"
         android:onClick="@{()->registerViewModel.register()}"
         android:text="@string/registerButton"
-        app:layout_constraintEnd_toEndOf="@+id/registerPwdConfirm"
-        app:layout_constraintStart_toStartOf="@+id/registerPwdConfirm"
-        app:layout_constraintTop_toBottomOf="@+id/registerPwdConfirm" />
+        app:layout_constraintEnd_toEndOf="@+id/textInputLayoutPwdConfirm"
+        app:layout_constraintStart_toStartOf="@+id/textInputLayoutPwdConfirm"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutPwdConfirm" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/jumpToActiveButton"
@@ -136,6 +139,17 @@
             app:layout_constraintHorizontal_bias="0.493"
             app:layout_constraintStart_toStartOf="@+id/registerButton"
             app:layout_constraintTop_toBottomOf="@+id/registerButton" />
+
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/textInputLayoutUserName"
+            app:layout_constraintStart_toStartOf="@+id/textInputLayoutUserName"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.050000012"
+            app:srcCompat="@drawable/ic_error" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

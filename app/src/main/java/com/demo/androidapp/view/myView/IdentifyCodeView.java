@@ -77,10 +77,6 @@ public class IdentifyCodeView extends View {
     public static void codesAttrChanged(IdentifyCodeView v, InverseBindingListener listener) {
         Log.d("imageView", "codesAttrChanged: 数据改变");
         v.inverseBindingListener = listener;
-//        v.addCodesChangeListener(codes -> {
-//            Log.d("imageView", "textChanged: 数据改变" + codes);
-//            listener.onChange();
-//        });
     }
 
     public IdentifyCodeView(Context context) {

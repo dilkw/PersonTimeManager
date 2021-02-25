@@ -17,11 +17,44 @@
         android:layout_height="match_parent"
         tools:context=".view.ActiveFragment">
 
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/activeTextInputLayoutEmail"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:boxBackgroundColor="#00000000"
+            app:counterMaxLength="255"
+            app:errorEnabled="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/identifyCodeView"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.13">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/activeTextInputEditEmail"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:hint="@string/email"
+                android:inputType="textEmailAddress" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/activeGetCodeBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/activeGetCodeBtnText"
+            android:enabled="false"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/activeTextInputLayoutEmail"
+            app:layout_constraintStart_toEndOf="@+id/activeTextInputLayoutEmail"
+            app:layout_constraintTop_toTopOf="@+id/activeTextInputLayoutEmail" />
+
         <TextView
-            android:id="@+id/textView3"
+            android:id="@+id/codeHasBeenSentText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
+            android:visibility="gone"
             android:text="@string/activeFragmentTip"
             app:layout_constraintBottom_toTopOf="@+id/identifyCodeView"
             app:layout_constraintStart_toStartOf="@+id/identifyCodeView"
@@ -39,17 +72,17 @@
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.26999998" />
+            app:layout_constraintVertical_bias="0.45" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/activeButton"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:enabled="false"
+            android:onClick="@{()->activeViewModel.sendCodes()}"
             android:text="@string/activeBtnText"
             android:textColor="#333232"
             app:cornerRadius="20dp"
-            android:onClick="@{()->activeViewModel.sendCodes()}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/identifyCodeView"
             app:layout_constraintStart_toStartOf="@+id/identifyCodeView"

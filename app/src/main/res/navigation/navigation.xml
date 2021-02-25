@@ -23,11 +23,15 @@
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.demo.androidapp.view.HomeFragment"
-        android:label="主页面"
         tools:layout="@layout/home_fragment">
         <action
             android:id="@+id/action_homeFragment_to_loginFragment"
             app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_addTaskFragment"
+            app:destination="@id/addTaskFragment"
+            app:popUpTo="@id/homeFragment"
+            app:popUpToInclusive="true"/>
     </fragment>
     <fragment
         android:id="@+id/registerFragment"
@@ -45,6 +49,11 @@
         tools:layout="@layout/active_fragment" />
     <fragment
         android:id="@+id/retrievePasswordFragment"
-        android:name="com.demo.androidapp.view.RetrievePasswordFragment"
+        android:name="com.demo.androidapp.view.ResetPasswordFragment"
+        tools:layout="@layout/reset_password_fragment"
         android:label="找回密码" />
+    <fragment
+        android:id="@+id/addTaskFragment"
+        android:name="com.demo.androidapp.view.AddTaskFragment"
+        tools:layout="@layout/add_task_fragment"/>
 </navigation>
