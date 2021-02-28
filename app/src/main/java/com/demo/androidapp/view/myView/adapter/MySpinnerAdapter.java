@@ -2,17 +2,13 @@ package com.demo.androidapp.view.myView.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.database.DataSetObserver;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import com.demo.androidapp.R;

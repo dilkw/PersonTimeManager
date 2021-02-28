@@ -100,22 +100,16 @@ public class LoginFragment extends Fragment {
             Log.d("imageView","重新创建");
             loginViewModel = new ViewModelProvider(this).get(LoginViewModel.class);
         }
-        loginViewModel.getReturnLiveData().observe(this,new Observer<ReturnData>() {
+        loginViewModel.getReturnLiveData().observe(this,new Observer<ReturnData<LoginAndRegisterReturn>>() {
             @Override
             public void onChanged(ReturnData returnData) {
-                Log.d("imageView", "ReturnData------onchange()" + returnData.getCode() + returnData.getData());
                 if (returnData.getCode() == RCodeEnum.OK.getCode()) {
                     Toast.makeText(getActivity(), "登录成功", Toast.LENGTH_SHORT).show();
-
                     //上传数据，更新MyApplication中的数据
                     LoginAndRegisterReturn loginAndRegisterReturn = (LoginAndRegisterReturn)loginViewModel.getReturnLiveData().getValue().getData();
-                    Log.d("imageView", "returnData000000000000000" + loginAndRegisterReturn.toString());
-                    MyApplication.getApplication().saveData(loginAndRegisterReturn.getName(),
-                            loginViewModel.getAuthLiveData().getValue().getPassword(),
-                            loginAndRegisterReturn.getUid());
-
-                    Log.d("imageView", String.valueOf(returnData.getCode()));
-
+                    MyApplication.getApplication().signIn(loginAndRegisterReturn.getName(),
+                                                            loginViewModel.getAuthLiveData().getValue().getPassword(),
+                                                            loginAndRegisterReturn.getUid());
                     //跳转主页
                     loginViewModel.jumpToHomeFragment(getView());
                 } else {

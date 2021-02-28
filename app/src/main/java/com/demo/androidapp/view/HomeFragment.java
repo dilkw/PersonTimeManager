@@ -122,35 +122,40 @@ public class HomeFragment extends Fragment {
 
     private void initData(LifecycleOwner lifecycleOwner) {
         Log.d("imageView",MyApplication.getApplication().getUID() + "++++++++++");
-        homeViewModel.getAllTaskByUid(MyApplication.getApplication().getUID());
-        homeViewModel.getReturnLiveData().observe(lifecycleOwner, new Observer<ReturnData>() {
-            @Override
-            public void onChanged(ReturnData returnData) {
-                if (returnData == null) {
-                    Log.d("imageView", "onChanged:returnData为空" );
-                    return;
-                }
-                Log.d("imageView", "onChanged:returnData.toString" + returnData.toString());
-                if (returnData.getCode() == RCodeEnum.OK.getCode()) {
-                    Log.d("imageView", "onChanged: 获取任务清单成功==============");
-                    homeViewModel.homeLiveData.setValue(((ReturnListObject<Task>)returnData.getData()).getItems());
-                }else {
-                    Log.d("imageView", "onChanged: 获取任务清单失败==============");
-                }
-            }
-        });
-        TasksItemAdapter tasksItemAdapter = new TasksItemAdapter(homeViewModel.homeLiveData.getValue());
+        homeViewModel.getAllTaskByUidInDB();
+        TasksItemAdapter tasksItemAdapter = new TasksItemAdapter((List<Task>)(homeViewModel.getReturnLiveData().getValue().getData()));
         StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(2, RecyclerView.VERTICAL);
         homeFragmentBinding.recyclerView.setLayoutManager(staggeredGridLayoutManager);
         homeFragmentBinding.recyclerView.setAdapter(tasksItemAdapter);
 
-        homeViewModel.homeLiveData.observe(lifecycleOwner, new Observer<List<Task>>() {
+        homeViewModel.getReturnLiveData().observe(lifecycleOwner, new Observer<ReturnData<List<Task>>>() {
             @Override
-            public void onChanged(List<Task> tasks) {
-                Log.d("imageView", "onChanged: 数据变化");
-                if (tasks.size() == 0) return;
-                tasksItemAdapter.setTasks(tasks);
-                tasksItemAdapter.notifyDataSetChanged();
+            public void onChanged(ReturnData<List<Task>> returnData) {
+                RCodeEnum rCodeEnum = returnData.getRCodeEnum();
+                List<Task> tasks = returnData.getData();
+                switch (rCodeEnum) {
+                    case DB_OK:{
+                        if (tasks == null || tasks.size() == 0) {
+                            Log.d("imageView", "onChanged: 本地数据库为空");
+                            homeViewModel.getAllTaskByUidInServer();
+                            break;
+                        }
+                        Log.d("imageView", "onChanged: 本地数据库不为空");
+                        tasksItemAdapter.setTasks(tasks);
+                        tasksItemAdapter.notifyDataSetChanged();
+                        break;
+                    }
+                    case SERVER_OK:{
+                        Log.d("imageView", "onChanged: 网络请求成功");
+                        tasksItemAdapter.setTasks(tasks);
+                        tasksItemAdapter.notifyDataSetChanged();
+                        break;
+                    }
+                    case ERROR_AUTH:{
+                        Log.d("imageView", "onChanged: token_error");
+                    }
+
+                }
             }
         });
 

@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.demo.androidapp.model.common.RCodeEnum;
 import com.demo.androidapp.model.common.ReturnData;
+import com.demo.androidapp.model.returnObject.LoginAndRegisterReturn;
 import com.demo.androidapp.repository.AuthRepository;
 
 import retrofit2.Call;
@@ -39,7 +40,7 @@ public class ResetPasswordViewModel extends AndroidViewModel {
         authRepository.resetPwdGetCode(email);
     }
 
-    public MutableLiveData<ReturnData> getRepositoryMutableLiveData() {
+    public MutableLiveData<ReturnData<LoginAndRegisterReturn>> getRepositoryMutableLiveData() {
         return authRepository.getReturnDataLiveData();
     }
 

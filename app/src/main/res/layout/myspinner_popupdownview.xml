@@ -3,12 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
+    app:strokeColor="@color/strokeColor"
     android:layout_height="wrap_content"
+    app:strokeWidth="2dp"
     android:minWidth="300dp"
+    android:maxWidth="600dp"
     app:cardCornerRadius="10dp">
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:divider="@drawable/divider_line"
         android:orientation="vertical"
@@ -16,7 +19,7 @@
 
         <ListView
             android:id="@+id/mySpinnerPopupWindowListView"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginStart="10dp"
             android:layout_marginLeft="10dp"
@@ -24,7 +27,7 @@
 
         <TextView
             android:id="@+id/mySpinnerPopupWindowTextView"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_marginStart="10dp"
             android:layout_marginLeft="10dp"
@@ -38,7 +41,7 @@
 
         <Button
             android:id="@+id/mySpinnerPopupWindowButton"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_marginStart="10dp"
             android:layout_marginLeft="10dp"

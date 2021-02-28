@@ -7,4 +7,8 @@
     <color name="colorTextFalse">#676767</color>
     <color name="colorTextTrue">#1C3FF6</color>
     <color name="colorDividerColor">#676767</color>
+
+    <color name="backgroundColor">#00000000</color>
+    <color name="strokeColor">#676767</color>
+
 </resources>

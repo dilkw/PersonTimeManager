@@ -2,64 +2,54 @@ package com.demo.androidapp.model.common;
 
 public class ReturnData<T> {
 
-    //响应码
-    private int code;
-
-    //响应状态
-    private String msg;
+    //枚举类
+    private RCodeEnum rCodeEnum;
 
     //相应返回数据
     private T data;
 
     public ReturnData(int code, String msg, T data) {
-        this.code = code;
-        this.msg = msg;
+        this.rCodeEnum = RCodeEnum.returnRCodeEnumByCode(code);
         this.data = data;
     }
 
     public ReturnData(T data) {
-        this.code = RCodeEnum.OK.getCode();
-        this.msg = RCodeEnum.OK.getMessage();
+        this.rCodeEnum = RCodeEnum.OK;
         this.data = data;
     }
 
     public ReturnData(RCodeEnum rCodeEnum, T data) {
-        this.code = rCodeEnum.getCode();
-        this.msg = rCodeEnum.getMessage();
+        this.rCodeEnum = rCodeEnum;
         this.data = data;
     }
 
     public ReturnData(RCodeEnum rCodeEnum) {
-        this.code = rCodeEnum.getCode();
-        this.msg = rCodeEnum.getMessage();
+        this.rCodeEnum = rCodeEnum;
         this.data = null;
     }
 
     public ReturnData() {
-        this.code = RCodeEnum.OK.getCode();
-        this.msg = RCodeEnum.OK.getMessage();
+        this.rCodeEnum = RCodeEnum.OK;
         this.data = null;
     }
 
     public int getCode() {
-        return code;
-    }
-
-    public void setCode(int code) {
-        this.code = code;
+        return this.rCodeEnum.getCode();
     }
 
     public String getMsg() {
-        return msg;
+        return this.rCodeEnum.getMessage();
     }
 
-    public void setMsg(String msg) {
-        this.msg = msg;
+    public RCodeEnum getRCodeEnum() {
+        return rCodeEnum;
+    }
+
+    public void setRCodeEnum(RCodeEnum rCodeEnum) {
+        this.rCodeEnum = rCodeEnum;
     }
 
     public T getData() {
-//        Gson gson = new Gson();
-//        return gson.fromJson(data,Object.class);
         return data;
     }
 
@@ -70,8 +60,8 @@ public class ReturnData<T> {
     @Override
     public String toString() {
         return "ReturnData{" +
-                "code=" + code +
-                ", msg='" + msg + '\'' +
+                "code=" + rCodeEnum.getCode() +
+                ", msg='" + rCodeEnum.getMessage() + '\'' +
                 ", data=" + data +
                 '}';
     }

@@ -8,6 +8,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 
 import com.demo.androidapp.model.common.ReturnData;
+import com.demo.androidapp.model.returnObject.LoginAndRegisterReturn;
 import com.demo.androidapp.repository.AuthRepository;
 
 import java.util.Objects;
@@ -43,7 +44,7 @@ public class ActiveViewModel extends AndroidViewModel {
         return codesLiveData;
     }
 
-    public MutableLiveData<ReturnData> getReturnLiveData() {
+    public MutableLiveData<ReturnData<LoginAndRegisterReturn>> getReturnLiveData() {
         return authRepository.getReturnDataLiveData();
     }
 

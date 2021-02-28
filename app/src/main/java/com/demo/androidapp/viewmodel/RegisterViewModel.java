@@ -14,6 +14,7 @@ import androidx.navigation.Navigation;
 import com.demo.androidapp.R;
 import com.demo.androidapp.model.commitObject.RegisterCommit;
 import com.demo.androidapp.model.common.ReturnData;
+import com.demo.androidapp.model.returnObject.LoginAndRegisterReturn;
 import com.demo.androidapp.repository.AuthRepository;
 
 public class RegisterViewModel extends AndroidViewModel {
@@ -44,7 +45,7 @@ public class RegisterViewModel extends AndroidViewModel {
         this.authRepository.register(registerCommitLiveData.getValue());
     }
 
-    public MutableLiveData<ReturnData> getReturnData() {
+    public MutableLiveData<ReturnData<LoginAndRegisterReturn>> getReturnData() {
         return authRepository.getReturnDataLiveData();
     }
 

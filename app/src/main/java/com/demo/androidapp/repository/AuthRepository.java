@@ -18,12 +18,12 @@ public class AuthRepository {
 
     private Api api;
 
-    private MutableLiveData<ReturnData> returnDataLiveData = new MutableLiveData<>();
+    private MutableLiveData<ReturnData<LoginAndRegisterReturn>> returnDataLiveData = new MutableLiveData<>();
 
     private AuthRepository authRepository;
 
     public AuthRepository() {
-        this.api = MyApplication.getApi();
+        this.api = MyApplication.getApplication().getApi();
     }
 
     public AuthRepository getInstance() {
@@ -106,7 +106,7 @@ public class AuthRepository {
             public void onFailure(Call<ReturnData> call, Throwable t) {
                 Log.d("imageView","authRepository层：获取验证码失败");
                 t.printStackTrace();
-                ReturnData returnData = new ReturnData(RCodeEnum.ERROR);
+                ReturnData returnData = new ReturnData<LoginAndRegisterReturn>(RCodeEnum.ERROR);
                 returnDataLiveData.postValue(returnData);
             }
         });
@@ -114,24 +114,24 @@ public class AuthRepository {
 
     //重置密码获取验证码
     public void resetPwdGetCode(String email) {
-        api.getResetPwdCode(email).enqueue(new Callback<ReturnData>() {
+        api.getResetPwdCode(email).enqueue(new Callback<ReturnData<LoginAndRegisterReturn>>() {
             @Override
-            public void onResponse(Call<ReturnData> call, Response<ReturnData> response) {
+            public void onResponse(Call<ReturnData<LoginAndRegisterReturn>> call, Response<ReturnData<LoginAndRegisterReturn>> response) {
                 Log.d("imageView","authRepository层：重置密码获取验证码成功" );
-                returnDataLiveData.postValue(response.body());
+                returnDataLiveData.postValue((ReturnData<LoginAndRegisterReturn>)response.body());
             }
 
             @Override
-            public void onFailure(Call<ReturnData> call, Throwable t) {
+            public void onFailure(Call<ReturnData<LoginAndRegisterReturn>> call, Throwable t) {
                 Log.d("imageView","authRepository层：重置密码获取验证码失败");
                 t.printStackTrace();
-                ReturnData returnData = new ReturnData(RCodeEnum.ERROR);
+                ReturnData<LoginAndRegisterReturn> returnData = new ReturnData<LoginAndRegisterReturn>(RCodeEnum.ERROR);
                 returnDataLiveData.postValue(returnData);
             }
         });
     }
 
-    public MutableLiveData<ReturnData> getReturnDataLiveData() {
+    public MutableLiveData<ReturnData<LoginAndRegisterReturn>> getReturnDataLiveData() {
         return returnDataLiveData;
     }
 

@@ -1,11 +1,15 @@
 package com.demo.androidapp.model.entity;
 
 
+import android.util.Log;
+
 import androidx.databinding.BindingBuildInfo;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
+
+import com.demo.androidapp.MyApplication;
 
 import java.sql.Date;
 
@@ -17,20 +21,12 @@ import java.sql.Date;
 public class Task {
 
     //id
-    @PrimaryKey(autoGenerate = true)
-    private Long id;
+    @PrimaryKey(autoGenerate = false)
+    private long id;
 
     //创建时间
     @ColumnInfo(name = "created_at")
     private Date created_at;
-
-    //更新时间
-    @ColumnInfo(name = "updated_at")
-    private Date updatedTime;
-
-    //删除时间
-    @ColumnInfo(name = "deleted_at")
-    private Date deletedTime;
 
     //用户uid
     @ColumnInfo(name = "uid")
@@ -64,11 +60,9 @@ public class Task {
     public Task() {
     }
 
-    public Task(Long id, Date created_at, Date updatedTime, Date deletedTime, String userId, String task, String category, boolean state, Date time, boolean alert, boolean redo) {
+    public Task(Long id, Date created_at, String userId, String task, String category, boolean state, Date time, boolean alert, boolean redo) {
         this.id = id;
         this.created_at = created_at;
-        this.updatedTime = updatedTime;
-        this.deletedTime = deletedTime;
         this.userId = userId;
         this.task = task;
         this.category = category;
@@ -76,6 +70,10 @@ public class Task {
         this.time = time;
         this.alert = alert;
         this.redo = redo;
+        if (userId == null || userId.equals("")) {
+            Log.d("imageView", "Task: 添加uid");
+            this.userId = MyApplication.getApplication().getUID();
+        }
     }
 
     public Long getId() {
@@ -94,27 +92,17 @@ public class Task {
         this.created_at = created_at;
     }
 
-    public Date getUpdatedTime() {
-        return updatedTime;
-    }
-
-    public void setUpdatedTime(Date updatedTime) {
-        this.updatedTime = updatedTime;
-    }
-
-    public Date getDeletedTime() {
-        return deletedTime;
-    }
-
-    public void setDeletedTime(Date deletedTime) {
-        this.deletedTime = deletedTime;
-    }
-
     public String getUserId() {
+        Log.d("imageView", "Task: 获取uid");
+        if (userId == null || userId.equals("")) {
+            Log.d("imageView", "Task: 添加uid");
+            this.userId = MyApplication.getApplication().getUID();
+        }
         return userId;
     }
 
     public void setUserId(String userId) {
+        Log.d("imageView", "Task: 设置uid");
         this.userId = userId;
     }
 
@@ -171,8 +159,6 @@ public class Task {
         return "Task{" +
                 "id=" + id +
                 ", created_at=" + created_at +
-                ", updatedTime=" + updatedTime +
-                ", deletedTime=" + deletedTime +
                 ", userId='" + userId + '\'' +
                 ", task='" + task + '\'' +
                 ", category='" + category + '\'' +

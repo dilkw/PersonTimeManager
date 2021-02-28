@@ -7,7 +7,13 @@ import android.content.Context;
 import com.demo.androidapp.api.Api;
 import com.demo.androidapp.api.impl.RetrofitClient;
 import com.demo.androidapp.model.Auth;
+import com.demo.androidapp.model.common.ReturnData;
+import com.demo.androidapp.model.returnObject.LoginAndRegisterReturn;
 import com.demo.androidapp.util.DataSP;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MyApplication extends Application {
 
@@ -16,7 +22,7 @@ public class MyApplication extends Application {
     private static String UID = "";          //uid
     private static String COOKIE = "";       //cookie校验码
 
-    private static Api api;
+    private Api api;
 
     private DataSP dataSP;
 
@@ -34,6 +40,9 @@ public class MyApplication extends Application {
         dataSP = new DataSP(mContext);
         loadData();
         api = RetrofitClient.getInstance().getApi();
+        if (!USER_NAME.equals("userName")){
+            signIn();
+        }
     }
 
     public String getUSER_NAME() {
@@ -52,7 +61,7 @@ public class MyApplication extends Application {
         return COOKIE;
     }
 
-    public static Api getApi() {
+    public Api getApi() {
         return api;
     }
 
@@ -73,7 +82,7 @@ public class MyApplication extends Application {
         dataSP.saveCookie(cookieStr);
     }
 
-    public void saveData(String userName, String password,String uid) {
+    public void signIn(String userName, String password,String uid) {
         MyApplication.USER_NAME = userName;
         MyApplication.PASSWORD = password;
         MyApplication.UID = uid;
@@ -93,6 +102,19 @@ public class MyApplication extends Application {
         return mContext;
     }
 
+    public void signIn(){
+        api.signIn(this.getUSER_NAME(),this.getPASSWORD()).enqueue(new Callback<ReturnData<LoginAndRegisterReturn>>() {
+            @Override
+            public void onResponse(Call<ReturnData<LoginAndRegisterReturn>> call, Response<ReturnData<LoginAndRegisterReturn>> response) {
+
+            }
+            @Override
+            public void onFailure(Call<ReturnData<LoginAndRegisterReturn>> call, Throwable t) {
+                signOut();
+            }
+        });
+    }
+
     public void signOut() {
         USER_NAME = "userName";
         PASSWORD = "";
@@ -103,4 +125,15 @@ public class MyApplication extends Application {
         }
         dataSP.delete();
     }
+
+//    public void reLogin(String ) {
+//        USER_NAME = "userName";
+//        PASSWORD = "";
+//        UID = "";
+//        COOKIE = "";
+//        if (dataSP == null) {
+//            dataSP = new DataSP(mContext);
+//        }
+//        dataSP.delete();
+//    }
 }

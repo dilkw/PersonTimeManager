@@ -20,6 +20,7 @@ import com.demo.androidapp.R;
 import com.demo.androidapp.model.Auth;
 import com.demo.androidapp.model.common.RCodeEnum;
 import com.demo.androidapp.model.common.ReturnData;
+import com.demo.androidapp.model.returnObject.LoginAndRegisterReturn;
 import com.demo.androidapp.repository.AuthRepository;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -40,7 +41,7 @@ public class LoginViewModel extends AndroidViewModel {
     // TODO: Implement the ViewModel
 
 
-    public MutableLiveData<ReturnData> getReturnLiveData() {
+    public MutableLiveData<ReturnData<LoginAndRegisterReturn>> getReturnLiveData() {
         return authRepository.getReturnDataLiveData();
     }
 

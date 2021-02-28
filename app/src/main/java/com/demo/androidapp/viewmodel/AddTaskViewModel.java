@@ -14,6 +14,7 @@ import com.demo.androidapp.MyApplication;
 import com.demo.androidapp.model.entity.CategoryOfTask;
 import com.demo.androidapp.model.entity.Task;
 import com.demo.androidapp.repository.CategoryRepository;
+import com.demo.androidapp.repository.TaskRepository;
 import com.demo.androidapp.util.DateTimeUtil;
 
 import java.sql.Date;
@@ -29,6 +30,8 @@ public class AddTaskViewModel extends AndroidViewModel {
     
     public MutableLiveData<Task> taskMutableLiveData;
 
+    private TaskRepository taskRepository;
+
     private DateTimeUtil dateTimeUtil;
 
     public AddTaskViewModel(@NonNull Application application) {
@@ -39,6 +42,7 @@ public class AddTaskViewModel extends AndroidViewModel {
         task.setCreated_at(new Date(date1.getTime()));
         taskMutableLiveData = new MutableLiveData<>();
         taskMutableLiveData.setValue(task);
+        taskRepository = new TaskRepository(application);
         categoryRepository = new CategoryRepository(application, MyApplication.getApplication().getUID());
     }
 
@@ -85,6 +89,11 @@ public class AddTaskViewModel extends AndroidViewModel {
     //删除任务分类
     public void deleteCategory(CategoryOfTask... categoryOfTasks) {
         categoryRepository.deleteCategory(categoryOfTasks);
+    }
+
+    //添加任务
+    public void addTasks(){
+        taskRepository.addTasksToDB(taskMutableLiveData.getValue());
     }
 
 }

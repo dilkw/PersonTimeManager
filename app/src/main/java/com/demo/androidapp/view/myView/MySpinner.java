@@ -106,10 +106,6 @@ public class MySpinner extends LinearLayout {
                     myPopupWindow.dismiss();
                     return;
                 }
-                //intPopupWindow();
-//                myPopupWindow.setWidth(ViewGroup.LayoutParams.WRAP_CONTENT);
-//                myPopupWindow.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
-                Log.d("imageView","下拉框宽度：" + myPopupWindow.getWidth());
                 myPopupWindow.showAsDropDown(MySpinner.this,20,20);
                 Log.d("imageView", "onClick: imageButton点击-----展开");
             }
@@ -140,8 +136,8 @@ public class MySpinner extends LinearLayout {
         });
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     private void intPopupWindow() {
-        TextView addCategoryTextView = new TextView(context);
         myPopupWindow = new PopupWindow(context);
         View contentView = LayoutInflater.from(context).inflate(R.layout.myspinner_popupdownview,null);
         ListView listView = contentView.findViewById(R.id.mySpinnerPopupWindowListView);
@@ -209,10 +205,10 @@ public class MySpinner extends LinearLayout {
         listView.setAdapter(mySpinnerAdapter);
         myPopupWindow.setContentView(contentView);
         myPopupWindow.setOutsideTouchable(true);
-        Log.d("imageView", "MyPopupWindow:" + listView.getMeasuredWidth());
         myPopupWindow.setWidth(LayoutParams.WRAP_CONTENT);
         myPopupWindow.setHeight(LayoutParams.WRAP_CONTENT);
         myPopupWindow.setOutsideTouchable(false);
         myPopupWindow.setFocusable(true);
+        myPopupWindow.setBackgroundDrawable(getResources().getDrawable(R.color.backgroundColor));
     }
 }

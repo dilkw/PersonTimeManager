@@ -34,7 +34,7 @@ public interface Api {
     //重置密码获取验证码（返回字符串）
     @FormUrlEncoded
     @POST("user/forget")
-    Call<ReturnData> getResetPwdCode(@Field("email") String email);
+    Call<ReturnData<LoginAndRegisterReturn>> getResetPwdCode(@Field("email") String email);
 
     //注册完成后激活帐号
     @FormUrlEncoded
