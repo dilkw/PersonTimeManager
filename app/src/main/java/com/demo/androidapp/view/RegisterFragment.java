@@ -77,14 +77,15 @@ public class RegisterFragment extends Fragment {
             public void onChanged(ReturnData returnData) {
                 Log.d("imageView","ReturnData------onchange()" + returnData.getCode() + returnData.getData());
                 if(returnData.getCode() == RCodeEnum.OK.getCode()) {
-                    MyApplication.getApplication().loadData();
                     //跳转激活页面
+                    Log.d("imageView","注册成功" + returnData.getCode());
+                    Bundle bundle = new Bundle();
+                    bundle.putString("email",registerViewModel.getRegisterCommitLiveData().getValue().getEmail());
                     NavController navController = Navigation.findNavController(registerBinding.registerButton);
                     navController.navigate(R.id.action_registerFragment_to_activeFragment);
-                    registerViewModel.jumpToActiveFragment(getView());
                 }else {
                     Toast.makeText(getActivity(),returnData.getMsg(),Toast.LENGTH_SHORT).show();
-                    Log.d("imageView","注册失败");
+                    Log.d("imageView","注册失败" + returnData.getCode());
                 }
             }
         });

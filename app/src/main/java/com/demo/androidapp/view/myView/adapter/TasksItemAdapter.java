@@ -1,67 +1,173 @@
 package com.demo.androidapp.view.myView.adapter;
 
+import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.databinding.DataBindingUtil;
+import androidx.annotation.RequiresApi;
+import androidx.lifecycle.MutableLiveData;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.demo.androidapp.R;
-import com.demo.androidapp.databinding.ItemTaskBinding;
 import com.demo.androidapp.model.entity.Task;
+import com.demo.androidapp.util.DateTimeUtil;
+import com.demo.androidapp.viewmodel.HomeViewModel;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class TasksItemAdapter extends RecyclerView.Adapter<TasksItemAdapter.MyViewHolder> {
 
+    private boolean isShow = false;
+
+    private boolean allChecked = false;
+
     private List<Task> tasks;
 
-    private ItemTaskBinding itemTaskBinding;
+    private List<Task> editModelSelectedTasks;
+
+    private ItemLongOnClickListener itemLongOnClickListener;
+
+    private ItemOnClickListener itemOnClickListener;
+
+    public List<Task> getEditModelSelectedTasks() {
+        return editModelSelectedTasks;
+    }
+
+    private DateTimeUtil dateTimeUtil;
+
+    //长按Item时弹出编辑菜单，取消按钮（删除所选择的）
+    public void cancelTask() {
+        isShow = false;
+        allChecked = false;
+        notifyDataSetChanged();
+    }
+    //长按Item时弹出编辑菜单，删除按钮（删除所选择的）
+    public List<Task> deleteSelectedTask() {
+        allChecked = false;
+        if (editModelSelectedTasks.size() == 0)return null;
+        tasks.removeAll(Objects.requireNonNull(editModelSelectedTasks));
+        notifyDataSetChanged();
+        return editModelSelectedTasks;
+    }
+    //长按Item时弹出编辑菜单，全选按钮
+    public void selectedAllTasks() {
+        allChecked = true;
+        notifyDataSetChanged();
+    }
+
+    public void setItemLongOnClickListener(ItemLongOnClickListener itemLongOnClickListener) {
+        this.itemLongOnClickListener = itemLongOnClickListener;
+    }
+    public void setItemOnClickListener(ItemOnClickListener itemOnClickListener) {
+        this.itemOnClickListener = itemOnClickListener;
+    }
 
     public void setTasks(List<Task> tasks) {
         this.tasks = tasks;
     }
 
+    public void setCheckBoxIsShow() {
+        isShow = true;
+        notifyDataSetChanged();
+    }
+
     public TasksItemAdapter(List<Task> tasks) {
         Log.d("imageView", "TasksItemAdapter: 数据长度：" + tasks.size());
         this.tasks = tasks;
+        editModelSelectedTasks = new ArrayList<>();
+        dateTimeUtil = new DateTimeUtil();
     }
 
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-//        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_task,parent,false);
-//        itemTaskBinding = DataBindingUtil.getBinding(view);
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        itemTaskBinding = DataBindingUtil.inflate(layoutInflater,R.layout.item_task,parent,false);
-        return new MyViewHolder(itemTaskBinding.getRoot());
+        View view = layoutInflater.inflate(R.layout.item_task,parent,false);
+        return new MyViewHolder(view);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         Task task = tasks.get(position);
-        if (itemTaskBinding != null) {
-            itemTaskBinding.itemTaskCreateTimeText.append(task.getCreated_at().toString());
-            itemTaskBinding.itemTaskEndTimeText.append(task.getTime().toString());
-            itemTaskBinding.itemTaskStateText.append("" + task.getState());
-            itemTaskBinding.itemTaskTaskText.append(task.getTask());
-        }else {
-            Log.d("imageView", "onBindViewHolder: itemTaskBinding为空");
+        holder.createTimeTextView.setText(dateTimeUtil.longToStrYMDHM(task.getCreated_at()));
+        holder.endTimeTextView.setText(dateTimeUtil.longToStrYMDHM(task.getTime()));
+        Log.d("imageView", "onBindViewHolder: endTime " + holder.endTimeTextView.getText());
+        holder.stateTextView.setText(task.getState() ? "有效" : "无效");
+        holder.taskTextView.setText(task.getTask());
+        holder.checkBox.setVisibility(isShow ? View.VISIBLE : View.GONE);
+        if (isShow) {
+            holder.checkBox.setChecked(allChecked);
+            holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    Log.d("imageView", "onCheckedChanged: checkBox点击");
+                    if (isChecked) {
+                        editModelSelectedTasks.add(tasks.get(position));
+                    }else {
+                        editModelSelectedTasks.remove(tasks.get(position));
+                    }
+                }
+            });
         }
+
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                if (editModelSelectedTasks == null) {
+                    editModelSelectedTasks = new ArrayList<>();
+                }
+                itemLongOnClickListener.itemLongOnClick();
+                return false;
+            }
+        });
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                itemOnClickListener.itemOnClick(position);
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
         return tasks == null ? 0 : tasks.size();
-        //return 0;
     }
 
-    static class MyViewHolder extends RecyclerView.ViewHolder {
+    public static class MyViewHolder extends RecyclerView.ViewHolder {
+
+        public View itemView;
+        public TextView createTimeTextView;
+        public TextView endTimeTextView;
+        public TextView stateTextView;
+        public TextView taskTextView;
+        public CheckBox checkBox;
+
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
+            this.itemView = itemView;
+            this.createTimeTextView = itemView.findViewById(R.id.itemTask_createTimeText);
+            this.endTimeTextView = itemView.findViewById(R.id.itemTask_endTimeText);
+            this.stateTextView = itemView.findViewById(R.id.itemTask_stateText);
+            this.taskTextView = itemView.findViewById(R.id.itemTask_taskText);
+            this.checkBox = itemView.findViewById(R.id.itemTask_checkBox);
         }
+    }
+
+    public interface ItemLongOnClickListener {
+        void itemLongOnClick();
+    }
+
+    public interface ItemOnClickListener {
+        void itemOnClick(int position);
     }
 }

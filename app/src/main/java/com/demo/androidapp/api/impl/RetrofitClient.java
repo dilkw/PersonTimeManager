@@ -3,6 +3,7 @@ package com.demo.androidapp.api.impl;
 import android.util.Log;
 
 import com.demo.androidapp.api.Api;
+import com.demo.androidapp.api.LiveDataCallAdapterFactory;
 import com.demo.androidapp.util.InterceptorOfAddCookie;
 import com.demo.androidapp.util.InterceptorOfReceivedCookie;
 import com.google.gson.Gson;
@@ -40,7 +41,7 @@ public class RetrofitClient {
         gsonBuilder.registerTypeAdapter(Date.class, new JsonDeserializer<Date>() {
             public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
                 Date date = new Date(json.getAsJsonPrimitive().getAsLong() * 1000);
-                //Log.d("imageView", "deserialize: " + json.getAsJsonPrimitive().getAsLong());
+                Log.d("imageView", "deserialize: " + json.getAsJsonPrimitive().getAsLong());
                 return date;
             }
         });
@@ -66,8 +67,9 @@ public class RetrofitClient {
                 .addInterceptor(new InterceptorOfReceivedCookie())
                 .build();
         retrofit = new Retrofit.Builder().baseUrl(BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create(gson))
                 .client(okHttpClient)
+                .addCallAdapterFactory(new LiveDataCallAdapterFactory())
+                .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
     }
 

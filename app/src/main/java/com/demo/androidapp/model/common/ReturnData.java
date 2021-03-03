@@ -1,52 +1,37 @@
 package com.demo.androidapp.model.common;
 
-public class ReturnData<T> {
+import android.util.Log;
 
-    //枚举类
-    private RCodeEnum rCodeEnum;
+public class ReturnData<T>{
+
+    private int code;
+
+    private String msg;
 
     //相应返回数据
     private T data;
 
     public ReturnData(int code, String msg, T data) {
-        this.rCodeEnum = RCodeEnum.returnRCodeEnumByCode(code);
+        Log.d("imageView", "ReturnData: 构造code + msg + data");
+        this.code = code;
+        this.msg = msg;
         this.data = data;
-    }
-
-    public ReturnData(T data) {
-        this.rCodeEnum = RCodeEnum.OK;
-        this.data = data;
-    }
-
-    public ReturnData(RCodeEnum rCodeEnum, T data) {
-        this.rCodeEnum = rCodeEnum;
-        this.data = data;
-    }
-
-    public ReturnData(RCodeEnum rCodeEnum) {
-        this.rCodeEnum = rCodeEnum;
-        this.data = null;
-    }
-
-    public ReturnData() {
-        this.rCodeEnum = RCodeEnum.OK;
-        this.data = null;
     }
 
     public int getCode() {
-        return this.rCodeEnum.getCode();
+        return code;
+    }
+
+    public void setCode(int code) {
+        this.code = code;
     }
 
     public String getMsg() {
-        return this.rCodeEnum.getMessage();
+        return msg;
     }
 
-    public RCodeEnum getRCodeEnum() {
-        return rCodeEnum;
-    }
-
-    public void setRCodeEnum(RCodeEnum rCodeEnum) {
-        this.rCodeEnum = rCodeEnum;
+    public void setMsg(String msg) {
+        this.msg = msg;
     }
 
     public T getData() {
@@ -55,14 +40,5 @@ public class ReturnData<T> {
 
     public void setData(T data) {
         this.data = data;
-    }
-
-    @Override
-    public String toString() {
-        return "ReturnData{" +
-                "code=" + rCodeEnum.getCode() +
-                ", msg='" + rCodeEnum.getMessage() + '\'' +
-                ", data=" + data +
-                '}';
     }
 }

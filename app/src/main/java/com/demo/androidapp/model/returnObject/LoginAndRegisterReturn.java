@@ -1,7 +1,5 @@
 package com.demo.androidapp.model.returnObject;
 
-import java.sql.Date;
-
 //登录返回数据类型
 public class LoginAndRegisterReturn {
 
@@ -11,9 +9,9 @@ public class LoginAndRegisterReturn {
 
     private String state;              //是否被激活
 
-    private Date created_at;       //创建时间
+    private long created_at;       //创建时间
 
-    public LoginAndRegisterReturn(String uid, String name, String state, Date created_at) {
+    public LoginAndRegisterReturn(String uid, String name, String state, long created_at) {
         this.uid = uid;
         this.name = name;
         this.state = state;
@@ -44,11 +42,11 @@ public class LoginAndRegisterReturn {
         this.state = state;
     }
 
-    public Date getCreated_at() {
+    public long getCreated_at() {
         return created_at;
     }
 
-    public void setCreated_at(Date created_at) {
+    public void setCreated_at(long created_at) {
         this.created_at = created_at;
     }
 

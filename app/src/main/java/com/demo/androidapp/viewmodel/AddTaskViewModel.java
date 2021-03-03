@@ -3,6 +3,7 @@ package com.demo.androidapp.viewmodel;
 import android.annotation.SuppressLint;
 import android.app.Application;
 import android.os.Build;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -11,63 +12,67 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.demo.androidapp.MyApplication;
+import com.demo.androidapp.model.common.ReturnData;
+import com.demo.androidapp.model.entity.AlertOfTask;
 import com.demo.androidapp.model.entity.CategoryOfTask;
 import com.demo.androidapp.model.entity.Task;
 import com.demo.androidapp.repository.CategoryRepository;
 import com.demo.androidapp.repository.TaskRepository;
 import com.demo.androidapp.util.DateTimeUtil;
 
-import java.sql.Date;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
 public class AddTaskViewModel extends AndroidViewModel {
 
-    private CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
     
     public MutableLiveData<Task> taskMutableLiveData;
 
-    private TaskRepository taskRepository;
+    public MutableLiveData<AlertOfTask> alertOfTaskMutableLiveData;
 
-    private DateTimeUtil dateTimeUtil;
+    private final TaskRepository taskRepository;
 
+    private final DateTimeUtil dateTimeUtil;
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public AddTaskViewModel(@NonNull Application application) {
         super(application);
-        java.util.Date date1 = new java.util.Date();
-        Task task = new Task();
-        dateTimeUtil = new DateTimeUtil();
-        task.setCreated_at(new Date(date1.getTime()));
         taskMutableLiveData = new MutableLiveData<>();
-        taskMutableLiveData.setValue(task);
+        alertOfTaskMutableLiveData = new MutableLiveData<>(new AlertOfTask());
         taskRepository = new TaskRepository(application);
         categoryRepository = new CategoryRepository(application, MyApplication.getApplication().getUID());
-    }
-
-    //对任务的创建时间的setter和getter方法
-    public String getDateString(){
-        @SuppressLint("SimpleDateFormat")
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        return format.format(taskMutableLiveData.getValue().getCreated_at());
-    }
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public void setDateString(String str){
-        DateTimeUtil dateTimeUtil = new DateTimeUtil();
-        taskMutableLiveData.getValue().setCreated_at(dateTimeUtil.strToDateYMDHM(str));
+        dateTimeUtil = new DateTimeUtil();
     }
 
     //对任务的结束时间的setter和getter方法
     @RequiresApi(api = Build.VERSION_CODES.O)
     public String getTimeStr() {
-        if (taskMutableLiveData.getValue().getTime() == null){
+        long endTime = taskMutableLiveData.getValue().getTime();
+        if (endTime == 0) {
             return "";
         }
-        return dateTimeUtil.dateToStrYMDHM(taskMutableLiveData.getValue().getTime());
+        return dateTimeUtil.longToStrYMDHM(endTime);
     }
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void setTimeStr(String timeStr) {
-        taskMutableLiveData.getValue().setTime(dateTimeUtil.strToDateYMDHM(timeStr));
+        Objects.requireNonNull(taskMutableLiveData.getValue()).setTime(dateTimeUtil.strToLong(timeStr));
+    }
+
+    //对任务的创建时间的setter和getter方法
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public String getCreateTimeStr() {
+        long createTime = taskMutableLiveData.getValue().getCreated_at();
+        if (createTime == 0) {
+            return "";
+        }
+        return dateTimeUtil.longToStrYMDHM(createTime);
+    }
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void setCreateTimeStr(String timeStr) {
+        Objects.requireNonNull(taskMutableLiveData.getValue()).setCreated_at(dateTimeUtil.strToLong(timeStr));
     }
 
     //获取任务分类
@@ -77,7 +82,6 @@ public class AddTaskViewModel extends AndroidViewModel {
 
     //添加任务分类
     public Long addCategory(CategoryOfTask... categoryOfTasks) throws ExecutionException, InterruptedException {
-
         return categoryRepository.addCategory(categoryOfTasks);
     }
 
@@ -92,8 +96,14 @@ public class AddTaskViewModel extends AndroidViewModel {
     }
 
     //添加任务
-    public void addTasks(){
-        taskRepository.addTasksToDB(taskMutableLiveData.getValue());
+    public void addTask(){
+        taskRepository.addTasksToServer(taskMutableLiveData.getValue());
+    }
+
+    //更新任务
+    public void updateTaskInServer(){
+        Log.d("imageView", "updateTaskInServer: " + taskMutableLiveData.getValue().toString());
+        taskRepository.updateTaskInServer(taskMutableLiveData.getValue());
     }
 
 }

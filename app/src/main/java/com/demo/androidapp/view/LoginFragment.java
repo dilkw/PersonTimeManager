@@ -49,9 +49,6 @@ public class LoginFragment extends Fragment {
 
         Log.d("imageView","onCreateView");
         binding = DataBindingUtil.inflate(inflater,R.layout.login_fragment,container,false);
-//        binding = LoginFragmentBinding.inflate(inflater);
-//        binding.textInputLayoutPwd.setEndIconDrawable(R.drawable.pwdn);
-//        binding.textInputLayoutPwd.setEndIconCheckable(false);
         return binding.getRoot();
     }
 
@@ -65,6 +62,32 @@ public class LoginFragment extends Fragment {
             public void onClick(View v) {
             }
         });
+
+        binding.loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loginViewModel.signInLiveData().observe(getViewLifecycleOwner(), new Observer<ReturnData<LoginAndRegisterReturn>>() {
+                    @Override
+                    public void onChanged(ReturnData<LoginAndRegisterReturn> loginAndRegisterReturnReturnData) {
+                        if (loginAndRegisterReturnReturnData.getCode() == RCodeEnum.OK.getCode()) {
+                            Toast.makeText(getActivity(), "登录成功", Toast.LENGTH_SHORT).show();
+                            //上传数据，更新MyApplication中的数据
+                            LoginAndRegisterReturn loginAndRegisterReturn = (LoginAndRegisterReturn)loginAndRegisterReturnReturnData.getData();
+                            Log.d("imageView", "" + loginAndRegisterReturn.toString());
+                            MyApplication.getApplication().signIn(loginAndRegisterReturn.getName(),
+                                    loginViewModel.getAuthLiveData().getValue().getPassword(),
+                                    loginAndRegisterReturn.getUid());
+                            //跳转主页
+                            loginViewModel.jumpToHomeFragment(getView());
+                        } else {
+                            Toast.makeText(getActivity(), loginAndRegisterReturnReturnData.getMsg(), Toast.LENGTH_SHORT).show();
+                            Log.d("imageView", "用户名或密码错误");
+                        }
+                    }
+                });
+            }
+        });
+
         TextWatcher textWatcher = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -100,24 +123,25 @@ public class LoginFragment extends Fragment {
             Log.d("imageView","重新创建");
             loginViewModel = new ViewModelProvider(this).get(LoginViewModel.class);
         }
-        loginViewModel.getReturnLiveData().observe(this,new Observer<ReturnData<LoginAndRegisterReturn>>() {
-            @Override
-            public void onChanged(ReturnData returnData) {
-                if (returnData.getCode() == RCodeEnum.OK.getCode()) {
-                    Toast.makeText(getActivity(), "登录成功", Toast.LENGTH_SHORT).show();
-                    //上传数据，更新MyApplication中的数据
-                    LoginAndRegisterReturn loginAndRegisterReturn = (LoginAndRegisterReturn)loginViewModel.getReturnLiveData().getValue().getData();
-                    MyApplication.getApplication().signIn(loginAndRegisterReturn.getName(),
-                                                            loginViewModel.getAuthLiveData().getValue().getPassword(),
-                                                            loginAndRegisterReturn.getUid());
-                    //跳转主页
-                    loginViewModel.jumpToHomeFragment(getView());
-                } else {
-                    Toast.makeText(getActivity(), returnData.getMsg(), Toast.LENGTH_SHORT).show();
-                    Log.d("imageView", "用户名或密码错误");
-                }
-            }
-        });
+
+//        loginViewModel.getReturnLiveData().observe(this,new Observer<ReturnData<LoginAndRegisterReturn>>() {
+//            @Override
+//            public void onChanged(ReturnData returnData) {
+//                if (returnData.getCode() == RCodeEnum.OK.getCode()) {
+//                    Toast.makeText(getActivity(), "登录成功", Toast.LENGTH_SHORT).show();
+//                    //上传数据，更新MyApplication中的数据
+//                    LoginAndRegisterReturn loginAndRegisterReturn = (LoginAndRegisterReturn)loginViewModel.getReturnLiveData().getValue().getData();
+//                    MyApplication.getApplication().signIn(loginAndRegisterReturn.getName(),
+//                                                            loginViewModel.getAuthLiveData().getValue().getPassword(),
+//                                                            loginAndRegisterReturn.getUid());
+//                    //跳转主页
+//                    loginViewModel.jumpToHomeFragment(getView());
+//                } else {
+//                    Toast.makeText(getActivity(), returnData.getMsg(), Toast.LENGTH_SHORT).show();
+//                    Log.d("imageView", "用户名或密码错误");
+//                }
+//            }
+//        });
     }
 
     @Override

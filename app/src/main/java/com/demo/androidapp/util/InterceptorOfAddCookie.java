@@ -18,6 +18,9 @@ import okhttp3.Response;
 public class InterceptorOfAddCookie implements Interceptor {
     @Override
     public Response intercept(Chain chain) throws IOException {
+        if (chain.request().body() != null) {
+            Log.d("imageView", "interceptmmmmmmmmmmmmmmmmmmmm:" + chain.request().body().toString());
+        }
         Context context = MyApplication.getMyApplicationContext();
         Request.Builder builder = chain.request().newBuilder();
         String cookieStr = MyApplication.getApplication().getCOOKIE();

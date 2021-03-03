@@ -34,7 +34,7 @@ public class ResetPasswordViewModel extends AndroidViewModel {
     public void resetPwdGetCode(String email) {
         if (email.isEmpty()) {
             Log.d("imageView", "resetPwdGetCode: 邮箱为空");
-            authRepository.getReturnDataLiveData().setValue(new ReturnData(RCodeEnum.EMAIL_NULL));
+            authRepository.getReturnDataLiveData().setValue(new ReturnData(201,"",null));
             return;
         }
         authRepository.resetPwdGetCode(email);
@@ -48,7 +48,7 @@ public class ResetPasswordViewModel extends AndroidViewModel {
     public void resetPwdCommit(String email,String password,String passwordConfirm) {
         if (email.isEmpty()) {
             Log.d("imageView", "resetPwdGetCode: 邮箱为空");
-            authRepository.getReturnDataLiveData().setValue(new ReturnData(RCodeEnum.EMAIL_NULL));
+            authRepository.getReturnDataLiveData().setValue(new ReturnData(201,"",null));
             return;
         }
         authRepository.resetPwdGetCode(email);

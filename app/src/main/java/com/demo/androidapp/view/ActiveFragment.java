@@ -70,9 +70,11 @@ public class ActiveFragment extends Fragment implements IdentifyCodeView.CodesCh
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mViewModel = new ViewModelProvider(this).get(ActiveViewModel.class);
-        assert getArguments() != null;
-        mViewModel.setEmail(getArguments().getString("email"));
-        Log.d("imageView", "onActivityCreated: " + getArguments().getString("email"));
+        if (getArguments() != null) {
+            mViewModel.setEmail(getArguments().getString("email"));
+            Log.d("imageView", "onActivityCreated: " + getArguments().getString("email"));
+        }
+
         binding.setActiveViewModel(mViewModel);
         binding.setView(binding.identifyCodeView);
         binding.identifyCodeView.addCodesChangeListener(codes -> {

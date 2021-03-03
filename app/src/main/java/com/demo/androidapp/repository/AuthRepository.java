@@ -1,6 +1,8 @@
 package com.demo.androidapp.repository;
 
 import android.util.Log;
+
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.demo.androidapp.MyApplication;
@@ -23,7 +25,10 @@ public class AuthRepository {
     private AuthRepository authRepository;
 
     public AuthRepository() {
-        this.api = MyApplication.getApplication().getApi();
+        this.api = MyApplication.getApi();
+        if (api == null) {
+            Log.d("imageView", "AuthRepository: api为空==========");
+        }
     }
 
     public AuthRepository getInstance() {
@@ -42,13 +47,7 @@ public class AuthRepository {
             @Override
             public void onResponse(Call<ReturnData<LoginAndRegisterReturn>> call, Response<ReturnData<LoginAndRegisterReturn>> response) {
                 Log.d("imageView","authRepository层：登录成功" );
-                Log.d("response", "onResponse:");
-                if (response.body() == null) {
-                    Log.d("response", "onResponse: null");
-                    returnDataLiveData.postValue(new ReturnData(RCodeEnum.ERROR));
-                    return;
-                }
-                Log.d("response", "onResponse: notNull=========" + response.body().getData());
+                Log.d("response", "onResponse: notNull=========" + response.body().getCode());
                 returnDataLiveData.postValue(response.body());
             }
 
@@ -56,10 +55,13 @@ public class AuthRepository {
             public void onFailure(Call<ReturnData<LoginAndRegisterReturn>> call, Throwable t) {
                 Log.d("imageView","authRepository层：登录失败" );
                 t.printStackTrace();
-                returnDataLiveData.postValue(new ReturnData(RCodeEnum.ERROR));
+                returnDataLiveData.postValue(new ReturnData(201,"",null));
                 //Log.d("imageView","authRepository层：登陆失败" + returnDataLiveData.getValue().getCode());
             }
         });
+    }
+    public LiveData<ReturnData<LoginAndRegisterReturn>> signInLiveData(String userName, String password) {
+        return api.signInLiveData(userName,password);
     }
 
     //注册
@@ -79,7 +81,7 @@ public class AuthRepository {
             }
             @Override
             public void onFailure(Call<ReturnData<LoginAndRegisterReturn>> call, Throwable t) {
-                returnDataLiveData.postValue(new ReturnData(RCodeEnum.ERROR));
+                returnDataLiveData.postValue(new ReturnData(201,"",null));
                 Log.d("imageView","authRepository层：注册失败" + t.toString());
                 t.printStackTrace();
             }
@@ -106,8 +108,7 @@ public class AuthRepository {
             public void onFailure(Call<ReturnData> call, Throwable t) {
                 Log.d("imageView","authRepository层：获取验证码失败");
                 t.printStackTrace();
-                ReturnData returnData = new ReturnData<LoginAndRegisterReturn>(RCodeEnum.ERROR);
-                returnDataLiveData.postValue(returnData);
+                returnDataLiveData.postValue(new ReturnData(201,"",null));
             }
         });
     }
@@ -125,8 +126,7 @@ public class AuthRepository {
             public void onFailure(Call<ReturnData<LoginAndRegisterReturn>> call, Throwable t) {
                 Log.d("imageView","authRepository层：重置密码获取验证码失败");
                 t.printStackTrace();
-                ReturnData<LoginAndRegisterReturn> returnData = new ReturnData<LoginAndRegisterReturn>(RCodeEnum.ERROR);
-                returnDataLiveData.postValue(returnData);
+                returnDataLiveData.postValue(new ReturnData(201,"",null));
             }
         });
     }
@@ -152,7 +152,7 @@ public class AuthRepository {
 
             @Override
             public void onFailure(Call<ReturnData> call, Throwable t) {
-                returnDataLiveData.postValue(new ReturnData(RCodeEnum.ERROR));
+                returnDataLiveData.postValue(new ReturnData(201,"",null));
                 Log.d("imageView","authRepository层：激活失败" + t.toString());
                 t.printStackTrace();
             }

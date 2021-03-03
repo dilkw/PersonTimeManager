@@ -2,6 +2,7 @@ package com.demo.androidapp.viewmodel;
 
 import android.annotation.SuppressLint;
 import android.app.Application;
+import android.os.Bundle;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.View;
@@ -57,6 +58,10 @@ public class LoginViewModel extends AndroidViewModel {
         this.authRepository.login(authLiveData.getValue().getUserName(),authLiveData.getValue().getPassword());
     }
 
+    public LiveData<ReturnData<LoginAndRegisterReturn>> signInLiveData() {
+        return authRepository.signInLiveData(authLiveData.getValue().getUserName(),authLiveData.getValue().getPassword());
+    }
+
     //重写点击监听事件的方法
     public View.OnClickListener loginClick = new View.OnClickListener() {
         @Override
@@ -79,8 +84,10 @@ public class LoginViewModel extends AndroidViewModel {
     //登陆成功跳转主页面方法
     public void jumpToHomeFragment(View view) {
         Log.d("imageView","跳转主页面");
+        Bundle bundle = new Bundle();
+        bundle.putBoolean("isLogin",true);
         NavController navController = Navigation.findNavController(view);
-        navController.navigateUp();        //返回上一级
+        navController.navigate(R.id.action_loginFragment_to_homeFragment,bundle);        //返回上一级
     }
 
     //忘记密码跳转重置密码页面方法

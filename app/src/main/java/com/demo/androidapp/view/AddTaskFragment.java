@@ -3,6 +3,7 @@ package com.demo.androidapp.view;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.Toolbar;
 import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -19,17 +20,28 @@ import androidx.navigation.ui.NavigationUI;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import com.demo.androidapp.MainActivity;
 import com.demo.androidapp.R;
 import com.demo.androidapp.databinding.AddTaskFragmentBinding;
+import com.demo.androidapp.model.common.RCodeEnum;
+import com.demo.androidapp.model.common.ReturnData;
 import com.demo.androidapp.model.entity.CategoryOfTask;
+import com.demo.androidapp.model.entity.Task;
+import com.demo.androidapp.util.DateTimeUtil;
 import com.demo.androidapp.view.myView.DateTimePickerDialog;
 import com.demo.androidapp.view.myView.adapter.MySpinnerAdapter;
 import com.demo.androidapp.viewmodel.AddTaskViewModel;
+import com.google.gson.internal.$Gson$Preconditions;
 
+import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,8 +51,6 @@ public class AddTaskFragment extends Fragment{
 
     private AddTaskFragmentBinding addTaskFragmentBinding;
 
-    private NavHostFragment navHostFragment;
-
     private NavController controller;
 
     private DateTimePickerDialog dateTimePickerDialog;
@@ -49,23 +59,44 @@ public class AddTaskFragment extends Fragment{
         return new AddTaskFragment();
     }
 
+    private FragmentManager fragmentManager;
+
+    private DateTimeUtil dateTimeUtil;
+
+    private boolean isAddTask = true;
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         addTaskFragmentBinding = DataBindingUtil.inflate(inflater,R.layout.add_task_fragment,container,false);
-        View view = addTaskFragmentBinding.getRoot();
-        navHostFragment = (NavHostFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.fragment);
+        fragmentManager = requireActivity().getSupportFragmentManager();
+        NavHostFragment navHostFragment = (NavHostFragment) fragmentManager.findFragmentById(R.id.fragment);
+        assert navHostFragment != null;
         controller = navHostFragment.getNavController();
         NavigationUI.setupWithNavController(addTaskFragmentBinding.addTaskFragmentToolBar,controller);
-        return view;
+        return addTaskFragmentBinding.getRoot();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        dateTimeUtil = new DateTimeUtil();
+        Task task = (Task)((MainActivity)requireActivity()).getDataFromMapByKey("task");
         addTaskViewModel = new ViewModelProvider(this).get(AddTaskViewModel.class);
+        if (task == null) {
+            isAddTask = true;
+            Log.d("imageView", "onActivityCreated: map为空");
+            task = new Task();
+            LocalDateTime localDateTime = LocalDateTime.now();
+            task.setCreated_at(dateTimeUtil.localDateTimeToSecLong(localDateTime));
+            Log.d("imageView", "onActivityCreated: Created_at" + dateTimeUtil.localDateTimeToStrYMDHM(localDateTime));
+        }else {
+            Log.d("imageView", "onActivityCreated: task" + task.toString());
+            isAddTask = false;
+        }
+        addTaskViewModel.taskMutableLiveData.setValue(task);
         addTaskFragmentBinding.setAddTaskViewModel(addTaskViewModel);
-        setClickListener();
         List<CategoryOfTask> categoryOfTasks = null;
         categoryOfTasks = addTaskViewModel.getCategory().getValue();
         if (categoryOfTasks == null) {
@@ -82,11 +113,30 @@ public class AddTaskFragment extends Fragment{
                 mySpinnerAdapter.notifyDataSetChanged();
             }
         });
+        addTaskViewModel.taskMutableLiveData.observe(getViewLifecycleOwner(), new Observer<Task>() {
+            @Override
+            public void onChanged(Task task) {
+                Log.d("imageView", "onChanged: taskMutableLiveData变化" + task.getCreated_at());
+            }
+        });
+        setClickListener();
 
     }
 
-    private void setClickListener() {
+    //
+    private void editInitUi() {
+        addTaskViewModel.taskMutableLiveData.setValue(null);
+    }
 
+    private void addInitUi() {
+        addTaskViewModel.addTask();
+    }
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    private void setClickListener() {
         //为选择时间的imgBtn按钮添加点击事件
         //弹出时间选择对话框并返回时间字符串
         addTaskFragmentBinding.addTaskSelectEndTimeImgButton.setOnClickListener(new View.OnClickListener() {
@@ -98,11 +148,11 @@ public class AddTaskFragment extends Fragment{
                         @RequiresApi(api = Build.VERSION_CODES.O)
                         @Override
                         public void enterBtnOnClicked() {
-                            addTaskFragmentBinding.endTimeEditText.setText(dateTimePickerDialog.getSelectTime());
+                            addTaskFragmentBinding.endTimeEditText.setText(dateTimePickerDialog.getSelectTimeString());
                         }
                     });
                 }
-                dateTimePickerDialog.show(getActivity().getSupportFragmentManager(),"dialog");
+                dateTimePickerDialog.show(fragmentManager,"dialog");
             }
         });
 
@@ -111,16 +161,41 @@ public class AddTaskFragment extends Fragment{
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {
-                    case R.id.addTaskSaveBtn :
-
-                        controller.navigateUp();
+                    case R.id.addTaskSaveBtn : {
+                        if (isAddTask) {
+                            addTask();
+                        }else {
+                            saveTask();
+                        }
+                        break;
+                    }
+                    case R.id.addTaskAddAlertTimeBtn:{
+                        DateTimePickerDialog dateTimePickerDialog = new DateTimePickerDialog();
+                        dateTimePickerDialog.setEnterClicked(new DateTimePickerDialog.EnterListener() {
+                            @RequiresApi(api = Build.VERSION_CODES.O)
+                            @Override
+                            public void enterBtnOnClicked() {
+                                String date = dateTimePickerDialog.getSelectedDate();
+                                addTaskViewModel.alertOfTaskMutableLiveData.getValue().setAlertTime(date);
+                            }
+                        });
+                        dateTimePickerDialog.show(fragmentManager,"alertTimeSetDialog");
+                    }
                 }
                 return false;
             }
         });
     }
 
+    //编辑完成后保存任务
     private void saveTask() {
-        addTaskViewModel.taskMutableLiveData.getValue();
+        Log.d("imageView", "saveTask: 保存任务");
+        addTaskViewModel.updateTaskInServer();
+    }
+
+    //添加任务
+    private void addTask() {
+        Log.d("imageView", "saveTask: 添加任务");
+        addTaskViewModel.addTask();
     }
 }

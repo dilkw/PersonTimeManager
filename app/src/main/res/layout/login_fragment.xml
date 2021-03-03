@@ -76,12 +76,12 @@
                 android:text="@={loginViewModel.getAuthLiveData().password}" />
         </com.google.android.material.textfield.TextInputLayout>
 
+<!--        android:onClick="@{()->loginViewModel.login()}"-->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/loginButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="100dp"
-            android:onClick="@{()->loginViewModel.login()}"
             android:text="@string/login_button"
             android:enabled="false"
             app:cornerRadius="20dp"

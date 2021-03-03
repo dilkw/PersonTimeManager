@@ -2,9 +2,10 @@ package com.demo.androidapp.model.entity;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
-import java.sql.Date;
+import com.demo.androidapp.MyApplication;
 
 @Entity(tableName = "task_alert")
 public class AlertOfTask {
@@ -16,12 +17,15 @@ public class AlertOfTask {
     private long taskId;
 
     @ColumnInfo(name = "alert_time")
-    private Date alertTime;
+    private String alertTime;
 
     @ColumnInfo(name = "uid")
-    private String uid;
+    private String uid = MyApplication.getApplication().getUID();
 
-    public AlertOfTask(long id, long taskId, Date alertTime, String uid) {
+    @Ignore
+    public AlertOfTask(){}
+
+    public AlertOfTask(long id, long taskId, String alertTime, String uid) {
         this.id = id;
         this.taskId = taskId;
         this.alertTime = alertTime;
@@ -44,11 +48,11 @@ public class AlertOfTask {
         this.taskId = taskId;
     }
 
-    public Date getAlertTime() {
+    public String getAlertTime() {
         return alertTime;
     }
 
-    public void setAlertTime(Date alertTime) {
+    public void setAlertTime(String alertTime) {
         this.alertTime = alertTime;
     }
 

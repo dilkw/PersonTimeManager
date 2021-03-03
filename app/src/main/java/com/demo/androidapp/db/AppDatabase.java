@@ -11,7 +11,7 @@ import com.demo.androidapp.model.entity.User;
 import com.demo.androidapp.util.Converters;
 
 @Database(entities = {User.class, Task.class, CategoryOfTask.class, AlertOfTask.class}, version = 1)
-@TypeConverters({Converters.class})
+//@TypeConverters({Converters.class})
 public abstract class AppDatabase extends RoomDatabase {
     public abstract UserDao userDao();
     public abstract TaskDao taskDao();

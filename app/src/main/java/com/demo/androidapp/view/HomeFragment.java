@@ -1,14 +1,14 @@
 package com.demo.androidapp.view;
 
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.widget.Toolbar;
 import androidx.databinding.DataBindingUtil;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import android.app.FragmentManager;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -33,11 +33,9 @@ import com.demo.androidapp.MainActivity;
 import com.demo.androidapp.MyApplication;
 import com.demo.androidapp.R;
 import com.demo.androidapp.databinding.HomeFragmentBinding;
-import com.demo.androidapp.model.Auth;
 import com.demo.androidapp.model.entity.Task;
 import com.demo.androidapp.model.common.RCodeEnum;
 import com.demo.androidapp.model.common.ReturnData;
-import com.demo.androidapp.model.returnObject.ReturnListObject;
 import com.demo.androidapp.util.DataSP;
 import com.demo.androidapp.view.myView.adapter.TasksItemAdapter;
 import com.demo.androidapp.viewmodel.HomeViewModel;
@@ -45,8 +43,9 @@ import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements View.OnClickListener {
 
     private HomeViewModel homeViewModel;
 
@@ -62,6 +61,8 @@ public class HomeFragment extends Fragment {
 
     AppBarConfiguration appBarConfiguration;
 
+    private FragmentManager fragmentManager;
+
     public static HomeFragment newInstance() {
         return new HomeFragment();
     }
@@ -72,11 +73,12 @@ public class HomeFragment extends Fragment {
         Log.d("imageView", "onCreateView0: ");
         homeFragmentBinding = DataBindingUtil.inflate(inflater,R.layout.home_fragment,container,false);
         homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
-
         View view = homeFragmentBinding.getRoot();
         DrawerLayout drawerLayout = view.findViewById(R.id.drawer_layout);
         NavigationView navView = view.findViewById(R.id.nav_view);
-        navHostFragment = (NavHostFragment)getActivity().getSupportFragmentManager().findFragmentById(R.id.fragment);
+        fragmentManager = requireActivity().getSupportFragmentManager();
+        navHostFragment = (NavHostFragment)fragmentManager.findFragmentById(R.id.fragment);
+        assert navHostFragment != null;
         controller = navHostFragment.getNavController();
         appBarConfiguration = new AppBarConfiguration.Builder(controller.getGraph()).setDrawerLayout(drawerLayout).build();
         NavigationUI.setupWithNavController(homeFragmentBinding.homeFragmentToolBar,controller,appBarConfiguration);
@@ -90,25 +92,17 @@ public class HomeFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         DataSP dataSP = new DataSP(getContext());
         Log.d("imageView", "onCreateView1: ");
-
+        boolean isLogin = false;
+        isLogin = getArguments() != null && getArguments().getBoolean("isLogin");
         homeFragmentBinding.loginOutBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 MyApplication.getApplication().signOut();
                 Log.d("imageView", "onClick:userName" + MyApplication.getApplication().getUSER_NAME());
-                getActivity().finish();
+                requireActivity().finish();
                 Intent intent = new Intent(); //生成Intent对象
                 intent.setClass(getActivity(), MainActivity.class);
                 startActivity(intent);
-            }
-        });
-
-        homeFragmentBinding.myFloatingActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d("imageView", "onClick: 点击事件");
-                NavController navController = Navigation.findNavController(homeFragmentBinding.myFloatingActionButton);
-                navController.navigate(R.id.action_homeFragment_to_addTaskFragment);
             }
         });
         Log.d("imageView","pppppppp" + MyApplication.getApplication().getCOOKIE());
@@ -116,24 +110,35 @@ public class HomeFragment extends Fragment {
             Log.d("imageView", "onCreateView2: ");
             controller.navigate(R.id.action_homeFragment_to_loginFragment);
         }else {
-            initData(this);
+            initData(this,isLogin);
+            setListener();
         }
     }
 
-    private void initData(LifecycleOwner lifecycleOwner) {
+    private void initData(LifecycleOwner lifecycleOwner,boolean isLogin) {
         Log.d("imageView",MyApplication.getApplication().getUID() + "++++++++++");
-        homeViewModel.getAllTaskByUidInDB();
-        TasksItemAdapter tasksItemAdapter = new TasksItemAdapter((List<Task>)(homeViewModel.getReturnLiveData().getValue().getData()));
+//        if (isLogin) {
+//            homeViewModel.getAllTaskByUidInServer();
+//            assert getArguments() != null;
+//            getArguments().remove("isLogin");
+//        } else {
+//            homeViewModel.getAllTaskByUidInDB();
+//        }
+        homeViewModel.getAllTaskByUidInServer();
+        tasksItemAdapter = new TasksItemAdapter((List<Task>)(new ArrayList<Task>()));
         StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(2, RecyclerView.VERTICAL);
         homeFragmentBinding.recyclerView.setLayoutManager(staggeredGridLayoutManager);
         homeFragmentBinding.recyclerView.setAdapter(tasksItemAdapter);
-
         homeViewModel.getReturnLiveData().observe(lifecycleOwner, new Observer<ReturnData<List<Task>>>() {
             @Override
             public void onChanged(ReturnData<List<Task>> returnData) {
-                RCodeEnum rCodeEnum = returnData.getRCodeEnum();
+                RCodeEnum rCodeEnum = RCodeEnum.returnRCodeEnumByCode(returnData.getCode());
                 List<Task> tasks = returnData.getData();
                 switch (rCodeEnum) {
+                    case OK:{
+                        tasksItemAdapter.setTasks(tasks);
+                        tasksItemAdapter.notifyDataSetChanged();
+                    }
                     case DB_OK:{
                         if (tasks == null || tasks.size() == 0) {
                             Log.d("imageView", "onChanged: 本地数据库为空");
@@ -158,6 +163,55 @@ public class HomeFragment extends Fragment {
                 }
             }
         });
+    }
 
+    public void setListener() {
+        homeFragmentBinding.cancelImageButton.setOnClickListener(this);
+        homeFragmentBinding.deleteImageButton.setOnClickListener(this);
+        homeFragmentBinding.allSelectImageButton.setOnClickListener(this);
+        homeFragmentBinding.myFloatingActionButton.setOnClickListener(this);
+        tasksItemAdapter.setItemLongOnClickListener(new TasksItemAdapter.ItemLongOnClickListener() {
+            @Override
+            public void itemLongOnClick() {
+                tasksItemAdapter.setCheckBoxIsShow();
+                homeFragmentBinding.itemLongClickEditWindow.setVisibility(View.VISIBLE);
+            }
+        });
+        tasksItemAdapter.setItemOnClickListener(new TasksItemAdapter.ItemOnClickListener() {
+            @Override
+            public void itemOnClick(int position) {
+                //将点击的task对象放到MainActivity中的map中
+                ((MainActivity)requireActivity()).putDataInToMap("task", Objects.requireNonNull(((Objects.requireNonNull(homeViewModel.getReturnLiveData().getValue())).getData())).get(position));
+                NavController navController = Navigation.findNavController(requireView());
+                navController.navigate(R.id.action_homeFragment_to_addTaskFragment);
+            }
+        });
+    }
+
+    @SuppressLint({"NonConstantResourceId", "ResourceAsColor"})
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.cancelImageButton: {
+                tasksItemAdapter.cancelTask();
+                homeFragmentBinding.itemLongClickEditWindow.setVisibility(View.GONE);
+                break;
+            }
+            case R.id.deleteImageButton: {
+                homeViewModel.deleteTasksByUidInDB(tasksItemAdapter.deleteSelectedTask());
+                homeFragmentBinding.itemLongClickEditWindow.setVisibility(View.GONE);
+                break;
+            }
+            case R.id.allSelectImageButton: {
+                homeFragmentBinding.allSelectImageButton.setBackgroundColor(R.color.colorTextTrue);
+                tasksItemAdapter.selectedAllTasks();
+                break;
+            }
+            case R.id.myFloatingActionButton: {
+                NavController navController = Navigation.findNavController(homeFragmentBinding.myFloatingActionButton);
+                navController.navigate(R.id.action_homeFragment_to_addTaskFragment);
+                break;
+            }
+        }
     }
 }

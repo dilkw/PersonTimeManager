@@ -33,6 +33,12 @@
     <string name="signOutBtnText">退出登录</string>
     <string name="homeFragmentToolBarSearchMenuTitle">搜索</string>
     <string name="addTaskFragmentToolBarSaveBtnTitle">搜索</string>
+    <string name="homeFragmentLongClickDialogAllSelectBtnText">全选</string>
+    <string name="homeFragmentLongClickDialogDeleteBtnText">删除</string>
+    <string name="homeFragmentLongClickDialogCancelBtnText">取消</string>
+    <string name="homeFragmentLongClickDialogAllSelectBtnContentDescription">全选按钮</string>
+    <string name="homeFragmentLongClickDialogDeleteBtnContentDescription">删除按钮</string>
+    <string name="homeFragmentLongClickDialogCancelBtnContentDescription">取消按钮</string>
 
 
     <!--重置密码页面字符串-->
@@ -71,21 +77,17 @@
     <string name="addCategoryEnterButtonText">确定</string>
     <string name="addTaskCreateTimeImgContentDescription">任务创建时间图标</string>
     <string name="addTaskSelectEndTimeTextTip">结束时间:</string>
+    <string name="addTaskCreateTimeTextTip">创建时间:</string>
     <string name="addTaskEndTimeDefault">----------</string>
     <string name="addTaskIsRedo">重复做</string>
     <string name="addTaskSpinnerImgContentDescription">分类图标</string>
+    <string name="addTaskAlertTimeSelectTimeImgBtnImgContentDescription">选择提醒时间按钮图标</string>
+    <string name="addTaskAlertTimeImgViewContentDescription">提醒时间图标</string>
+    <string name="addTaskAlertTimeClearImgBtnImgContentDescription">删除提醒时间按钮图标</string>
 
     //时间选择对话框
     <string name="dateTimePickerImgBtnContentDescription">关闭对话框按钮图片</string>
     <string name="addTask_alert">提醒</string>
 
-
-    <string-array name="languages">
-        <item>c语言</item>
-        <item>java </item>
-        <item>php</item>
-        <item>xml</item>
-        <item>html</item>
-    </string-array>
 
 </resources>

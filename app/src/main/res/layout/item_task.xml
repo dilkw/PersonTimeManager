@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+        <variable
+            name="myAdapter"
+            type="com.demo.androidapp.view.myView.adapter.TasksItemAdapter" />
 
     </data>
 
@@ -26,16 +30,36 @@
                 android:layout_height="match_parent">
 
                 <TextView
+                    android:id="@+id/createTimeLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginLeft="20dp"
+                    android:text="@string/tasklist_item_createtime"
+                    app:layout_constraintBottom_toTopOf="@+id/endTimeLabel"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
                     android:id="@+id/itemTask_createTimeText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:layout_marginLeft="20dp"
-                    android:layout_marginTop="30dp"
                     android:text="@string/tasklist_item_createtime"
-                    app:layout_constraintBottom_toTopOf="@+id/itemTask_endTimeText"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintBottom_toBottomOf="@+id/createTimeLabel"
+                    app:layout_constraintStart_toEndOf="@+id/createTimeLabel"
+                    app:layout_constraintTop_toTopOf="@+id/createTimeLabel" />
+
+                <TextView
+                    android:id="@+id/endTimeLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/tasklist_item_endtime"
+                    app:layout_constraintBottom_toTopOf="@+id/stateLabel"
+                    app:layout_constraintEnd_toEndOf="@+id/createTimeLabel"
+                    app:layout_constraintStart_toStartOf="@+id/createTimeLabel"
+                    app:layout_constraintTop_toBottomOf="@+id/createTimeLabel" />
 
                 <TextView
                     android:id="@+id/itemTask_endTimeText"
@@ -48,6 +72,16 @@
                     app:layout_constraintVertical_bias="0.100000024" />
 
                 <TextView
+                    android:id="@+id/stateLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/tasklist_item_state"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@+id/endTimeLabel"
+                    app:layout_constraintStart_toStartOf="@+id/endTimeLabel"
+                    app:layout_constraintTop_toBottomOf="@+id/endTimeLabel" />
+
+                <TextView
                     android:id="@+id/itemTask_stateText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -56,6 +90,8 @@
                     app:layout_constraintStart_toStartOf="@+id/itemTask_endTimeText"
                     app:layout_constraintTop_toBottomOf="@+id/itemTask_endTimeText"
                     app:layout_constraintVertical_bias="0.19" />
+
+
 
                 <TextView
                     android:id="@+id/itemTask_taskText"
@@ -74,8 +110,17 @@
                     android:layout_marginLeft="10dp"
                     android:layout_marginTop="5dp"
                     android:contentDescription="@string/tasklist_item_icon"
-                    android:src="@drawable/ic_dingzi"
                     app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_dingzi" />
+
+                <CheckBox
+                    android:id="@+id/itemTask_checkBox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -19,20 +19,20 @@ import retrofit2.http.DELETE;
 public interface TaskDao {
 
     //根据uid查询出所有任务
-    @Query("SELECT * FROM task WHERE uid = :uid")
-    public LiveData<List<Task>> getAllTaskLiveDataByUid(String uid);
+    @Query("SELECT * FROM task")
+    public LiveData<List<Task>> getAllTaskLiveDataByUid();
 
     //根据uid查询出所有任务
-    @Query("SELECT * FROM task WHERE uid = :uid")
-    public List<Task> getAllTaskListByUid(String uid);
+    @Query("SELECT * FROM task")
+    public List<Task> getAllTaskListByUid();
 
     //根据uid添加单个任务
     @Insert
     public void addTask(Task task);
 
-    //根据uid添加单多个任务
+    //根据uid添加多个任务
     @Insert
-    public void addTasks(Task... tasks);
+    public Long[] addTasks(Task... tasks);
 
     //根据任务内容进行模糊查询出所有相关任务
     @Query("SELECT * FROM task WHERE task like :pattern")

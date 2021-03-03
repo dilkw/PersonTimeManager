@@ -18,7 +18,7 @@ public class InterceptorOfReceivedCookie implements Interceptor {
     @Override
     public Response intercept(Chain chain) throws IOException {
         Response response = chain.proceed(chain.request());
-        Log.d("response", "onResponse: cookieStr1" + response.headers().toString() + "\n" + response.headers(MyApplication.getMyApplicationContext().getResources().getString(R.string.headerCookie_name)));
+        Log.d("response", "onResponse: cookieStr1" + response.code() + "\n" + response.headers(MyApplication.getMyApplicationContext().getResources().getString(R.string.headerCookie_name)));
         String cookieStr = response.header(MyApplication.getMyApplicationContext().getResources().getString(R.string.headerCookie_name));
         Log.d("response", "onResponse: cookieStr2" + cookieStr);
         if (cookieStr != null && !cookieStr.equals("")) {

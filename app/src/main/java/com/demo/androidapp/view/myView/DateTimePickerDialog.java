@@ -2,9 +2,7 @@ package com.demo.androidapp.view.myView;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.app.Application;
 import android.app.Dialog;
-import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -20,6 +18,8 @@ import androidx.fragment.app.DialogFragment;
 import com.demo.androidapp.R;
 import com.demo.androidapp.databinding.DatetimepickerBinding;
 import com.demo.androidapp.util.DateTimeUtil;
+
+import java.sql.Date;
 import java.util.Calendar;
 
 public class DateTimePickerDialog extends DialogFragment {
@@ -27,6 +27,8 @@ public class DateTimePickerDialog extends DialogFragment {
     private DatetimepickerBinding datetimepickerBinding;
 
     private EnterListener enterListener;
+
+    private Date selectedDate;
 
     private int createYear, createMonthOfYear, createDayOfMonth;
 
@@ -97,7 +99,7 @@ public class DateTimePickerDialog extends DialogFragment {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public String getSelectTime() {
+    public String getSelectTimeString() {
         int year,moth,day,hour,minute;
         year = datetimepickerBinding.datePicker.getYear();
         moth = datetimepickerBinding.datePicker.getMonth();
@@ -107,4 +109,17 @@ public class DateTimePickerDialog extends DialogFragment {
         DateTimeUtil dateTimeUtil = new DateTimeUtil();
         return dateTimeUtil.intToStrDateTime(year,moth,day,hour,minute);
     }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public String getSelectedDate() {
+        int year,moth,day,hour,minute;
+        year = datetimepickerBinding.datePicker.getYear();
+        moth = datetimepickerBinding.datePicker.getMonth();
+        day = datetimepickerBinding.datePicker.getDayOfMonth();
+        hour = datetimepickerBinding.timePicker.getHour();
+        minute = datetimepickerBinding.timePicker.getMinute();
+        DateTimeUtil dateTimeUtil = new DateTimeUtil();
+        return dateTimeUtil.intToStrDateTime(year,moth,day,hour,minute);
+    }
+
 }

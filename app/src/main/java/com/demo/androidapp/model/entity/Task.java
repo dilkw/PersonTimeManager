@@ -3,7 +3,6 @@ package com.demo.androidapp.model.entity;
 
 import android.util.Log;
 
-import androidx.databinding.BindingBuildInfo;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.Ignore;
@@ -11,14 +10,14 @@ import androidx.room.PrimaryKey;
 
 import com.demo.androidapp.MyApplication;
 
-import java.sql.Date;
+import java.io.Serializable;
 
 
 /**
  * 任务信息实体类
  */
 @Entity(tableName = "task")
-public class Task {
+public class Task implements Serializable {
 
     //id
     @PrimaryKey(autoGenerate = false)
@@ -26,11 +25,11 @@ public class Task {
 
     //创建时间
     @ColumnInfo(name = "created_at")
-    private Date created_at;
+    private long created_at;
 
     //用户uid
-    @ColumnInfo(name = "uid")
-    private String userId;
+//    @ColumnInfo(name = "uid")
+//    private String userId;
 
     //任务内容
     @ColumnInfo(name = "task")
@@ -46,7 +45,7 @@ public class Task {
 
     //结束时间
     @ColumnInfo(name = "time")
-    private Date time;
+    private long time;
 
     //提醒
     @ColumnInfo(name = "alert")
@@ -60,20 +59,20 @@ public class Task {
     public Task() {
     }
 
-    public Task(Long id, Date created_at, String userId, String task, String category, boolean state, Date time, boolean alert, boolean redo) {
+    public Task(Long id, long created_at, String task, String category, boolean state, long time, boolean alert, boolean redo) {
         this.id = id;
         this.created_at = created_at;
-        this.userId = userId;
+//        this.userId = userId;
         this.task = task;
         this.category = category;
         this.state = state;
         this.time = time;
         this.alert = alert;
         this.redo = redo;
-        if (userId == null || userId.equals("")) {
-            Log.d("imageView", "Task: 添加uid");
-            this.userId = MyApplication.getApplication().getUID();
-        }
+//        if (userId == null || userId.equals("")) {
+//            Log.d("imageView", "Task: 添加uid");
+//            this.userId = MyApplication.getApplication().getUID();
+//        }
     }
 
     public Long getId() {
@@ -84,27 +83,27 @@ public class Task {
         this.id = id;
     }
 
-    public Date getCreated_at() {
+    public long getCreated_at() {
         return created_at;
     }
 
-    public void setCreated_at(Date created_at) {
+    public void setCreated_at(long created_at) {
         this.created_at = created_at;
     }
 
-    public String getUserId() {
-        Log.d("imageView", "Task: 获取uid");
-        if (userId == null || userId.equals("")) {
-            Log.d("imageView", "Task: 添加uid");
-            this.userId = MyApplication.getApplication().getUID();
-        }
-        return userId;
-    }
+//    public String getUserId() {
+//        Log.d("imageView", "Task: 获取uid");
+//        if (userId == null || userId.equals("")) {
+//            Log.d("imageView", "Task: 添加uid");
+//            this.userId = MyApplication.getApplication().getUID();
+//        }
+//        return userId;
+//    }
 
-    public void setUserId(String userId) {
-        Log.d("imageView", "Task: 设置uid");
-        this.userId = userId;
-    }
+//    public void setUserId(String userId) {
+//        Log.d("imageView", "Task: 设置uid");
+//        this.userId = userId;
+//    }
 
     public String getTask() {
         return task;
@@ -130,11 +129,11 @@ public class Task {
         this.state = state;
     }
 
-    public Date getTime() {
+    public long getTime() {
         return time;
     }
 
-    public void setTime(Date time) {
+    public void setTime(long time) {
         this.time = time;
     }
 
@@ -159,7 +158,7 @@ public class Task {
         return "Task{" +
                 "id=" + id +
                 ", created_at=" + created_at +
-                ", userId='" + userId + '\'' +
+//                ", userId='" + userId + '\'' +
                 ", task='" + task + '\'' +
                 ", category='" + category + '\'' +
                 ", state=" + state +

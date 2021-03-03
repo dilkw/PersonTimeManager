@@ -1,9 +1,10 @@
 package com.demo.androidapp.model.returnObject;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
-public class ReturnListObject<T> {
+public class ReturnListObject<T> implements Serializable {
 
     //private T[] items;
 

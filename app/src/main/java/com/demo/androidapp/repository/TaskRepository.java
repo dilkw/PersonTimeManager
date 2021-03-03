@@ -4,6 +4,7 @@ import android.app.Application;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.room.Room;
 
@@ -18,7 +19,9 @@ import com.demo.androidapp.model.returnObject.ReturnListObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -31,15 +34,17 @@ public class TaskRepository {
 
     private MutableLiveData<ReturnData<List<Task>>> returnDataLiveData;
 
+    private MutableLiveData<ReturnData> deleteReturnDataLiveData;
+
     private TaskRepository authRepository;
 
     public TaskRepository(Application application) {
-        this.api = MyApplication.getApplication().getApi();
+        this.api = MyApplication.getApi();
         this.taskDao = Room
                 .databaseBuilder(application.getApplicationContext(), AppDatabase.class, "task")
                 .build()
                 .taskDao();
-        returnDataLiveData = new MutableLiveData<ReturnData<List<Task>>>(new ReturnData<>(new ArrayList<Task>()));
+        returnDataLiveData = new MutableLiveData<ReturnData<List<Task>>>();
     }
 
     public MutableLiveData<ReturnData<List<Task>>> getReturnDataLiveData() {
@@ -63,17 +68,19 @@ public class TaskRepository {
             @Override
             public void onResponse(Call<ReturnData<ReturnListObject<Task>>> call, Response<ReturnData<ReturnListObject<Task>>> response) {
                 Log.d("imageView", "TaskRepository: 获取任务清单成功");
-                returnDataLiveData.postValue(new ReturnData<List<Task>>(RCodeEnum.SERVER_OK,response.body().getData().getItems()));
-                Task[] tasks = new Task[response.body().getData().getTotal()];
-                tasks = ((response.body().getData().getItems()).toArray(tasks));
-                deleteAllTaskByUidInDB(tasks);
-                addTasksToDB(tasks);
+                returnDataLiveData.postValue(new ReturnData<List<Task>>(response.body().getCode(),response.body().getMsg(),response.body().getData().getItems()));
+//                Task[] tasks = new Task[response.body().getData().getTotal()];
+//                tasks = ((response.body().getData().getItems()).toArray(tasks));
+//                deleteAllTaskByUidInDB(tasks);
+//                addTasksToDB(tasks);
+//                //从数据库中获取
+//                getAllTaskByUidInDB();
             }
             @Override
             public void onFailure(Call<ReturnData<ReturnListObject<Task>>> call, Throwable t) {
                 t.printStackTrace();
                 Log.d("imageView", "TaskRepository: 获取任务清单失败" );
-                returnDataLiveData.postValue(new ReturnData<List<Task>>(RCodeEnum.DB_ERROR));
+                returnDataLiveData.postValue(new ReturnData<List<Task>>(201,"",null));
             }
         });
     }
@@ -85,16 +92,63 @@ public class TaskRepository {
         new GetAllTaskByUid(taskDao,returnDataLiveData).execute(uid);
     }
 
+    //在本地数据库中删除数据
     public void deleteAllTaskByUidInDB(Task... tasks) {
         String uid = MyApplication.getApplication().getUID();
-        Log.d("imageView", "getAllTaskByUidInDB: 数据库获取数据888");
+        Log.d("imageView", "getAllTaskByUidInDB: 数据库删除数据");
         new DeleteAllTasks(taskDao).execute(tasks);
+    }
+
+    //在服务器中删除数据
+    public void deleteAllTaskByUidInServer(Task task) {
+        Log.d("imageView", "getAllTaskByUidInDB: 服务器删除数据");
+        api.deleteTask(task.getId());
     }
 
 
     //插入本地数据库任务列表
-    public void addTasksToDB(Task... tasks) {
-        new TaskRepository.InsertTaskList(taskDao).execute(tasks);
+    public Long[] addTasksToDB(Task... tasks) {
+        Long[] longs = null;
+        try {
+            longs = new InsertTaskList(taskDao).execute(tasks).get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return longs;
+    }
+
+    //添加到服务器任务列表
+    public void addTasksToServer(Task task) {
+        api.addTask(task).enqueue(new Callback<ReturnData<Object>>() {
+            @Override
+            public void onResponse(Call<ReturnData<Object>> call, Response<ReturnData<Object>> response) {
+
+            }
+
+            @Override
+            public void onFailure(Call<ReturnData<Object>> call, Throwable t) {
+
+            }
+        });
+    }
+
+    //更新任务到服务器
+    public void updateTaskInServer(Task task) {
+        MutableLiveData<Object> objectMutableLiveData = new MutableLiveData<>();
+        Log.d("imageView", "updateTaskInServer: " + task.toString());
+        api.updateTask(task.getId(),task).enqueue(new Callback<ReturnData<Object>>() {
+            @Override
+            public void onResponse(Call<ReturnData<Object>> call, Response<ReturnData<Object>> response) {
+                objectMutableLiveData.postValue(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<ReturnData<Object>> call, Throwable t) {
+
+            }
+        });
     }
 
     //更新本地数据库任务列表
@@ -102,7 +156,7 @@ public class TaskRepository {
         new TaskRepository.UpdateTaskList(taskDao).execute(tasks);
     }
 
-    public static class InsertTaskList extends AsyncTask<Task,Void,Void> {
+    public static class InsertTaskList extends AsyncTask<Task,Void, Long[]> {
 
         TaskDao taskDao;
 
@@ -111,9 +165,8 @@ public class TaskRepository {
         }
 
         @Override
-        protected Void doInBackground(Task... tasks) {
-            this.taskDao.addTasks(tasks);
-            return null;
+        protected Long[] doInBackground(Task... tasks) {
+            return this.taskDao.addTasks(tasks);
         }
     }
 
@@ -130,9 +183,9 @@ public class TaskRepository {
 
         @Override
         protected Void doInBackground(String... strings) {
-            List<Task> tasks = taskDao.getAllTaskListByUid(strings[0]);
-            Log.d("imageView", "doInBackground: 本地数据库数据长度" + tasks.size());
-            returnDataLiveData.postValue(new ReturnData<List<Task>>(RCodeEnum.DB_OK,tasks));
+//            List<Task> tasks = taskDao.getAllTaskListByUid(strings[0]);
+//            Log.d("imageView", "doInBackground: 本地数据库数据长度" + tasks.size());
+//            returnDataLiveData.postValue(new ReturnData<List<Task>>(RCodeEnum.DB_OK,tasks));
             return null;
         }
     }
@@ -165,22 +218,6 @@ public class TaskRepository {
             taskDao.deleteTask(tasks);
             return null;
         }
-    }
-
-
-    //根据TaskId（id放在cookie中）添加任务
-    public void addTaskToServer(Task task) {
-        api.addTask(task).enqueue(new Callback<ReturnData>() {
-            @Override
-            public void onResponse(Call<ReturnData> call, Response<ReturnData> response) {
-
-            }
-
-            @Override
-            public void onFailure(Call<ReturnData> call, Throwable t) {
-
-            }
-        });
     }
 
     public void reLogin(){

@@ -35,18 +35,32 @@ public class HomeViewModel extends AndroidViewModel {
     //根据用户id从服务器中中加载该用户的任务列表
     public void getAllTaskByUidInServer() {
         //在数据库中没有数据时尝试从无服务器中获取
+        Log.d("imageView", "getAllTaskByUidInServer: 从服务器中获取数据");
         taskRepository.getAllTaskByUidInServer();
     }
 
     //根据用户id从本地数据库加载该用户的任务列表
     public void getAllTaskByUidInDB() {
         //在数据库中没有数据时尝试从无服务器中获取
+        Log.d("imageView", "getAllTaskByUidInServer: 从数据库中获取数据");
         taskRepository.getAllTaskByUidInDB();
     }
 
     //根据用户id从本地数据库清空该用户的任务列表
     public void deleteAllTaskByUidInDB() {
         //在数据库中没有数据时尝试从无服务器中获取
+        taskRepository.deleteAllTaskByUidInDB();
+    }
+
+    //根据用户id从本地数据库清空该用户的任务列表
+    public void deleteTasksByUidInDB(List<Task> tasks) {
+        //在数据库中没有数据时尝试从无服务器中获取
+        if (tasks == null || tasks.size() == 0) {
+            return;
+        }
+        Task[] tasks1 = null;
+        tasks.toArray(tasks1);
+        taskRepository.deleteAllTaskByUidInDB(tasks1);
         taskRepository.deleteAllTaskByUidInDB();
     }
 

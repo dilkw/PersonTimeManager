@@ -6,32 +6,19 @@ import android.view.KeyEvent;
 import android.widget.Toast;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
     private Date date1,date2;
 
+    private Map<String,Object> dataMap = new HashMap<String,Object>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//        activityMainBinding.loginOutBtn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                FragmentManager fragmentManager = getFragmentManager();
-//                int count = fragmentManager.getBackStackEntryCount();
-//                Log.d("imageView", "onClick:fragment数量 " + count);
-//                for (int i = 0; i < count; ++i) {
-//                    fragmentManager.popBackStack();
-//                }
-//                MyApplication.getApplication().signOut();
-//                Log.d("imageView", "onClick:userName" + MyApplication.getApplication().getUSER_NAME());
-//                MainActivity.this.finish();
-//                Intent intent = new Intent(); //生成Intent对象
-//                intent.setClass(MainActivity.this, MainActivity.class);
-//                startActivity(intent);  //
-//            }
-//        });
     }
 
     @Override
@@ -39,13 +26,11 @@ public class MainActivity extends AppCompatActivity {
         if(keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
             if (date1 != null) {
                 date2 = new Date();
-                if((date2.getTime()-date1.getTime()) < 1000) {
+                if((date2.getTime()-date1.getTime()) < 500) {
                     finish();
                     System.exit(0);
-                    //onDestroy();
                 }
                 else {
-
                     date1 = null;
                     date2 = null;
                     return super.onKeyDown(keyCode, event);
@@ -61,14 +46,20 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    //自定义返回键监听方法
-    public void my_onBackPressed(boolean isExit) {
-        if(isExit) {
-            finish();
-            onDestroy();
-        }else {
-            super.onBackPressed();
-        }
+    //主页面(HomeFragment)定义返回键监听接口
+    public interface HomeFragmentBackPressedListener{
+        void homeFragmentBackPressedClickListener();
     }
 
+    //从数据map中获取数据
+    public Object getDataFromMapByKey(String key) {
+        Object o = this.dataMap.get(key);
+        this.dataMap.remove(key);
+        return o;
+    }
+
+    //将数据存放到map
+    public void putDataInToMap(String key,Object o) {
+        this.dataMap.put(key,o);
+    }
 }

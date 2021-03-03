@@ -3,6 +3,7 @@ package com.demo.androidapp;
 import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
+import android.util.Log;
 
 import com.demo.androidapp.api.Api;
 import com.demo.androidapp.api.impl.RetrofitClient;
@@ -22,7 +23,7 @@ public class MyApplication extends Application {
     private static String UID = "";          //uid
     private static String COOKIE = "";       //cookie校验码
 
-    private Api api;
+    private static Api api;
 
     private DataSP dataSP;
 
@@ -40,6 +41,10 @@ public class MyApplication extends Application {
         dataSP = new DataSP(mContext);
         loadData();
         api = RetrofitClient.getInstance().getApi();
+        Log.d("imageView", "onCreate: MyApplication--------api创建");
+        if (api == null) {
+            Log.d("imageView", "onCreate: MyApplication--------api为空");
+        }
         if (!USER_NAME.equals("userName")){
             signIn();
         }
@@ -61,7 +66,7 @@ public class MyApplication extends Application {
         return COOKIE;
     }
 
-    public Api getApi() {
+    public static Api getApi() {
         return api;
     }
 
