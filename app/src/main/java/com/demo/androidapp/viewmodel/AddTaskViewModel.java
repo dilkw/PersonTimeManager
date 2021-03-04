@@ -96,14 +96,14 @@ public class AddTaskViewModel extends AndroidViewModel {
     }
 
     //添加任务
-    public void addTask(){
-        taskRepository.addTasksToServer(taskMutableLiveData.getValue());
+    public LiveData<ReturnData<Object>> addTask(){
+        return taskRepository.addTasksToServer(taskMutableLiveData.getValue());
     }
 
     //更新任务
-    public void updateTaskInServer(){
+    public LiveData<ReturnData<Object>> updateTaskInServer(){
         Log.d("imageView", "updateTaskInServer: " + taskMutableLiveData.getValue().toString());
-        taskRepository.updateTaskInServer(taskMutableLiveData.getValue());
+        return taskRepository.updateTaskInServer(taskMutableLiveData.getValue());
     }
 
 }

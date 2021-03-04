@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
@@ -122,15 +123,6 @@ public class AddTaskFragment extends Fragment{
         setClickListener();
 
     }
-
-    //
-    private void editInitUi() {
-        addTaskViewModel.taskMutableLiveData.setValue(null);
-    }
-
-    private void addInitUi() {
-        addTaskViewModel.addTask();
-    }
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
@@ -190,12 +182,36 @@ public class AddTaskFragment extends Fragment{
     //编辑完成后保存任务
     private void saveTask() {
         Log.d("imageView", "saveTask: 保存任务");
-        addTaskViewModel.updateTaskInServer();
+        addTaskViewModel.updateTaskInServer().observe(getViewLifecycleOwner(), new Observer<ReturnData<Object>>() {
+            @Override
+            public void onChanged(ReturnData<Object> objectReturnData) {
+                if (objectReturnData.getCode() == RCodeEnum.OK.getCode()) {
+                    Toast.makeText(getContext(),"保存成功",Toast.LENGTH_SHORT).show();
+                    NavController navController = Navigation.findNavController(getView());
+                    navController.navigateUp();
+                }else {
+                    Toast.makeText(getContext(),"保存任务失败",Toast.LENGTH_SHORT).show();
+                    Log.d("imageView",objectReturnData.getCode() + objectReturnData.getMsg());
+                }
+            }
+        });
     }
 
     //添加任务
     private void addTask() {
         Log.d("imageView", "saveTask: 添加任务");
-        addTaskViewModel.addTask();
+        addTaskViewModel.addTask().observe(getViewLifecycleOwner(), new Observer<ReturnData<Object>>() {
+            @Override
+            public void onChanged(ReturnData<Object> objectReturnData) {
+                if (objectReturnData.getCode() == RCodeEnum.OK.getCode()) {
+                    Toast.makeText(getContext(),"添加任务成功",Toast.LENGTH_SHORT).show();
+                    NavController navController = Navigation.findNavController(getView());
+                    navController.navigateUp();
+                }else {
+                    Toast.makeText(getContext(),"添加任务失败",Toast.LENGTH_SHORT).show();
+                    Log.d("imageView",objectReturnData.getCode() + objectReturnData.getMsg());
+                }
+            }
+        });
     }
 }

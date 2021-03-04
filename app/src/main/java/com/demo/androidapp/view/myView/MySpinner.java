@@ -2,17 +2,13 @@ package com.demo.androidapp.view.myView;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -20,6 +16,9 @@ import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
+import androidx.databinding.BindingAdapter;
+import androidx.databinding.InverseBindingAdapter;
+import androidx.databinding.InverseBindingListener;
 
 import com.demo.androidapp.MyApplication;
 import com.demo.androidapp.R;
@@ -42,12 +41,43 @@ public class MySpinner extends LinearLayout {
 
     private Context context;
 
-    private int width,height;
+    private String category;
 
     public void setMySpinnerAdapter(MySpinnerAdapter mySpinnerAdapter) {
         this.mySpinnerAdapter = mySpinnerAdapter;
         setItemOnClickListener();
         intPopupWindow();
+    }
+
+    public String getCategory() {
+        Log.d("imageView", "getCategory: 数据改变");
+        return category;
+    }
+
+    public void setCategory(String category) {
+        Log.d("imageView", "setCategory: 数据改变");
+        this.category = category;
+        mySpinnerTextView.setText(category);
+    }
+
+    @BindingAdapter(value = "app:category")
+    public static void setCategory(MySpinner v, String category) {
+        Log.d("imageView", "v.setCategory: 数据改变");
+        v.setCategory(category);
+    }
+
+    @InverseBindingAdapter(attribute = "app:category", event = "categoryAttrChanged")
+    public static String getCategory(MySpinner v) {
+        Log.d("imageView", "v.getCategory: 数据改变");
+        return v.getCategory();
+    }
+
+    private InverseBindingListener inverseBindingListener;
+
+    @BindingAdapter(value = {"categoryAttrChanged"}, requireAll = false)
+    public static void categoryAttrChanged(MySpinner v, InverseBindingListener listener) {
+        Log.d("imageView", "categoryAttrChanged: 数据改变");
+        v.inverseBindingListener = listener;
     }
 
     public CategoryOfTask getSelectCategoryOfTask() {
@@ -78,14 +108,12 @@ public class MySpinner extends LinearLayout {
     @SuppressLint("ResourceType")
     void initView(Context context){
         LayoutInflater layoutInflater = LayoutInflater.from(context);
-//        View view1 = layoutInflater.inflate(R.layout.add_task_fragment,null);
-//        LinearLayout parentView = (LinearLayout)view1.findViewById(R.id.addTaskLinearLayout);
         View view = layoutInflater.inflate(R.layout.my_category_spinner,null);
         if (view == null) {
             Log.d("imageView", "initView: spinner为空");
         }
         mySpinnerTextView = view.findViewById(R.id.mySpinnerTextView);
-        mySpinnerTextView.setText("未分类");
+        mySpinnerTextView.setText(getCategory());
         mySpinnerImageButton = view.findViewById(R.id.mySpinnerImageButton);
         setClickListener();
         LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.MATCH_PARENT);
@@ -119,7 +147,8 @@ public class MySpinner extends LinearLayout {
             public void itemOnClick(int position) {
                 categoryOfTask = (CategoryOfTask)mySpinnerAdapter.getItem(position);
                 String str = categoryOfTask.getCategoryName();
-                mySpinnerTextView.setText(str);
+                setCategory(MySpinner.this,str);
+                inverseBindingListener.onChange();
             }
 
             @Override
@@ -129,7 +158,7 @@ public class MySpinner extends LinearLayout {
                 if (categoryOfTask != null
                         && clickCategoryOfTask.getId().equals(categoryOfTask.getId())) {
                     categoryOfTask = null;
-                    mySpinnerTextView.setText("未分类");
+                    mySpinnerTextView.setText(getCategory());
                 }
 
             }

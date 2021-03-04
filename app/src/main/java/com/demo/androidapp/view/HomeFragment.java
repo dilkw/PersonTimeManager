@@ -208,6 +208,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 break;
             }
             case R.id.myFloatingActionButton: {
+                Log.d("imageView", "onClick: 添加按钮");
                 NavController navController = Navigation.findNavController(homeFragmentBinding.myFloatingActionButton);
                 navController.navigate(R.id.action_homeFragment_to_addTaskFragment);
                 break;

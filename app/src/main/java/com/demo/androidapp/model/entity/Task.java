@@ -28,8 +28,8 @@ public class Task implements Serializable {
     private long created_at;
 
     //用户uid
-//    @ColumnInfo(name = "uid")
-//    private String userId;
+    @ColumnInfo(name = "uid")
+    private String userId = MyApplication.getApplication().getUID();
 
     //任务内容
     @ColumnInfo(name = "task")
@@ -59,20 +59,16 @@ public class Task implements Serializable {
     public Task() {
     }
 
-    public Task(Long id, long created_at, String task, String category, boolean state, long time, boolean alert, boolean redo) {
+    public Task(Long id, long created_at,String userId, String task, String category, boolean state, long time, boolean alert, boolean redo) {
         this.id = id;
         this.created_at = created_at;
-//        this.userId = userId;
+        this.userId = userId;
         this.task = task;
         this.category = category;
         this.state = state;
         this.time = time;
         this.alert = alert;
         this.redo = redo;
-//        if (userId == null || userId.equals("")) {
-//            Log.d("imageView", "Task: 添加uid");
-//            this.userId = MyApplication.getApplication().getUID();
-//        }
     }
 
     public Long getId() {
@@ -91,19 +87,13 @@ public class Task implements Serializable {
         this.created_at = created_at;
     }
 
-//    public String getUserId() {
-//        Log.d("imageView", "Task: 获取uid");
-//        if (userId == null || userId.equals("")) {
-//            Log.d("imageView", "Task: 添加uid");
-//            this.userId = MyApplication.getApplication().getUID();
-//        }
-//        return userId;
-//    }
+    public String getUserId() {
+        return userId;
+    }
 
-//    public void setUserId(String userId) {
-//        Log.d("imageView", "Task: 设置uid");
-//        this.userId = userId;
-//    }
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
 
     public String getTask() {
         return task;
@@ -158,7 +148,7 @@ public class Task implements Serializable {
         return "Task{" +
                 "id=" + id +
                 ", created_at=" + created_at +
-//                ", userId='" + userId + '\'' +
+                ", userId='" + userId + '\'' +
                 ", task='" + task + '\'' +
                 ", category='" + category + '\'' +
                 ", state=" + state +

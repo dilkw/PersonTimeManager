@@ -55,6 +55,8 @@ public class MyFloatingActionButton extends FloatingActionButton {
     private float actionDownX = 0;
     private float actionDownY = 0;
     private boolean isDrag = false;
+    float moveX;
+    float moveY;
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(@NonNull MotionEvent ev) {
@@ -64,19 +66,17 @@ public class MyFloatingActionButton extends FloatingActionButton {
         Log.d("imageView","" + getPivotX());
         switch (ev.getAction()) {
             case MotionEvent.ACTION_DOWN: {
+                Log.d("imageView","ACTION_DOWN");
                 actionDownX = ev.getRawX();
                 actionDownY = ev.getRawY();
                 break;
             }
             case MotionEvent.ACTION_MOVE: {
+                Log.d("imageView","ACTION_MOVE");
                 isDrag = true;
                 setPressed(false);
-                Log.d("imageView", "getPivotX():" + getPivotX() + "getX():" + getX() + "----ev.getX():" + ev.getX());
-                Log.d("imageView", "getY():" + getY() + "----ev.getY():" + ev.getY());
-                Log.d("imageView", "getRawX():" + ev.getRawX());
-                Log.d("imageView", "getRawY():" + ev.getRawY());
-                float moveX = getX() + (ev.getRawX() - actionDownX);
-                float moveY = getY() + (ev.getRawY() - actionDownY);
+                moveX = getX() + (ev.getRawX() - actionDownX);
+                moveY = getY() + (ev.getRawY() - actionDownY);
                 moveX = moveX >= 0 ? moveX : 0;
                 moveY = moveY >= 0 ? moveY : 0;
                 moveX = moveX <= parentRightX - getWidth() ? moveX : parentRightX - getWidth();
@@ -85,12 +85,17 @@ public class MyFloatingActionButton extends FloatingActionButton {
                 setY(moveY);
                 actionDownX = ev.getRawX();
                 actionDownY = ev.getRawY();
-                return true;
+                break;
             }
             case MotionEvent.ACTION_UP:{
                 Log.d("imageView","ACTION_UP");
                 if (isDrag) {
                     isDrag = false;
+                    //真机调试容错判断（允许误差范围为200（X和Y方向的移动距离））
+                    if ((Math.abs(moveX - actionDownX)) < 200
+                        &&(Math.abs(moveY - actionDownY)) < 200){
+                        break;
+                    }
                     return true;
                 }
                 break;

@@ -39,10 +39,10 @@ public class LiveDataCallAdapterFactory extends CallAdapter.Factory {
             Log.d(TAG, "rawType = 类型错误");
             isApiResponse = false;
         }
-//        if (observableType instanceof ParameterizedType) {
-//            Log.d(TAG, "observableType = " + ((ParameterizedType) observableType).getRawType().getTypeName());
-//            throw new IllegalArgumentException("resource must be parameterized");
-//        }
+        if (observableType instanceof ParameterizedType) {
+            Log.d(TAG, "observableType = " + ((ParameterizedType) observableType).getRawType().getTypeName());
+            //throw new IllegalArgumentException("resource must be parameterized");
+        }
         return new LiveDataCallAdapter<>(observableType, isApiResponse);
     }
 }

@@ -120,35 +120,15 @@ public class TaskRepository {
     }
 
     //添加到服务器任务列表
-    public void addTasksToServer(Task task) {
-        api.addTask(task).enqueue(new Callback<ReturnData<Object>>() {
-            @Override
-            public void onResponse(Call<ReturnData<Object>> call, Response<ReturnData<Object>> response) {
-
-            }
-
-            @Override
-            public void onFailure(Call<ReturnData<Object>> call, Throwable t) {
-
-            }
-        });
+    public LiveData<ReturnData<Object>> addTasksToServer(Task task) {
+        return api.addTask(task);
     }
 
     //更新任务到服务器
-    public void updateTaskInServer(Task task) {
+    public LiveData<ReturnData<Object>> updateTaskInServer(Task task) {
         MutableLiveData<Object> objectMutableLiveData = new MutableLiveData<>();
         Log.d("imageView", "updateTaskInServer: " + task.toString());
-        api.updateTask(task.getId(),task).enqueue(new Callback<ReturnData<Object>>() {
-            @Override
-            public void onResponse(Call<ReturnData<Object>> call, Response<ReturnData<Object>> response) {
-                objectMutableLiveData.postValue(response.body());
-            }
-
-            @Override
-            public void onFailure(Call<ReturnData<Object>> call, Throwable t) {
-
-            }
-        });
+        return api.updateTask(task.getId(),task);
     }
 
     //更新本地数据库任务列表

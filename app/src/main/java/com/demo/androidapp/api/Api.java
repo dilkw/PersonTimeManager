@@ -78,7 +78,7 @@ public interface Api {
 
     //添加任务
     @POST("todo/add")
-    Call<ReturnData<Object>> addTask(@Body Task task);
+    LiveData<ReturnData<Object>> addTask(@Body Task task);
 
     //删除任务
     @HTTP(method = "DELETE", path = "todo/{taskId}}", hasBody = true)
@@ -86,6 +86,6 @@ public interface Api {
 
     //修改任务
     @PUT("todo/{id}")
-    Call<ReturnData<Object>> updateTask(@Path("id")long taskId,@Body Task task);
+    LiveData<ReturnData<Object>> updateTask(@Path("id")long taskId,@Body Task task);
 
 }
