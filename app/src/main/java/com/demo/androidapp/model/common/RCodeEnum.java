@@ -5,7 +5,7 @@ public enum RCodeEnum {
     //服务器对应的状态码
     OK(200,"正常"),
     DB_OK(2000,"DB正常"),
-    SERVER_OK(2001,"SERVER正常"),
+    GET_TASKS_SERVER_OK(2001,"SERVER正常"),
 
     ERROR(201,"请求错误"),
     DB_ERROR(2010,"DB请求错误"),
@@ -13,6 +13,7 @@ public enum RCodeEnum {
 
     //移动端定义状态码
     EMAIL_NULL(40000,"邮箱为空"),
+    DELETE_TASK_ERROR(40001,"删除失败"),
 
 //    ERROR(500, "fail"),
 

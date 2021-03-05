@@ -60,13 +60,13 @@ public class MySpinner extends LinearLayout {
         mySpinnerTextView.setText(category);
     }
 
-    @BindingAdapter(value = "app:category")
+    @BindingAdapter(value = "category")
     public static void setCategory(MySpinner v, String category) {
         Log.d("imageView", "v.setCategory: 数据改变");
         v.setCategory(category);
     }
 
-    @InverseBindingAdapter(attribute = "app:category", event = "categoryAttrChanged")
+    @InverseBindingAdapter(attribute = "category", event = "categoryAttrChanged")
     public static String getCategory(MySpinner v) {
         Log.d("imageView", "v.getCategory: 数据改变");
         return v.getCategory();

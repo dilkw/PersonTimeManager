@@ -18,6 +18,20 @@ public class ReturnData<T>{
         this.data = data;
     }
 
+    public ReturnData(RCodeEnum rCodeEnum) {
+        Log.d("imageView", "ReturnData: 构造RCodeEnum");
+        this.code = rCodeEnum.getCode();
+        this.msg = rCodeEnum.getMessage();
+        this.data = null;
+    }
+
+    public ReturnData(RCodeEnum rCodeEnum,T data) {
+        Log.d("imageView", "ReturnData: 构造RCodeEnum + Data");
+        this.code = rCodeEnum.getCode();
+        this.msg = rCodeEnum.getMessage();
+        this.data = data;
+    }
+
     public int getCode() {
         return code;
     }

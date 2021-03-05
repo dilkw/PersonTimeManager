@@ -4,6 +4,7 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.Toolbar;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -39,9 +40,7 @@ import com.demo.androidapp.util.DateTimeUtil;
 import com.demo.androidapp.view.myView.DateTimePickerDialog;
 import com.demo.androidapp.view.myView.adapter.MySpinnerAdapter;
 import com.demo.androidapp.viewmodel.AddTaskViewModel;
-import com.google.gson.internal.$Gson$Preconditions;
 
-import java.sql.Date;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -98,20 +97,14 @@ public class AddTaskFragment extends Fragment{
         }
         addTaskViewModel.taskMutableLiveData.setValue(task);
         addTaskFragmentBinding.setAddTaskViewModel(addTaskViewModel);
-        List<CategoryOfTask> categoryOfTasks = null;
-        categoryOfTasks = addTaskViewModel.getCategory().getValue();
-        if (categoryOfTasks == null) {
-            categoryOfTasks = new ArrayList<CategoryOfTask>();
-            Log.d("imageView", "onActivityCreated: category为空" + categoryOfTasks.size());
-        }
-        MySpinnerAdapter mySpinnerAdapter = new MySpinnerAdapter(requireActivity().getApplicationContext(), categoryOfTasks, addTaskViewModel);
+        MySpinnerAdapter mySpinnerAdapter = new MySpinnerAdapter(requireActivity().getApplicationContext(), new ArrayList<>(), addTaskViewModel);
         addTaskFragmentBinding.mySpinner.setMySpinnerAdapter(mySpinnerAdapter);
-        addTaskViewModel.getCategory().observe(getViewLifecycleOwner(), new Observer<List<CategoryOfTask>>() {
+        LiveData<List<CategoryOfTask>> categoryLiveData = addTaskViewModel.getCategory();
+        categoryLiveData.observe(getViewLifecycleOwner(), new Observer<List<CategoryOfTask>>() {
             @Override
             public void onChanged(List<CategoryOfTask> categoryOfTasks) {
-                Log.d("imageView", "onChanged: " + categoryOfTasks.size());
-                mySpinnerAdapter.setCategoryOfTaskList(categoryOfTasks);
-                mySpinnerAdapter.notifyDataSetChanged();
+                Log.d("imageView", "category onChanged: " + categoryOfTasks.size());
+                mySpinnerAdapter.setCategoryOfTaskListAndNotify(categoryOfTasks);
             }
         });
         addTaskViewModel.taskMutableLiveData.observe(getViewLifecycleOwner(), new Observer<Task>() {
@@ -128,6 +121,7 @@ public class AddTaskFragment extends Fragment{
         super.onCreateOptionsMenu(menu, inflater);
     }
 
+    //按钮设置监听事件
     private void setClickListener() {
         //为选择时间的imgBtn按钮添加点击事件
         //弹出时间选择对话框并返回时间字符串
@@ -148,6 +142,7 @@ public class AddTaskFragment extends Fragment{
             }
         });
 
+        //导航栏Menu菜单监听事件
         addTaskFragmentBinding.addTaskFragmentToolBar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @SuppressLint("NonConstantResourceId")
             @Override
@@ -167,7 +162,7 @@ public class AddTaskFragment extends Fragment{
                             @RequiresApi(api = Build.VERSION_CODES.O)
                             @Override
                             public void enterBtnOnClicked() {
-                                String date = dateTimePickerDialog.getSelectedDate();
+                                String date = dateTimePickerDialog.getSelectTimeString();
                                 addTaskViewModel.alertOfTaskMutableLiveData.getValue().setAlertTime(date);
                             }
                         });

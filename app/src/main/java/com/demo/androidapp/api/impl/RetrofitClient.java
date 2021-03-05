@@ -38,28 +38,15 @@ public class RetrofitClient {
         // 创建gson对象构建器
         GsonBuilder gsonBuilder = new GsonBuilder();
         // 实现将long 类型的日期格式转换为国际标准格式
-        gsonBuilder.registerTypeAdapter(Date.class, new JsonDeserializer<Date>() {
-            public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-                Date date = new Date(json.getAsJsonPrimitive().getAsLong() * 1000);
-                Log.d("imageView", "deserialize: " + json.getAsJsonPrimitive().getAsLong());
-                return date;
-            }
-        });
+        //gsonBuilder.registerTypeAdapter(Date.class, new JsonDeserializer<Date>() {
+            //public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+                //Date date = new Date(json.getAsJsonPrimitive().getAsLong() * 1000);
+                //Log.d("imageView", "deserialize: " + json.getAsJsonPrimitive().getAsLong());
+                //return date;
+            //}
+        //});
         // 创建gson对象
         Gson gson = gsonBuilder.create();
-
-        CookieJar cookieJar = new CookieJar() {
-            @Override
-            public void saveFromResponse(HttpUrl url, List<Cookie> cookies) {
-
-            }
-
-            @Override
-            public List<Cookie> loadForRequest(HttpUrl url) {
-                return null;
-            }
-        };
-        //.cookieJar(cookieJar)
 
         okHttpClient = new OkHttpClient
                 .Builder()

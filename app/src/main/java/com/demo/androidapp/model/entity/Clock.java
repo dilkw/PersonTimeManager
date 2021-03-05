@@ -1,8 +1,6 @@
 package com.demo.androidapp.model.entity;
 
 
-import android.util.Log;
-
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.Ignore;
@@ -10,22 +8,24 @@ import androidx.room.PrimaryKey;
 
 import com.demo.androidapp.MyApplication;
 
-import java.io.Serializable;
-
 
 /**
  * 任务信息实体类
  */
-@Entity(tableName = "task")
-public class Task {
+@Entity(tableName = "clock")
+public class Clock {
 
     //id
-    @PrimaryKey(autoGenerate = false)
+    @PrimaryKey(autoGenerate = true)
     private long id;
 
     //创建时间
     @ColumnInfo(name = "created_at")
     private long created_at;
+
+    //创建时间
+    @ColumnInfo(name = "clock_minuet")
+    private long clockMinuet;
 
     //用户uid
     @ColumnInfo(name = "uid")
@@ -35,47 +35,38 @@ public class Task {
     @ColumnInfo(name = "task")
     private String task;
 
-    //分类
-    @ColumnInfo(name = "category")
-    private String category;
-
-    //状态
+    //状态(完成/未完成)
     @ColumnInfo(name = "state")
     private boolean state;
-
-    //结束时间
-    @ColumnInfo(name = "time")
-    private long time;
 
     //提醒
     @ColumnInfo(name = "alert")
     private boolean alert;
 
-    //重复做
-    @ColumnInfo(name = "redo")
-    private boolean redo;
+    //提醒
+    @ColumnInfo(name = "alert_time")
+    private long alertTime;
 
     @Ignore
-    public Task() {
+    public Clock() {
     }
 
-    public Task(Long id, long created_at,String userId, String task, String category, boolean state, long time, boolean alert, boolean redo) {
+    public Clock(long id, long created_at, long clockMinuet, String userId, String task, boolean state, boolean alert, long alertTime) {
         this.id = id;
         this.created_at = created_at;
+        this.clockMinuet = clockMinuet;
         this.userId = userId;
         this.task = task;
-        this.category = category;
         this.state = state;
-        this.time = time;
         this.alert = alert;
-        this.redo = redo;
+        this.alertTime = alertTime;
     }
 
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -85,6 +76,14 @@ public class Task {
 
     public void setCreated_at(long created_at) {
         this.created_at = created_at;
+    }
+
+    public long getClockMinuet() {
+        return clockMinuet;
+    }
+
+    public void setClockMinuet(long clockMinuet) {
+        this.clockMinuet = clockMinuet;
     }
 
     public String getUserId() {
@@ -103,15 +102,7 @@ public class Task {
         this.task = task;
     }
 
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    public boolean getState() {
+    public boolean isState() {
         return state;
     }
 
@@ -119,15 +110,7 @@ public class Task {
         this.state = state;
     }
 
-    public long getTime() {
-        return time;
-    }
-
-    public void setTime(long time) {
-        this.time = time;
-    }
-
-    public boolean getAlert() {
+    public boolean isAlert() {
         return alert;
     }
 
@@ -135,26 +118,26 @@ public class Task {
         this.alert = alert;
     }
 
-    public boolean getRedo() {
-        return redo;
+    public long getAlertTime() {
+        return alertTime;
     }
 
-    public void setRedo(boolean redo) {
-        this.redo = redo;
+    public void setAlertTime(long alertTime) {
+        this.alertTime = alertTime;
     }
+
 
     @Override
     public String toString() {
-        return "Task{" +
+        return "Clock{" +
                 "id=" + id +
                 ", created_at=" + created_at +
+                ", clockMinuet=" + clockMinuet +
                 ", userId='" + userId + '\'' +
                 ", task='" + task + '\'' +
-                ", category='" + category + '\'' +
                 ", state=" + state +
-                ", time=" + time +
                 ", alert=" + alert +
-                ", redo=" + redo +
+                ", alertTime=" + alertTime +
                 '}';
     }
 }

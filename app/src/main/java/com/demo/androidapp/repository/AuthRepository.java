@@ -55,7 +55,7 @@ public class AuthRepository {
             public void onFailure(Call<ReturnData<LoginAndRegisterReturn>> call, Throwable t) {
                 Log.d("imageView","authRepository层：登录失败" );
                 t.printStackTrace();
-                returnDataLiveData.postValue(new ReturnData(201,"",null));
+                returnDataLiveData.postValue(new ReturnData<>(RCodeEnum.ERROR));
                 //Log.d("imageView","authRepository层：登陆失败" + returnDataLiveData.getValue().getCode());
             }
         });
@@ -81,7 +81,7 @@ public class AuthRepository {
             }
             @Override
             public void onFailure(Call<ReturnData<LoginAndRegisterReturn>> call, Throwable t) {
-                returnDataLiveData.postValue(new ReturnData(201,"",null));
+                returnDataLiveData.postValue(new ReturnData<>(RCodeEnum.ERROR));
                 Log.d("imageView","authRepository层：注册失败" + t.toString());
                 t.printStackTrace();
             }
@@ -108,7 +108,7 @@ public class AuthRepository {
             public void onFailure(Call<ReturnData> call, Throwable t) {
                 Log.d("imageView","authRepository层：获取验证码失败");
                 t.printStackTrace();
-                returnDataLiveData.postValue(new ReturnData(201,"",null));
+                returnDataLiveData.postValue(new ReturnData<>(RCodeEnum.ERROR));
             }
         });
     }
@@ -126,7 +126,7 @@ public class AuthRepository {
             public void onFailure(Call<ReturnData<LoginAndRegisterReturn>> call, Throwable t) {
                 Log.d("imageView","authRepository层：重置密码获取验证码失败");
                 t.printStackTrace();
-                returnDataLiveData.postValue(new ReturnData(201,"",null));
+                returnDataLiveData.postValue(new ReturnData<>(RCodeEnum.ERROR));
             }
         });
     }

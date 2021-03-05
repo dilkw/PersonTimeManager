@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:clickable="true"
+        android:id="@+id/clock_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:focusable="true">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/clockFragmentAppBarLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@+id/clockRecyclerView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/clockFragmentToolBar"
+                style="@style/Widget.MaterialComponents.Toolbar.Primary"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:menu="@menu/clockfragment_bar" />
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/clockRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/clockFragmentAppBarLayout">
+
+        </androidx.recyclerview.widget.RecyclerView>
+
+        <com.demo.androidapp.view.myView.MyFloatingActionButton
+            android:id="@+id/clockMyFloatingActionButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="50dp"
+            android:clickable="true"
+            android:focusable="true"
+            app:backgroundTint="@color/colorAccent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.95"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.96"
+            app:srcCompat="@drawable/floatingactionbutton_img" />
+
+<!--        android:visibility="gone"-->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/clockItemLongClickEditWindow"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+
+            <ImageButton
+                android:id="@+id/clockCancelImageButton"
+                android:layout_width="30dp"
+                android:layout_height="wrap_content"
+                android:background="#00000000"
+                android:contentDescription="@string/homeFragmentLongClickDialogCancelBtnContentDescription"
+                app:layout_constraintBottom_toTopOf="@+id/clockCancelImageButtonTextView"
+                app:layout_constraintEnd_toStartOf="@+id/clockDeleteImageButton"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_longclick_dialog_canceimgbtn" />
+
+            <TextView
+                android:id="@+id/clockCancelImageButtonTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/homeFragmentLongClickDialogCancelBtnText"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/clockCancelImageButton"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="@+id/clockCancelImageButton"
+                app:layout_constraintTop_toBottomOf="@+id/clockCancelImageButton" />
+
+            <ImageButton
+                android:id="@+id/clockDeleteImageButton"
+                android:layout_width="30dp"
+                android:layout_height="wrap_content"
+                android:background="#00000000"
+                android:contentDescription="@string/homeFragmentLongClickDialogDeleteBtnContentDescription"
+                app:layout_constraintBottom_toBottomOf="@+id/clockCancelImageButton"
+                app:layout_constraintEnd_toStartOf="@+id/clockAllSelectImageButton"
+                app:layout_constraintStart_toEndOf="@+id/clockCancelImageButton"
+                app:layout_constraintTop_toTopOf="@+id/clockCancelImageButton"
+                app:srcCompat="@drawable/category_item_delete_img" />
+
+            <TextView
+                android:id="@+id/clockDeleteImageButtonTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/homeFragmentLongClickDialogDeleteBtnText"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/clockDeleteImageButton"
+                app:layout_constraintStart_toStartOf="@+id/clockDeleteImageButton"
+                app:layout_constraintTop_toBottomOf="@+id/clockDeleteImageButton" />
+
+            <ImageButton
+                android:id="@+id/clockAllSelectImageButton"
+                android:layout_width="30dp"
+                android:layout_height="wrap_content"
+                android:background="#00000000"
+                android:contentDescription="@string/homeFragmentLongClickDialogAllSelectBtnContentDescription"
+                app:layout_constraintBottom_toBottomOf="@+id/clockCancelImageButton"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/clockDeleteImageButton"
+                app:layout_constraintTop_toTopOf="@+id/clockDeleteImageButton"
+                app:srcCompat="@drawable/ic_longclick_dialog_allselectimgbtn" />
+
+            <TextView
+                android:id="@+id/clockAllSelectImageButtonTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/homeFragmentLongClickDialogAllSelectBtnText"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/clockAllSelectImageButton"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/clockAllSelectImageButton"
+                app:layout_constraintTop_toBottomOf="@+id/clockAllSelectImageButton" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

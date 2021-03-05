@@ -29,14 +29,14 @@ public class MySpinnerAdapter extends BaseAdapter {
 
     private MyItemOnClickListener myItemOnClickListener;
 
-    public void setCategoryOfTaskList(List<CategoryOfTask> categoryOfTaskList) {
-        this.categoryOfTaskList.clear();
-        this.categoryOfTaskList.addAll(categoryOfTaskList);
+    public void setCategoryOfTaskListAndNotify(List<CategoryOfTask> categoryOfTaskList) {
+        this.categoryOfTaskList = null;
+        this.categoryOfTaskList = categoryOfTaskList;
+        notifyDataSetChanged();
     }
 
     public MySpinnerAdapter(Context context, List<CategoryOfTask> categoryOfTaskList, AddTaskViewModel addTaskViewModel) {
         this.categoryOfTaskList = categoryOfTaskList;
-        Log.d("imageView", "MySpinnerAdapter: " + this.categoryOfTaskList.toString());
         this.context = context;
         this.addTaskViewModel = addTaskViewModel;
     }

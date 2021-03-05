@@ -12,6 +12,7 @@ import com.demo.androidapp.MyApplication;
 import com.demo.androidapp.api.Api;
 import com.demo.androidapp.db.AppDatabase;
 import com.demo.androidapp.db.TaskDao;
+import com.demo.androidapp.model.commitObject.UpdateTaskCommit;
 import com.demo.androidapp.model.entity.Task;
 import com.demo.androidapp.model.common.RCodeEnum;
 import com.demo.androidapp.model.common.ReturnData;
@@ -68,19 +69,13 @@ public class TaskRepository {
             @Override
             public void onResponse(Call<ReturnData<ReturnListObject<Task>>> call, Response<ReturnData<ReturnListObject<Task>>> response) {
                 Log.d("imageView", "TaskRepository: 获取任务清单成功");
-                returnDataLiveData.postValue(new ReturnData<List<Task>>(response.body().getCode(),response.body().getMsg(),response.body().getData().getItems()));
-//                Task[] tasks = new Task[response.body().getData().getTotal()];
-//                tasks = ((response.body().getData().getItems()).toArray(tasks));
-//                deleteAllTaskByUidInDB(tasks);
-//                addTasksToDB(tasks);
-//                //从数据库中获取
-//                getAllTaskByUidInDB();
+                returnDataLiveData.postValue(new ReturnData<List<Task>>(RCodeEnum.GET_TASKS_SERVER_OK,response.body().getData().getItems()));
             }
             @Override
             public void onFailure(Call<ReturnData<ReturnListObject<Task>>> call, Throwable t) {
                 t.printStackTrace();
                 Log.d("imageView", "TaskRepository: 获取任务清单失败" );
-                returnDataLiveData.postValue(new ReturnData<List<Task>>(201,"",null));
+                returnDataLiveData.postValue(new ReturnData<>(RCodeEnum.ERROR));
             }
         });
     }
@@ -100,9 +95,23 @@ public class TaskRepository {
     }
 
     //在服务器中删除数据
-    public void deleteAllTaskByUidInServer(Task task) {
-        Log.d("imageView", "getAllTaskByUidInDB: 服务器删除数据");
-        api.deleteTask(task.getId());
+    public void deleteTaskByUidInServer(long taskId) {
+        Log.d("imageView", "deleteTaskByUidInServer: 服务器删除数据" + taskId);
+        api.deleteTask(taskId).enqueue(new Callback<ReturnData<Object>>() {
+            @Override
+            public void onResponse(Call<ReturnData<Object>> call, Response<ReturnData<Object>> response) {
+                Log.d("imageView", "deleteTaskByUidInServer: 服务器删除数据" + response.body().getCode());
+                if (response.body().getCode() != 200) {
+                    returnDataLiveData.postValue(new ReturnData<List<Task>>(RCodeEnum.DELETE_TASK_ERROR));
+                }
+                returnDataLiveData.postValue(new ReturnData<>(RCodeEnum.OK));
+            }
+
+            @Override
+            public void onFailure(Call<ReturnData<Object>> call, Throwable t) {
+                returnDataLiveData.postValue(new ReturnData<>(RCodeEnum.ERROR));
+            }
+        });
     }
 
 
@@ -125,10 +134,9 @@ public class TaskRepository {
     }
 
     //更新任务到服务器
-    public LiveData<ReturnData<Object>> updateTaskInServer(Task task) {
-        MutableLiveData<Object> objectMutableLiveData = new MutableLiveData<>();
+    public LiveData<ReturnData<Object>> updateTaskInServer(long id,Task task) {
         Log.d("imageView", "updateTaskInServer: " + task.toString());
-        return api.updateTask(task.getId(),task);
+        return api.updateTask(id,task);
     }
 
     //更新本地数据库任务列表

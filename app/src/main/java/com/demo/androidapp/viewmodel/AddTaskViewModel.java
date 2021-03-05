@@ -12,6 +12,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.demo.androidapp.MyApplication;
+import com.demo.androidapp.model.commitObject.UpdateTaskCommit;
 import com.demo.androidapp.model.common.ReturnData;
 import com.demo.androidapp.model.entity.AlertOfTask;
 import com.demo.androidapp.model.entity.CategoryOfTask;
@@ -102,8 +103,9 @@ public class AddTaskViewModel extends AndroidViewModel {
 
     //更新任务
     public LiveData<ReturnData<Object>> updateTaskInServer(){
-        Log.d("imageView", "updateTaskInServer: " + taskMutableLiveData.getValue().toString());
-        return taskRepository.updateTaskInServer(taskMutableLiveData.getValue());
+        //UpdateTaskCommit updateTaskCommit = new UpdateTaskCommit(taskMutableLiveData.getValue());
+        long id = taskMutableLiveData.getValue().getId();
+        return taskRepository.updateTaskInServer(id,taskMutableLiveData.getValue());
     }
 
 }

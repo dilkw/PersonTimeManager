@@ -5,9 +5,11 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.DatePicker;
+import android.widget.TimePicker;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,6 +22,7 @@ import com.demo.androidapp.databinding.DatetimepickerBinding;
 import com.demo.androidapp.util.DateTimeUtil;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.Calendar;
 
 public class DateTimePickerDialog extends DialogFragment {
@@ -30,7 +33,9 @@ public class DateTimePickerDialog extends DialogFragment {
 
     private Date selectedDate;
 
-    private int createYear, createMonthOfYear, createDayOfMonth;
+    private boolean btnIsEnable = false;
+
+    private int createYear, createMonthOfYear, createDayOfMonth,createHour, createMinute;
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -47,15 +52,21 @@ public class DateTimePickerDialog extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        Calendar calendar = Calendar.getInstance();
-        createYear = calendar.get(Calendar.YEAR);
-        createMonthOfYear = calendar.get(Calendar.MONTH);
-        createDayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+        LocalDateTime localDateTime = LocalDateTime.now();
+        createYear = localDateTime.getYear();;
+        createMonthOfYear = localDateTime.getMonthValue();
+        createDayOfMonth = localDateTime.getDayOfMonth();
+        createHour = localDateTime.getHour();
+        createMinute = localDateTime.getMinute();
+        Log.d("imageView", "onDateChanged: 创建" + createMonthOfYear + "-" + createDayOfMonth );
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        //View view = LayoutInflater.from(this.context).inflate(R.layout.datetimepicker,null);
         datetimepickerBinding = DataBindingUtil.inflate(LayoutInflater.from(requireContext()),R.layout.datetimepicker,null,false);
         setListener();
+        DateTimeUtil dateTimeUtil = new DateTimeUtil();
         datetimepickerBinding.timePicker.setIs24HourView(true);
+        datetimepickerBinding.datePicker.setMinDate(dateTimeUtil.localDateTimeToLong(localDateTime));
+        datetimepickerBinding.timePicker.setHour(createHour);
+        datetimepickerBinding.timePicker.setMinute(createMinute);
         datetimepickerBinding.timePickerEnterBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -72,13 +83,17 @@ public class DateTimePickerDialog extends DialogFragment {
         datetimepickerBinding.datePicker.setOnDateChangedListener(new DatePicker.OnDateChangedListener() {
             @Override
             public void onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                if (year >= createDayOfMonth
-                    && monthOfYear >= createDayOfMonth
-                    && dayOfMonth >= createDayOfMonth) {
-                    datetimepickerBinding.timePickerEnterBtn.setEnabled(true);
-                }else {
-                    datetimepickerBinding.timePickerEnterBtn.setEnabled(false);
-                }
+                Log.d("imageView", "onDateChanged: " + monthOfYear + "-" + dayOfMonth );
+                btnIsEnable = (year > createYear || monthOfYear + 1 > createDayOfMonth || dayOfMonth > createDayOfMonth);
+                datetimepickerBinding.timePickerEnterBtn.setEnabled(btnIsEnable);
+            }
+        });
+
+        datetimepickerBinding.timePicker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
+            @Override
+            public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
+                Log.d("imageView", "onDateChanged: " + hourOfDay + "-" + minute );
+                datetimepickerBinding.timePickerEnterBtn.setEnabled(btnIsEnable || (hourOfDay > createHour || (hourOfDay == createHour && (minute >= createMinute))));
             }
         });
 
@@ -102,7 +117,7 @@ public class DateTimePickerDialog extends DialogFragment {
     public String getSelectTimeString() {
         int year,moth,day,hour,minute;
         year = datetimepickerBinding.datePicker.getYear();
-        moth = datetimepickerBinding.datePicker.getMonth();
+        moth = datetimepickerBinding.datePicker.getMonth() + 1;
         day = datetimepickerBinding.datePicker.getDayOfMonth();
         hour = datetimepickerBinding.timePicker.getHour();
         minute = datetimepickerBinding.timePicker.getMinute();
@@ -111,15 +126,27 @@ public class DateTimePickerDialog extends DialogFragment {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public String getSelectedDate() {
+    public LocalDateTime getSelectedDate() {
         int year,moth,day,hour,minute;
         year = datetimepickerBinding.datePicker.getYear();
-        moth = datetimepickerBinding.datePicker.getMonth();
+        moth = datetimepickerBinding.datePicker.getMonth() + 1;
         day = datetimepickerBinding.datePicker.getDayOfMonth();
         hour = datetimepickerBinding.timePicker.getHour();
         minute = datetimepickerBinding.timePicker.getMinute();
         DateTimeUtil dateTimeUtil = new DateTimeUtil();
-        return dateTimeUtil.intToStrDateTime(year,moth,day,hour,minute);
+        return dateTimeUtil.intToLocalDateTime(year,moth,day,hour,minute);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public long getSelectedDateToLong() {
+        int year,moth,day,hour,minute;
+        year = datetimepickerBinding.datePicker.getYear();
+        moth = datetimepickerBinding.datePicker.getMonth() + 1;
+        day = datetimepickerBinding.datePicker.getDayOfMonth();
+        hour = datetimepickerBinding.timePicker.getHour();
+        minute = datetimepickerBinding.timePicker.getMinute();
+        DateTimeUtil dateTimeUtil = new DateTimeUtil();
+        return dateTimeUtil.intToLong(year,moth,day,hour,minute);
     }
 
 }

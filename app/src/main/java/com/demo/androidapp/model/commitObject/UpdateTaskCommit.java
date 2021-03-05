@@ -1,13 +1,10 @@
 package com.demo.androidapp.model.commitObject;
 
-import androidx.room.ColumnInfo;
-import androidx.room.PrimaryKey;
-
 import com.demo.androidapp.model.entity.Task;
 
-public class UpdateTaskCommit {
+import java.sql.Date;
 
-    private long id;
+public class UpdateTaskCommit {
 
     //任务内容
     private String task;
@@ -30,19 +27,16 @@ public class UpdateTaskCommit {
     public UpdateTaskCommit() {
     }
 
-    public UpdateTaskCommit taskToUpdateTaskCommit(Task task) {
-        return new UpdateTaskCommit(task.getId(),
-                                    task.getTask(),
-                                    task.getCategory(),
-                                    task.getState(),
-                                    task.getTime(),
-                                    task.getAlert(),
-                                    task.getRedo());
-
+    public UpdateTaskCommit(Task task) {
+        this.task = task.getTask();
+        this.category = task.getCategory();
+        this.state = task.getState();
+        this.time = task.getTime() / 1000L;
+        this.alert = task.getAlert();
+        this.redo = task.getRedo();
     }
 
-    public UpdateTaskCommit(long id,String task, String category, boolean state, long time, boolean alert, boolean redo) {
-        this.id = id;
+    public UpdateTaskCommit(String task, String category, boolean state, long time, boolean alert, boolean redo) {
         this.task = task;
         this.category = category;
         this.state = state;

@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.room.Delete;
 import androidx.room.Update;
 
+import com.demo.androidapp.model.commitObject.UpdateTaskCommit;
 import com.demo.androidapp.model.entity.Task;
 import com.demo.androidapp.model.commitObject.RegisterCommit;
 import com.demo.androidapp.model.common.ReturnData;
@@ -81,11 +82,11 @@ public interface Api {
     LiveData<ReturnData<Object>> addTask(@Body Task task);
 
     //删除任务
-    @HTTP(method = "DELETE", path = "todo/{taskId}}", hasBody = true)
-    Call<ReturnData<Object>> deleteTask(@Query("taskId") long taskId);
+    @HTTP(method = "DELETE", path = "todo/{taskId}", hasBody = false)
+    Call<ReturnData<Object>> deleteTask(@Path("taskId") long taskId);
 
     //修改任务
     @PUT("todo/{id}")
-    LiveData<ReturnData<Object>> updateTask(@Path("id")long taskId,@Body Task task);
+    LiveData<ReturnData<Object>> updateTask(@Path("id")long taskId, @Body Task task);
 
 }

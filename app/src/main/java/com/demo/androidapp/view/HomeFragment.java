@@ -28,6 +28,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.demo.androidapp.MainActivity;
 import com.demo.androidapp.MyApplication;
@@ -74,6 +75,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         homeFragmentBinding = DataBindingUtil.inflate(inflater,R.layout.home_fragment,container,false);
         homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
         View view = homeFragmentBinding.getRoot();
+        Log.d("imageView", "onCreateView: " + view.getClass().getSimpleName());
         DrawerLayout drawerLayout = view.findViewById(R.id.drawer_layout);
         NavigationView navView = view.findViewById(R.id.nav_view);
         fragmentManager = requireActivity().getSupportFragmentManager();
@@ -117,13 +119,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     private void initData(LifecycleOwner lifecycleOwner,boolean isLogin) {
         Log.d("imageView",MyApplication.getApplication().getUID() + "++++++++++");
-//        if (isLogin) {
-//            homeViewModel.getAllTaskByUidInServer();
-//            assert getArguments() != null;
-//            getArguments().remove("isLogin");
-//        } else {
-//            homeViewModel.getAllTaskByUidInDB();
-//        }
+        //        if (isLogin) {
+        //            homeViewModel.getAllTaskByUidInServer();
+        //            assert getArguments() != null;
+        //            getArguments().remove("isLogin");
+        //        } else {
+        //            homeViewModel.getAllTaskByUidInDB();
+        //        }
         homeViewModel.getAllTaskByUidInServer();
         tasksItemAdapter = new TasksItemAdapter((List<Task>)(new ArrayList<Task>()));
         StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(2, RecyclerView.VERTICAL);
@@ -136,8 +138,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 List<Task> tasks = returnData.getData();
                 switch (rCodeEnum) {
                     case OK:{
-                        tasksItemAdapter.setTasks(tasks);
-                        tasksItemAdapter.notifyDataSetChanged();
+                        Log.d("imageView", "onChanged: 成功");
+                        break;
                     }
                     case DB_OK:{
                         if (tasks == null || tasks.size() == 0) {
@@ -150,13 +152,17 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                         tasksItemAdapter.notifyDataSetChanged();
                         break;
                     }
-                    case SERVER_OK:{
+                    case GET_TASKS_SERVER_OK:{
                         Log.d("imageView", "onChanged: 网络请求成功");
                         tasksItemAdapter.setTasks(tasks);
                         tasksItemAdapter.notifyDataSetChanged();
                         break;
                     }
                     case ERROR_AUTH:{
+                        Log.d("imageView", "onChanged: token_error");
+                    }
+                    case ERROR:{
+                        Toast.makeText(getContext(), "请检查您的网络链接",Toast.LENGTH_LONG).show();
                         Log.d("imageView", "onChanged: token_error");
                     }
 
@@ -170,6 +176,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         homeFragmentBinding.deleteImageButton.setOnClickListener(this);
         homeFragmentBinding.allSelectImageButton.setOnClickListener(this);
         homeFragmentBinding.myFloatingActionButton.setOnClickListener(this);
+        homeFragmentBinding.turnToClockFragmentBtn.setOnClickListener(this);
         tasksItemAdapter.setItemLongOnClickListener(new TasksItemAdapter.ItemLongOnClickListener() {
             @Override
             public void itemLongOnClick() {
@@ -198,8 +205,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 break;
             }
             case R.id.deleteImageButton: {
-                homeViewModel.deleteTasksByUidInDB(tasksItemAdapter.deleteSelectedTask());
-                homeFragmentBinding.itemLongClickEditWindow.setVisibility(View.GONE);
+                homeViewModel.deleteTasksByUidInServer(tasksItemAdapter.deleteSelectedTask());
                 break;
             }
             case R.id.allSelectImageButton: {
@@ -209,8 +215,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             }
             case R.id.myFloatingActionButton: {
                 Log.d("imageView", "onClick: 添加按钮");
-                NavController navController = Navigation.findNavController(homeFragmentBinding.myFloatingActionButton);
-                navController.navigate(R.id.action_homeFragment_to_addTaskFragment);
+                //NavController navController = Navigation.findNavController(homeFragmentBinding.myFloatingActionButton);
+                controller.navigate(R.id.action_homeFragment_to_addTaskFragment);
+                break;
+            }
+            case R.id.turnToClockFragmentBtn:{
+                controller.navigate(R.id.action_homeFragment_to_clockFragment);
                 break;
             }
         }

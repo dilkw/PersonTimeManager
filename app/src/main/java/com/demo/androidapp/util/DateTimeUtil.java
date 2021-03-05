@@ -24,6 +24,20 @@ public class DateTimeUtil {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
+    public LocalDateTime intToLocalDateTime(int year, int moth, int day, int hour, int minute) {
+        LocalDateTime localDateTime = LocalDateTime.of(year,moth,day,hour,minute);
+        return localDateTime;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public long intToLong(int year, int moth, int day, int hour, int minute) {
+        LocalDateTime localDateTime = LocalDateTime.of(year,moth,day,hour,minute);
+        ZoneId zone = ZoneId.systemDefault();
+        Instant instant = localDateTime.atZone(zone).toInstant();
+        return instant.toEpochMilli();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public Date intToDateTime(int year, int moth, int day, int hour, int minute) {
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         LocalDateTime localDateTime = LocalDateTime.of(year,moth,day,hour,minute);
@@ -70,17 +84,23 @@ public class DateTimeUtil {
     //将long类型转换成字符串（年-月-日 时:分)格式
     @RequiresApi(api = Build.VERSION_CODES.O)
     public String longToStrYMDHM(long l) {
+        if (l == 0) {
+            return "";
+        }
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        return longToLocalDateTime(l * 1000).format(dateTimeFormatter);
+        return longToLocalDateTime(l * 1000L).format(dateTimeFormatter);
     }
 
     //将字符串（年-月-日 时:分)格式类型转换成long
     @RequiresApi(api = Build.VERSION_CODES.O)
     public long strToLong(String dateStr) {
+        if (dateStr == null || dateStr.equals("")) {
+            return 0;
+        }
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         ZoneId zone = ZoneId.systemDefault();
         Instant instant = LocalDateTime.parse(dateStr,dateTimeFormatter).atZone(zone).toInstant();
-        return instant.toEpochMilli();
+        return instant.toEpochMilli() / 1000L;
     }
 
     //将LocalDateTime类型转换成long(毫秒)

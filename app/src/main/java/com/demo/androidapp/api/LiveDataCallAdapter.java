@@ -64,7 +64,7 @@ public class LiveDataCallAdapter<T> implements CallAdapter<T, LiveData<T>> {
 
                     @Override
                     public void onFailure(@NotNull Call<T> call, @NotNull Throwable t) {
-                        Log.d("imageView", "onFailure: ");
+                        Log.d("imageView", "onFailure:======= ");
                         if (isApiResponse) {
                             postValue((T) new ReturnData<>(201, t.getMessage(),null));
                         } else {

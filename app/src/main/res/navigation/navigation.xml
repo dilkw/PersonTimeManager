@@ -34,6 +34,9 @@
             android:id="@+id/action_homeFragment_to_addTaskFragment"
             app:destination="@id/addTaskFragment"
             app:popUpTo="@id/homeFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_clockFragment"
+            app:destination="@id/clockFragment" />
     </fragment>
     <fragment
         android:id="@+id/registerFragment"
@@ -58,4 +61,8 @@
         android:id="@+id/addTaskFragment"
         android:name="com.demo.androidapp.view.AddTaskFragment"
         tools:layout="@layout/add_task_fragment"/>
+    <fragment
+        android:id="@+id/clockFragment"
+        android:name="com.demo.androidapp.view.ClockFragment"
+        android:label="ClockFragment" />
 </navigation>

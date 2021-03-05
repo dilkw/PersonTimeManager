@@ -2,22 +2,18 @@ package com.demo.androidapp.view.myView;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.viewpager.widget.ViewPager;
 
-import com.demo.androidapp.view.myView.adapter.MySpinnerAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-public class MyFloatingActionButton extends FloatingActionButton {
+public class MyFloatingActionButton2 extends FloatingActionButton {
 
     //父级控件（布局）顶、底部Y坐标值
     private int parentTopY;
@@ -32,17 +28,17 @@ public class MyFloatingActionButton extends FloatingActionButton {
         this.myOnClickListener = myOnClickListener;
     }
 
-    public MyFloatingActionButton(@NonNull Context context) {
+    public MyFloatingActionButton2(@NonNull Context context) {
         this(context,null);
         Log.d("imageView", "构造1:");
     }
 
-    public MyFloatingActionButton(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public MyFloatingActionButton2(@NonNull Context context, @Nullable AttributeSet attrs) {
         this(context, attrs,0);
         Log.d("imageView", "构造2:");
     }
 
-    public MyFloatingActionButton(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public MyFloatingActionButton2(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         Log.d("imageView", "构造3:");
         //init();
@@ -69,7 +65,7 @@ public class MyFloatingActionButton extends FloatingActionButton {
     private boolean isDrag = false;
     float moveX;
     float moveY;
-    @SuppressLint("ClickableViewAccessibility")
+    @SuppressLint({"ClickableViewAccessibility", "Recycle"})
     @Override
     public boolean onTouchEvent(@NonNull MotionEvent ev) {
         Log.d("imageView","状态栏高度：" + ((ViewGroup)getParent()).getBottom());
@@ -99,19 +95,31 @@ public class MyFloatingActionButton extends FloatingActionButton {
                 setY(moveY);
                 actionDownX = ev.getRawX();
                 actionDownY = ev.getRawY();
-                break;
+//                break;
+                return true;
             }
             case MotionEvent.ACTION_UP:{
                 //真机调试容错判断（允许误差范围为200（X和Y方向的移动距离））
-                if ((Math.abs(ev.getRawX() - downX)) < 200 &&(Math.abs(ev.getRawY() - downY)) < 200)
-                    performClick();
-                else
+                Log.d("imageView", "onTouchEvent: " + Math.abs(ev.getRawX() - downX) + "===" + Math.abs(ev.getRawX() - downY));
+                if ((Math.abs(ev.getRawX() - downX)) < 200
+                        &&(Math.abs(ev.getRawY() - downY)) < 200){
+                    Log.d("imageView","点击");
+                    isDrag = false;
+                }
+                Log.d("imageView","ACTION_UP");
+                if (isDrag) {
+                    Log.d("imageView","isDrag");
+                    isDrag = false;
                     break;
-                isDrag = false;
+                }
+                else {
+                    Log.d("imageView","not isDrag");
+                    performClick();
+                }
                 return true;
             }
             case MotionEvent.ACTION_CANCEL:{
-                Log.d("imageView","ACTION_CANCEL");
+                Log.d("imageView", "onTouchEvent: case MotionEvent.ACTION_CANCEL:");
                 break;
             }
         }
@@ -120,11 +128,5 @@ public class MyFloatingActionButton extends FloatingActionButton {
 
     public interface MyOnClickListener{
         void onClick();
-    }
-
-    @Override
-    public void setOnClickListener(@Nullable OnClickListener l) {
-        super.setOnClickListener(l);
-        Log.d("imageView", " MyFloatingActionButton setOnClickListener: ");
     }
 }

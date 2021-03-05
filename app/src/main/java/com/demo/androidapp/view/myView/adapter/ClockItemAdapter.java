@@ -1,5 +1,6 @@
 package com.demo.androidapp.view.myView.adapter;
 
+import android.annotation.SuppressLint;
 import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,29 +15,33 @@ import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.demo.androidapp.R;
+import com.demo.androidapp.model.entity.Clock;
 import com.demo.androidapp.model.entity.Task;
 import com.demo.androidapp.util.DateTimeUtil;
+import com.google.android.material.button.MaterialButton;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class TasksItemAdapter extends RecyclerView.Adapter<TasksItemAdapter.MyViewHolder> {
+public class ClockItemAdapter extends RecyclerView.Adapter<ClockItemAdapter.MyViewHolder> {
 
     private boolean isShow = false;
 
     private boolean allChecked = false;
 
-    private List<Task> tasks;
+    private List<Clock> clocks;
 
-    private List<Task> editModelSelectedTasks;
+    private List<Clock> editModelSelectedClocks;
 
     private ItemLongOnClickListener itemLongOnClickListener;
 
     private ItemOnClickListener itemOnClickListener;
 
-    public List<Task> getEditModelSelectedTasks() {
-        return editModelSelectedTasks;
+    public List<Clock> getEditModelSelectedTasks() {
+        return editModelSelectedClocks;
     }
 
     private DateTimeUtil dateTimeUtil;
@@ -48,15 +53,15 @@ public class TasksItemAdapter extends RecyclerView.Adapter<TasksItemAdapter.MyVi
         notifyDataSetChanged();
     }
     //长按Item时弹出编辑菜单，删除按钮（删除所选择的）
-    public List<Task> deleteSelectedTask() {
+    public List<Clock> deleteSelectedClocks() {
         allChecked = false;
-        if (editModelSelectedTasks.size() == 0)return null;
-        tasks.removeAll(Objects.requireNonNull(editModelSelectedTasks));
+        if (editModelSelectedClocks.size() == 0)return null;
+        clocks.removeAll(Objects.requireNonNull(editModelSelectedClocks));
         notifyDataSetChanged();
-        return editModelSelectedTasks;
+        return editModelSelectedClocks;
     }
     //长按Item时弹出编辑菜单，全选按钮
-    public void selectedAllTasks() {
+    public void selectedAllClocks() {
         allChecked = true;
         notifyDataSetChanged();
     }
@@ -68,8 +73,10 @@ public class TasksItemAdapter extends RecyclerView.Adapter<TasksItemAdapter.MyVi
         this.itemOnClickListener = itemOnClickListener;
     }
 
-    public void setTasks(List<Task> tasks) {
-        this.tasks = tasks;
+    public void setClocks(List<Clock> clocks) {
+        this.clocks.clear();
+        this.clocks = clocks;
+        notifyDataSetChanged();
     }
 
     public void setCheckBoxIsShow() {
@@ -77,10 +84,10 @@ public class TasksItemAdapter extends RecyclerView.Adapter<TasksItemAdapter.MyVi
         notifyDataSetChanged();
     }
 
-    public TasksItemAdapter(List<Task> tasks) {
-        Log.d("imageView", "TasksItemAdapter: 数据长度：" + tasks.size());
-        this.tasks = tasks;
-        editModelSelectedTasks = new ArrayList<>();
+    public ClockItemAdapter(List<Clock> clocks) {
+        Log.d("imageView", "TasksItemAdapter: 数据长度：" + clocks.size());
+        this.clocks = clocks;
+        editModelSelectedClocks = new ArrayList<>();
         dateTimeUtil = new DateTimeUtil();
     }
 
@@ -88,47 +95,45 @@ public class TasksItemAdapter extends RecyclerView.Adapter<TasksItemAdapter.MyVi
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        View view = layoutInflater.inflate(R.layout.taskitem_task,parent,false);
+        View view = layoutInflater.inflate(R.layout.clockitem_task,parent,false);
         return new MyViewHolder(view);
     }
 
+    @SuppressLint("SetTextI18n")
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        Task task = tasks.get(position);
-        holder.createTimeTextView.setText(dateTimeUtil.longToStrYMDHM(task.getCreated_at()));
-        holder.endTimeTextView.setText(dateTimeUtil.longToStrYMDHM(task.getTime()));
-        Log.d("imageView", "onBindViewHolder: endTime " + holder.endTimeTextView.getText());
-        holder.stateTextView.setText(task.getState() ? "有效" : "无效");
-        holder.taskTextView.setText(task.getTask());
+        Clock clock = clocks.get(position);
+        holder.clockTaskTextView.setText(clock.getTask());
+        holder.clockMinuteTextView.setText(clock.getClockMinuet() + "分钟");
         holder.checkBox.setVisibility(isShow ? View.VISIBLE : View.GONE);
+        holder.clockAlertTimeTextView.setText(dateTimeUtil.longToStrYMDHM(clock.getAlertTime()));
+        holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    editModelSelectedClocks.add(clocks.get(position));
+                }else {
+                    editModelSelectedClocks.remove(clocks.get(position));
+                }
+            }
+        });
         if (isShow) {
             holder.checkBox.setChecked(allChecked);
-            holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    Log.d("imageView", "onCheckedChanged: checkBox点击");
-                    if (isChecked) {
-                        editModelSelectedTasks.add(tasks.get(position));
-                    }else {
-                        editModelSelectedTasks.remove(tasks.get(position));
-                    }
-                }
-            });
         }
 
-        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+        holder.clockTaskTextView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                if (editModelSelectedTasks == null) {
-                    editModelSelectedTasks = new ArrayList<>();
+                if (editModelSelectedClocks == null) {
+                    editModelSelectedClocks = new ArrayList<>();
                 }
                 itemLongOnClickListener.itemLongOnClick();
                 return false;
             }
         });
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
+        holder.clockTaskTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 itemOnClickListener.itemOnClick(position);
@@ -138,26 +143,26 @@ public class TasksItemAdapter extends RecyclerView.Adapter<TasksItemAdapter.MyVi
 
     @Override
     public int getItemCount() {
-        return tasks == null ? 0 : tasks.size();
+        return clocks == null ? 0 : clocks.size();
     }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
 
         public View itemView;
-        public TextView createTimeTextView;
-        public TextView endTimeTextView;
-        public TextView stateTextView;
-        public TextView taskTextView;
+        public TextView clockTaskTextView;
+        public TextView clockMinuteTextView;
+        public MaterialButton clockStartButton;
         public CheckBox checkBox;
+        public TextView clockAlertTimeTextView;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
             this.itemView = itemView;
-            this.createTimeTextView = itemView.findViewById(R.id.itemTask_createTimeText);
-            this.endTimeTextView = itemView.findViewById(R.id.itemTask_endTimeText);
-            this.stateTextView = itemView.findViewById(R.id.itemTask_stateText);
-            this.taskTextView = itemView.findViewById(R.id.itemTask_taskText);
-            this.checkBox = itemView.findViewById(R.id.itemTask_checkBox);
+            this.clockTaskTextView = itemView.findViewById(R.id.clockTaskTextView);
+            this.clockMinuteTextView = itemView.findViewById(R.id.clockMinuteTextView);
+            this.clockStartButton = itemView.findViewById(R.id.clockStartButton);
+            this.checkBox = itemView.findViewById(R.id.clockItemCheckBox);
+            this.clockAlertTimeTextView = itemView.findViewById(R.id.clockAlertTimeTextView);
         }
     }
 

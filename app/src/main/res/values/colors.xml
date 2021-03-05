@@ -11,4 +11,6 @@
     <color name="backgroundColor">#00000000</color>
     <color name="strokeColor">#676767</color>
 
+    <color name="alpha_blue">#206d95e5</color>
+
 </resources>

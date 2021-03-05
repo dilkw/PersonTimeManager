@@ -30,8 +30,6 @@ public class CategoryRepository {
                 .categoryOfTaskDao();
         Log.d("imageView", "CategoryRepository: uid::: " + uid);
         liveData = categoryOfTaskDao.getAllCategoryByUid(uid);
-        //liveData = categoryOfTaskDao.getAllCategory();
-        //Log.d("imageView", "CategoryRepository: liveData_size " + liveData.getValue().size());
     }
 
     public LiveData<List<CategoryOfTask>> getAllCategoryLiveData() {
