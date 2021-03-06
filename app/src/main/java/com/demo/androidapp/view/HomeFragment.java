@@ -96,17 +96,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         Log.d("imageView", "onCreateView1: ");
         boolean isLogin = false;
         isLogin = getArguments() != null && getArguments().getBoolean("isLogin");
-        homeFragmentBinding.loginOutBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MyApplication.getApplication().signOut();
-                Log.d("imageView", "onClick:userName" + MyApplication.getApplication().getUSER_NAME());
-                requireActivity().finish();
-                Intent intent = new Intent(); //生成Intent对象
-                intent.setClass(getActivity(), MainActivity.class);
-                startActivity(intent);
-            }
-        });
         Log.d("imageView","pppppppp" + MyApplication.getApplication().getCOOKIE());
         if((MyApplication.getApplication().getUSER_NAME()).equals("userName")){
             Log.d("imageView", "onCreateView2: ");
@@ -172,11 +161,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     }
 
     public void setListener() {
+        homeFragmentBinding.loginOutBtn.setOnClickListener(this);
         homeFragmentBinding.cancelImageButton.setOnClickListener(this);
         homeFragmentBinding.deleteImageButton.setOnClickListener(this);
         homeFragmentBinding.allSelectImageButton.setOnClickListener(this);
         homeFragmentBinding.myFloatingActionButton.setOnClickListener(this);
         homeFragmentBinding.turnToClockFragmentBtn.setOnClickListener(this);
+        homeFragmentBinding.turnToBillFragmentBtn.setOnClickListener(this);
         tasksItemAdapter.setItemLongOnClickListener(new TasksItemAdapter.ItemLongOnClickListener() {
             @Override
             public void itemLongOnClick() {
@@ -220,8 +211,21 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 break;
             }
             case R.id.turnToClockFragmentBtn:{
+                //跳转时钟界面
                 controller.navigate(R.id.action_homeFragment_to_clockFragment);
                 break;
+            }
+            case R.id.turnToBillFragmentBtn:{
+                //跳转账单界面
+                controller.navigate(R.id.action_homeFragment_to_billFragment);
+                break;
+            }
+            case R.id.loginOutBtn: {
+                MyApplication.getApplication().signOut();
+                requireActivity().finish();
+                Intent intent = new Intent(); //生成Intent对象
+                intent.setClass(getActivity(), MainActivity.class);
+                startActivity(intent);
             }
         }
     }

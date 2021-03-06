@@ -5,10 +5,14 @@ import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -33,15 +37,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class LoginFragment extends Fragment {
+public class LoginFragment extends Fragment implements View.OnClickListener {
 
     private LoginViewModel loginViewModel;
 
     private LoginFragmentBinding binding;
 
-//    public static LoginFragment newInstance() {
-//        return new LoginFragment();
-//    }
+    public static LoginFragment newInstance() {
+        return new LoginFragment();
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -57,37 +61,12 @@ public class LoginFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         Log.d("imageView","onActivityCreated");
         binding.setLoginViewModel(loginViewModel);
-        binding.myImageView2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            }
-        });
+        setListener();
+        setTextChangeWatcher();
+    }
 
-        binding.loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                loginViewModel.signInLiveData().observe(getViewLifecycleOwner(), new Observer<ReturnData<LoginAndRegisterReturn>>() {
-                    @Override
-                    public void onChanged(ReturnData<LoginAndRegisterReturn> loginAndRegisterReturnReturnData) {
-                        if (loginAndRegisterReturnReturnData.getCode() == RCodeEnum.OK.getCode()) {
-                            Toast.makeText(getActivity(), "登录成功", Toast.LENGTH_SHORT).show();
-                            //上传数据，更新MyApplication中的数据
-                            LoginAndRegisterReturn loginAndRegisterReturn = (LoginAndRegisterReturn)loginAndRegisterReturnReturnData.getData();
-                            Log.d("imageView", "" + loginAndRegisterReturn.toString());
-                            MyApplication.getApplication().signIn(loginAndRegisterReturn.getName(),
-                                    loginViewModel.getAuthLiveData().getValue().getPassword(),
-                                    loginAndRegisterReturn.getUid());
-                            //跳转主页
-                            loginViewModel.jumpToHomeFragment(getView());
-                        } else {
-                            Toast.makeText(getActivity(), loginAndRegisterReturnReturnData.getMsg(), Toast.LENGTH_SHORT).show();
-                            Log.d("imageView", "用户名或密码错误");
-                        }
-                    }
-                });
-            }
-        });
-
+    //输入框输入监听
+    private void setTextChangeWatcher() {
         TextWatcher textWatcher = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -111,6 +90,62 @@ public class LoginFragment extends Fragment {
         };
         binding.loginUserName.addTextChangedListener(textWatcher);
         binding.loginPassword.addTextChangedListener(textWatcher);
+    }
+
+    //按钮设置监听事件
+    private void setListener() {
+        binding.loginButton.setOnClickListener(this);
+        binding.registerTextView.setOnClickListener(this);
+        binding.forgetPwd.setOnClickListener(this);
+        binding.activeAccount.setOnClickListener(this);
+    }
+
+    //重写点击出发事件
+    @SuppressLint("NonConstantResourceId")
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.loginButton: {
+                loginViewModel.signInLiveData().observe(getViewLifecycleOwner(), new Observer<ReturnData<LoginAndRegisterReturn>>() {
+                    @Override
+                    public void onChanged(ReturnData<LoginAndRegisterReturn> loginAndRegisterReturnReturnData) {
+                        if (loginAndRegisterReturnReturnData.getCode() == RCodeEnum.OK.getCode()) {
+                            Toast.makeText(getActivity(), "登录成功", Toast.LENGTH_SHORT).show();
+                            //上传数据，更新MyApplication中的数据
+                            LoginAndRegisterReturn loginAndRegisterReturn = (LoginAndRegisterReturn)loginAndRegisterReturnReturnData.getData();
+                            Log.d("imageView", "" + loginAndRegisterReturn.toString());
+                            MyApplication.getApplication().signIn(loginAndRegisterReturn.getName(),
+                                    loginViewModel.getAuthLiveData().getValue().getPassword(),
+                                    loginAndRegisterReturn.getUid());
+                            //跳转主页
+                            loginViewModel.jumpToHomeFragment(getView());
+                        } else {
+                            Toast.makeText(getActivity(), loginAndRegisterReturnReturnData.getMsg(), Toast.LENGTH_SHORT).show();
+                            Log.d("imageView", "用户名或密码错误");
+                        }
+                    }
+                });
+                break;
+            }
+            case R.id.registerTextView: {
+                Log.d("imageView","跳转注册页面");
+                NavController navController = Navigation.findNavController(getView());
+                navController.navigate(R.id.action_loginFragment_to_registerFragment);
+                break;
+            }
+            case R.id.forgetPwd: {
+                Log.d("imageView","跳转重置密码页面");
+                NavController navController = Navigation.findNavController(getView());
+                navController.navigate(R.id.action_loginFragment_to_retrievePasswordFragment);
+                break;
+            }
+            case R.id.activeAccount: {
+                Log.d("imageView","跳转激活账号页面");
+                NavController navController = Navigation.findNavController(getView());
+                navController.navigate(R.id.action_loginFragment_to_activeFragment);
+                break;
+            }
+        }
     }
 
     //fragment实现物理返回按键监听事件思路：

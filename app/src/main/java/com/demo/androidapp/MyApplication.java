@@ -5,6 +5,11 @@ import android.app.Application;
 import android.content.Context;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.Observer;
+
 import com.demo.androidapp.api.Api;
 import com.demo.androidapp.api.impl.RetrofitClient;
 import com.demo.androidapp.model.Auth;
@@ -121,6 +126,7 @@ public class MyApplication extends Application {
     }
 
     public void signOut() {
+        api.signOut();
         USER_NAME = "userName";
         PASSWORD = "";
         UID = "";

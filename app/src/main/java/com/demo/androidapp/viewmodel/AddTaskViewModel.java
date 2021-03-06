@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Application;
 import android.os.Build;
 import android.util.Log;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -74,6 +75,16 @@ public class AddTaskViewModel extends AndroidViewModel {
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void setCreateTimeStr(String timeStr) {
         Objects.requireNonNull(taskMutableLiveData.getValue()).setCreated_at(dateTimeUtil.strToLong(timeStr));
+    }
+
+    //对任务的创建时间的setter和getter方法
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public boolean getAlert() {
+        return taskMutableLiveData.getValue().getAlert();
+    }
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void setAlert(boolean alert) {
+        Objects.requireNonNull(taskMutableLiveData.getValue()).setAlert(alert);
     }
 
     //获取任务分类

@@ -6,14 +6,10 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 
-import com.demo.androidapp.model.common.ReturnData;
+import com.demo.androidapp.model.entity.Bill;
 import com.demo.androidapp.model.entity.Clock;
-import com.demo.androidapp.model.entity.Task;
 import com.demo.androidapp.repository.ClockRepository;
-import com.demo.androidapp.repository.TaskRepository;
 
 import java.util.List;
 

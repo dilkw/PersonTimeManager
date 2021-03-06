@@ -7,8 +7,8 @@ import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
 
+import com.demo.androidapp.model.entity.Bill;
 import com.demo.androidapp.model.entity.Clock;
-import com.demo.androidapp.model.entity.Task;
 
 import java.util.List;
 

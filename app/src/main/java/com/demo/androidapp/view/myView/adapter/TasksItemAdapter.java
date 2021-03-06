@@ -88,7 +88,7 @@ public class TasksItemAdapter extends RecyclerView.Adapter<TasksItemAdapter.MyVi
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        View view = layoutInflater.inflate(R.layout.taskitem_task,parent,false);
+        View view = layoutInflater.inflate(R.layout.task_item,parent,false);
         return new MyViewHolder(view);
     }
 
@@ -99,7 +99,7 @@ public class TasksItemAdapter extends RecyclerView.Adapter<TasksItemAdapter.MyVi
         holder.createTimeTextView.setText(dateTimeUtil.longToStrYMDHM(task.getCreated_at()));
         holder.endTimeTextView.setText(dateTimeUtil.longToStrYMDHM(task.getTime()));
         Log.d("imageView", "onBindViewHolder: endTime " + holder.endTimeTextView.getText());
-        holder.stateTextView.setText(task.getState() ? "有效" : "无效");
+        holder.stateTextView.setText(task.getState() ? "完成" : "未完成");
         holder.taskTextView.setText(task.getTask());
         holder.checkBox.setVisibility(isShow ? View.VISIBLE : View.GONE);
         if (isShow) {
@@ -120,6 +120,7 @@ public class TasksItemAdapter extends RecyclerView.Adapter<TasksItemAdapter.MyVi
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
+                if (itemLongOnClickListener == null)return false;
                 if (editModelSelectedTasks == null) {
                     editModelSelectedTasks = new ArrayList<>();
                 }
@@ -131,6 +132,7 @@ public class TasksItemAdapter extends RecyclerView.Adapter<TasksItemAdapter.MyVi
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (itemOnClickListener == null)return;
                 itemOnClickListener.itemOnClick(position);
             }
         });
@@ -153,9 +155,9 @@ public class TasksItemAdapter extends RecyclerView.Adapter<TasksItemAdapter.MyVi
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
             this.itemView = itemView;
-            this.createTimeTextView = itemView.findViewById(R.id.itemTask_createTimeText);
-            this.endTimeTextView = itemView.findViewById(R.id.itemTask_endTimeText);
-            this.stateTextView = itemView.findViewById(R.id.itemTask_stateText);
+            this.createTimeTextView = itemView.findViewById(R.id.itemTaskCreateTimeText);
+            this.endTimeTextView = itemView.findViewById(R.id.itemTaskEndTimeText);
+            this.stateTextView = itemView.findViewById(R.id.itemTaskStateText);
             this.taskTextView = itemView.findViewById(R.id.itemTask_taskText);
             this.checkBox = itemView.findViewById(R.id.itemTask_checkBox);
         }

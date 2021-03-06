@@ -7,6 +7,7 @@
         <variable
             name="addTaskViewModel"
             type="com.demo.androidapp.viewmodel.AddTaskViewModel" />
+        <import type="android.view.View" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -60,6 +61,8 @@
                     android:id="@+id/mySpinner"
                     android:layout_width="170dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginLeft="10dp"
                     android:gravity="center"
                     app:category="@={addTaskViewModel.taskMutableLiveData.category}"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -83,13 +86,12 @@
                 android:id="@+id/addTaskFragmentContentEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:autofillHints=""
                 android:background="@null"
                 android:gravity="top"
                 android:hint="@string/addTask_content"
                 android:inputType="text"
                 android:maxLines="10"
-                android:minHeight="400dp"
+                android:minHeight="300dp"
                 android:padding="10dp"
                 android:text="@={addTaskViewModel.taskMutableLiveData.task}"
                 app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
@@ -161,8 +163,10 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/alertTimeLinearLayout"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
+                android:visibility="@{addTaskViewModel.taskMutableLiveData.alert ? View.VISIBLE : View.GONE}"
                 android:gravity="center_vertical">
 
                 <ImageView

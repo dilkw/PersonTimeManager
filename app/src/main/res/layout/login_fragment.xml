@@ -90,35 +90,47 @@
             app:layout_constraintStart_toStartOf="@+id/textInputLayoutPwd"
             app:layout_constraintTop_toBottomOf="@+id/textInputLayoutPwd" />
 
+        <!--跳转注册页面-->
         <TextView
-            android:id="@+id/register_textView"
+            android:id="@+id/registerTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:clickable="true"
             android:focusable="true"
-            android:onClick="@{(view)->loginViewModel.jumpToRegisterFragment(view)}"
             android:text="@string/register_button"
             android:textColor="#03A9F4"
-            app:layout_constraintEnd_toStartOf="@+id/textView2"
+            app:layout_constraintEnd_toStartOf="@+id/forgetPwd"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="@+id/loginButton"
             app:layout_constraintTop_toBottomOf="@+id/loginButton" />
 
+        <!--跳转找回密码页面-->
         <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/forgetPwd"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:clickable="true"
-            android:onClick="@{(view)->loginViewModel.jumpToRetrievePasswordFragment(view)}"
             android:text="@string/forgetPwd"
             android:textColor="#03A9F4"
-            app:layout_constraintBottom_toBottomOf="@+id/register_textView"
+            app:layout_constraintBottom_toBottomOf="@+id/registerTextView"
             app:layout_constraintEnd_toEndOf="@+id/loginButton"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/register_textView"
-            app:layout_constraintTop_toTopOf="@+id/register_textView"
+            app:layout_constraintStart_toEndOf="@+id/registerTextView"
+            app:layout_constraintTop_toTopOf="@+id/registerTextView"
             android:focusable="true" />
+
+        <!--跳转激活帐号页面-->
+        <TextView
+            android:id="@+id/activeAccount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/activeAccount"
+            android:textColor="#03A9F4"
+            android:layout_marginEnd="411dp"
+            android:layout_marginRight="411dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -32,6 +32,7 @@ import android.widget.SearchView;
 
 import com.demo.androidapp.R;
 import com.demo.androidapp.databinding.ClockFragmentBinding;
+import com.demo.androidapp.model.entity.Bill;
 import com.demo.androidapp.model.entity.Clock;
 import com.demo.androidapp.view.myView.AddClockDialog;
 import com.demo.androidapp.view.myView.adapter.ClockItemAdapter;

@@ -21,6 +21,7 @@
     <string name="registerTitle">新用户注册</string>
     <string name="registerButton">注册</string>
     <string name="forgetPwd">忘记密码？</string>
+    <string name="activeAccount">激活账号？</string>
     <string name="pwdFormat_tips">提示：密码(6–18)由数字、字母（至少有一位大写字母）、特殊符号</string>
     <string name="paste">paste</string>
     <string name="copy">copy</string>

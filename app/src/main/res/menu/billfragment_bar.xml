@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/billSearch"
+        android:icon="@drawable/ic_home_toolbar_search"
+        android:title="@string/homeFragmentToolBarSearchMenuTitle"
+        app:actionViewClass="android.widget.SearchView"
+        android:contentDescription="@string/addTask_DeleteImgContentDescription"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/billAdd"
+        android:icon="@drawable/ic_addclock_btnic_24"
+        android:title="添加"
+        android:contentDescription="@string/addTask_DeleteImgContentDescription"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/billDeleteAll"
+        android:icon="@drawable/ic_bill_delete_all"
+        android:title="删除所有"
+        android:contentDescription="@string/addTask_DeleteImgContentDescription"
+        app:showAsAction="ifRoom" />
+
+</menu>

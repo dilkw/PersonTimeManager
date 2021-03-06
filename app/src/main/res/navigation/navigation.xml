@@ -20,6 +20,9 @@
             android:id="@+id/action_loginFragment_to_homeFragment"
             app:destination="@id/homeFragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_loginFragment_to_activeFragment"
+            app:destination="@id/activeFragment" />
     </fragment>
     <fragment
         android:id="@+id/homeFragment"
@@ -37,6 +40,9 @@
         <action
             android:id="@+id/action_homeFragment_to_clockFragment"
             app:destination="@id/clockFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_billFragment"
+            app:destination="@id/billFragment" />
     </fragment>
     <fragment
         android:id="@+id/registerFragment"
@@ -65,4 +71,8 @@
         android:id="@+id/clockFragment"
         android:name="com.demo.androidapp.view.ClockFragment"
         android:label="ClockFragment" />
+    <fragment
+        android:id="@+id/billFragment"
+        android:name="com.demo.androidapp.view.BillFragment"
+        android:label="BillFragment" />
 </navigation>

@@ -60,7 +60,7 @@ public interface Api {
 
     //注销
     @POST("user/logout")
-    Call<ReturnData> signOut();
+    LiveData<ReturnData<Object>> signOut();
 
     @GET("/todo")
     Call<ReturnData> todo();

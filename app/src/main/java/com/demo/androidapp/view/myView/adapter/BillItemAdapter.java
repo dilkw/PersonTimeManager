@@ -15,6 +15,7 @@ import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.demo.androidapp.R;
+import com.demo.androidapp.model.entity.Bill;
 import com.demo.androidapp.model.entity.Clock;
 import com.demo.androidapp.util.DateTimeUtil;
 import com.google.android.material.button.MaterialButton;
@@ -23,42 +24,42 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class ClockItemAdapter extends RecyclerView.Adapter<ClockItemAdapter.MyViewHolder> {
+public class BillItemAdapter extends RecyclerView.Adapter<BillItemAdapter.MyViewHolder> {
 
     private boolean isShow = false;
 
     private boolean allChecked = false;
 
-    private List<Clock> clocks;
+    private List<Bill> bills;
 
-    private List<Clock> editModelSelectedClocks;
+    private List<Bill> editModelSelectedBills;
 
     private ItemLongOnClickListener itemLongOnClickListener;
 
     private ItemOnClickListener itemOnClickListener;
 
-    public List<Clock> getEditModelSelectedTasks() {
-        return editModelSelectedClocks;
+    public List<Bill> getEditModelSelectedBills() {
+        return editModelSelectedBills;
     }
 
     private DateTimeUtil dateTimeUtil;
 
     //长按Item时弹出编辑菜单，取消按钮（删除所选择的）
-    public void cancelTask() {
+    public void cancelBill() {
         isShow = false;
         allChecked = false;
         notifyDataSetChanged();
     }
     //长按Item时弹出编辑菜单，删除按钮（删除所选择的）
-    public List<Clock> deleteSelectedClocks() {
+    public List<Bill> deleteSelectedBills() {
         allChecked = false;
-        if (editModelSelectedClocks.size() == 0)return null;
-        clocks.removeAll(Objects.requireNonNull(editModelSelectedClocks));
+        if (editModelSelectedBills.size() == 0)return null;
+        bills.removeAll(Objects.requireNonNull(editModelSelectedBills));
         notifyDataSetChanged();
-        return editModelSelectedClocks;
+        return editModelSelectedBills;
     }
     //长按Item时弹出编辑菜单，全选按钮
-    public void selectedAllClocks() {
+    public void selectedAllBills() {
         allChecked = true;
         notifyDataSetChanged();
     }
@@ -70,9 +71,9 @@ public class ClockItemAdapter extends RecyclerView.Adapter<ClockItemAdapter.MyVi
         this.itemOnClickListener = itemOnClickListener;
     }
 
-    public void setClocks(List<Clock> clocks) {
-        this.clocks.clear();
-        this.clocks = clocks;
+    public void setBills(List<Bill> bills) {
+        this.bills.clear();
+        this.bills = bills;
         notifyDataSetChanged();
     }
 
@@ -81,10 +82,10 @@ public class ClockItemAdapter extends RecyclerView.Adapter<ClockItemAdapter.MyVi
         notifyDataSetChanged();
     }
 
-    public ClockItemAdapter(List<Clock> clocks) {
-        Log.d("imageView", "TasksItemAdapter: 数据长度：" + clocks.size());
-        this.clocks = clocks;
-        editModelSelectedClocks = new ArrayList<>();
+    public BillItemAdapter(List<Bill> bills) {
+        Log.d("imageView", "TasksItemAdapter: 数据长度：" + bills.size());
+        this.bills = bills;
+        editModelSelectedBills = new ArrayList<>();
         dateTimeUtil = new DateTimeUtil();
     }
 
@@ -92,7 +93,7 @@ public class ClockItemAdapter extends RecyclerView.Adapter<ClockItemAdapter.MyVi
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        View view = layoutInflater.inflate(R.layout.clock_item,parent,false);
+        View view = layoutInflater.inflate(R.layout.bill_item,parent,false);
         return new MyViewHolder(view);
     }
 
@@ -100,75 +101,72 @@ public class ClockItemAdapter extends RecyclerView.Adapter<ClockItemAdapter.MyVi
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        Clock clock = clocks.get(position);
-        holder.clockTaskTextView.setText(clock.getTask());
-        holder.clockMinuteTextView.setText(clock.getClockMinuet() + "分钟");
-        holder.checkBox.setVisibility(isShow ? View.VISIBLE : View.GONE);
-        holder.clockAlertTimeTextView.setText(dateTimeUtil.longToStrYMDHM(clock.getAlertTime()));
-        holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        Bill bill = bills.get(position);
+        holder.billContentTextView.setText(bill.getContent());
+        holder.billCreateTimeTextView.setText(dateTimeUtil.longToStrYMDHM(bill.getCreatedTime()));
+        holder.billItemMoneyTextView.setText((bill.isCategory() ? "-" : "+") + bill.getMoney());
+        holder.billItemCheckBox.setVisibility(isShow ? View.VISIBLE : View.GONE);
+        holder.billItemCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    editModelSelectedClocks.add(clocks.get(position));
+                    editModelSelectedBills.add(bills.get(position));
                 }else {
-                    editModelSelectedClocks.remove(clocks.get(position));
+                    editModelSelectedBills.remove(bills.get(position));
                 }
             }
         });
         if (isShow) {
-            holder.checkBox.setChecked(allChecked);
+            holder.billItemCheckBox.setChecked(allChecked);
         }
 
-        holder.clockTaskTextView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                if (itemLongOnClickListener == null)return false;
-                if (editModelSelectedClocks == null) {
-                    editModelSelectedClocks = new ArrayList<>();
-                }
-                itemLongOnClickListener.itemLongOnClick();
-                return false;
-            }
-        });
-
-        holder.clockTaskTextView.setOnClickListener(new View.OnClickListener() {
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (itemOnClickListener == null) return;
                 itemOnClickListener.itemOnClick(position);
             }
         });
+
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                if (itemLongOnClickListener == null) return false;
+                itemLongOnClickListener.itemLongOnClick();
+                return false;
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
-        return clocks == null ? 0 : clocks.size();
+        return bills == null ? 0 : bills.size();
     }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
 
         public View itemView;
-        public TextView clockTaskTextView;
-        public TextView clockMinuteTextView;
-        public MaterialButton clockStartButton;
-        public CheckBox checkBox;
-        public TextView clockAlertTimeTextView;
+        public TextView billContentTextView;
+        public TextView billCreateTimeTextView;
+        public TextView billItemMoneyTextView;
+        public CheckBox billItemCheckBox;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
             this.itemView = itemView;
-            this.clockTaskTextView = itemView.findViewById(R.id.clockTaskTextView);
-            this.clockMinuteTextView = itemView.findViewById(R.id.clockMinuteTextView);
-            this.clockStartButton = itemView.findViewById(R.id.clockStartButton);
-            this.checkBox = itemView.findViewById(R.id.clockItemCheckBox);
-            this.clockAlertTimeTextView = itemView.findViewById(R.id.clockAlertTimeTextView);
+            this.billContentTextView = itemView.findViewById(R.id.billItemContentTextView);
+            this.billCreateTimeTextView = itemView.findViewById(R.id.billItemCreateTimeTextView);
+            this.billItemMoneyTextView = itemView.findViewById(R.id.billItemMoneyTextView);
+            this.billItemCheckBox = itemView.findViewById(R.id.billItemCheckBox);
         }
     }
 
+    //item长按接口
     public interface ItemLongOnClickListener {
         void itemLongOnClick();
     }
 
+    //item点击接口
     public interface ItemOnClickListener {
         void itemOnClick(int position);
     }

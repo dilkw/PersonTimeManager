@@ -34,6 +34,7 @@ import com.demo.androidapp.R;
 import com.demo.androidapp.databinding.AddTaskFragmentBinding;
 import com.demo.androidapp.model.common.RCodeEnum;
 import com.demo.androidapp.model.common.ReturnData;
+import com.demo.androidapp.model.entity.AlertOfTask;
 import com.demo.androidapp.model.entity.CategoryOfTask;
 import com.demo.androidapp.model.entity.Task;
 import com.demo.androidapp.util.DateTimeUtil;
@@ -45,7 +46,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AddTaskFragment extends Fragment{
+public class AddTaskFragment extends Fragment implements View.OnClickListener {
 
     private AddTaskViewModel addTaskViewModel;
 
@@ -86,16 +87,19 @@ public class AddTaskFragment extends Fragment{
         addTaskViewModel = new ViewModelProvider(this).get(AddTaskViewModel.class);
         if (task == null) {
             isAddTask = true;
-            Log.d("imageView", "onActivityCreated: map为空");
             task = new Task();
             LocalDateTime localDateTime = LocalDateTime.now();
             task.setCreated_at(dateTimeUtil.localDateTimeToSecLong(localDateTime));
-            Log.d("imageView", "onActivityCreated: Created_at" + dateTimeUtil.localDateTimeToStrYMDHM(localDateTime));
         }else {
-            Log.d("imageView", "onActivityCreated: task" + task.toString());
             isAddTask = false;
         }
         addTaskViewModel.taskMutableLiveData.setValue(task);
+        init();
+        setClickListener();
+    }
+
+    //初始化界面
+    private void init() {
         addTaskFragmentBinding.setAddTaskViewModel(addTaskViewModel);
         MySpinnerAdapter mySpinnerAdapter = new MySpinnerAdapter(requireActivity().getApplicationContext(), new ArrayList<>(), addTaskViewModel);
         addTaskFragmentBinding.mySpinner.setMySpinnerAdapter(mySpinnerAdapter);
@@ -113,35 +117,20 @@ public class AddTaskFragment extends Fragment{
                 Log.d("imageView", "onChanged: taskMutableLiveData变化" + task.getCreated_at());
             }
         });
-        setClickListener();
-
-    }
-    @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
+        addTaskViewModel.alertOfTaskMutableLiveData.observe(getViewLifecycleOwner(), new Observer<AlertOfTask>() {
+            @Override
+            public void onChanged(AlertOfTask alertOfTask) {
+                addTaskFragmentBinding.addTaskAlertTimeTextView.setText(alertOfTask.getAlertTime());
+            }
+        });
     }
 
     //按钮设置监听事件
     private void setClickListener() {
         //为选择时间的imgBtn按钮添加点击事件
         //弹出时间选择对话框并返回时间字符串
-        addTaskFragmentBinding.addTaskSelectEndTimeImgButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (dateTimePickerDialog == null) {
-                    dateTimePickerDialog = new DateTimePickerDialog();
-                    dateTimePickerDialog.setEnterClicked(new DateTimePickerDialog.EnterListener() {
-                        @RequiresApi(api = Build.VERSION_CODES.O)
-                        @Override
-                        public void enterBtnOnClicked() {
-                            addTaskFragmentBinding.endTimeEditText.setText(dateTimePickerDialog.getSelectTimeString());
-                        }
-                    });
-                }
-                dateTimePickerDialog.show(fragmentManager,"dialog");
-            }
-        });
-
+        addTaskFragmentBinding.addTaskSelectEndTimeImgButton.setOnClickListener(this);
+        addTaskFragmentBinding.addTaskAlertTimeClearImgBtn.setOnClickListener(this);
         //导航栏Menu菜单监听事件
         addTaskFragmentBinding.addTaskFragmentToolBar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @SuppressLint("NonConstantResourceId")
@@ -163,7 +152,10 @@ public class AddTaskFragment extends Fragment{
                             @Override
                             public void enterBtnOnClicked() {
                                 String date = dateTimePickerDialog.getSelectTimeString();
+                                addTaskViewModel.taskMutableLiveData.getValue().setAlert(true);
+                                addTaskFragmentBinding.alertTimeLinearLayout.setVisibility(View.VISIBLE);
                                 addTaskViewModel.alertOfTaskMutableLiveData.getValue().setAlertTime(date);
+                                addTaskFragmentBinding.addTaskAlertTimeTextView.setText(date);
                             }
                         });
                         dateTimePickerDialog.show(fragmentManager,"alertTimeSetDialog");
@@ -172,6 +164,37 @@ public class AddTaskFragment extends Fragment{
                 return false;
             }
         });
+
+    }
+
+    //重写点击监听方法
+    @SuppressLint("NonConstantResourceId")
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.addTaskSelectEndTimeImgButton: {
+                if (dateTimePickerDialog == null) {
+                    dateTimePickerDialog = new DateTimePickerDialog();
+                    dateTimePickerDialog.setEnterClicked(new DateTimePickerDialog.EnterListener() {
+                        @RequiresApi(api = Build.VERSION_CODES.O)
+                        @Override
+                        public void enterBtnOnClicked() {
+                            addTaskFragmentBinding.endTimeEditText.setText(dateTimePickerDialog.getSelectTimeString());
+                        }
+                    });
+                }
+                dateTimePickerDialog.show(fragmentManager,"dialog");
+                break;
+            }
+            case R.id.addTaskAlertTimeClearImgBtn: {
+                Log.d("imageView", "删除提醒时间:");
+                addTaskViewModel.taskMutableLiveData.getValue().setAlert(false);
+                addTaskFragmentBinding.alertTimeLinearLayout.setVisibility(View.GONE);
+                addTaskViewModel.alertOfTaskMutableLiveData.getValue().setAlertTime("");
+                addTaskFragmentBinding.addTaskAlertTimeTextView.setText("");
+                break;
+            }
+        }
     }
 
     //编辑完成后保存任务
@@ -203,6 +226,9 @@ public class AddTaskFragment extends Fragment{
                     NavController navController = Navigation.findNavController(getView());
                     navController.navigateUp();
                 }else {
+                    if (objectReturnData.getCode() == RCodeEnum.ERROR.getCode()){
+
+                    }
                     Toast.makeText(getContext(),"添加任务失败",Toast.LENGTH_SHORT).show();
                     Log.d("imageView",objectReturnData.getCode() + objectReturnData.getMsg());
                 }
