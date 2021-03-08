@@ -5,11 +5,15 @@ import androidx.room.Delete;
 import androidx.room.Update;
 
 import com.demo.androidapp.model.commitObject.UpdateTaskCommit;
+import com.demo.androidapp.model.entity.Bill;
+import com.demo.androidapp.model.entity.Clock;
 import com.demo.androidapp.model.entity.Task;
 import com.demo.androidapp.model.commitObject.RegisterCommit;
 import com.demo.androidapp.model.common.ReturnData;
 import com.demo.androidapp.model.returnObject.LoginAndRegisterReturn;
 import com.demo.androidapp.model.returnObject.ReturnListObject;
+
+import java.util.List;
 
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -88,5 +92,60 @@ public interface Api {
     //修改任务
     @PUT("todo/{id}")
     LiveData<ReturnData<Object>> updateTask(@Path("id")long taskId, @Body Task task);
+
+
+
+    //获取时钟
+    @GET("clock/list")
+    Call<ReturnData<ReturnListObject<Clock>>> getAllClocks();
+
+    //更新时钟
+    @PUT("clock/{clockId}")
+    LiveData<ReturnData<Object>> upDateClock(@Body Clock clock);
+
+    //删除时钟
+    @HTTP(method = "DELETE", path = "clock/{clockId}", hasBody = false)
+    LiveData<ReturnData<Object>> deleteClock(@Path("clockId") long clockId);
+
+    //修改时钟
+    @PUT("clock/{id}")
+    LiveData<ReturnData<Object>> updateClock(@Path("id")long clockId, @Body Clock clock);
+
+
+
+
+    //获取账单
+    @GET("bill/list")
+    Call<ReturnData<ReturnListObject<Bill>>> getAllBills();
+
+    //更新账单
+    @PUT("bill/{billId}")
+    LiveData<ReturnData<Object>> upDateBill(@Body Bill bill);
+
+    //删除账单
+    @HTTP(method = "DELETE", path = "bill/{billId}", hasBody = false)
+    LiveData<ReturnData<Object>> deleteBill(@Path("billId") long billId);
+
+    //修改账单
+    @PUT("bill/{id}")
+    LiveData<ReturnData<Object>> updateBill(@Path("id")long billId, @Body Bill bill);
+
+
+//    //获取账单
+//    @GET("bill/list")
+//    Call<ReturnData<ReturnListObject<Bill>>> getAllFriends();
+//
+//    //更新账单
+//    @PUT("bill/{billId}")
+//    LiveData<ReturnData<Object>> upDateBill(@Body Bill bill);
+//
+//    //删除账单
+//    @HTTP(method = "DELETE", path = "bill/{taskId}", hasBody = false)
+//    Call<ReturnData<Object>> deleteBill(@Path("taskId") long billId);
+//
+//    //修改账单
+//    @PUT("bill/{id}")
+//    LiveData<ReturnData<Object>> updateBill(@Path("id")long billId, @Body Bill bill);
+
 
 }

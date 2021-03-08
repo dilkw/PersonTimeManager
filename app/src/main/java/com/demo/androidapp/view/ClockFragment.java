@@ -32,6 +32,8 @@ import android.widget.SearchView;
 
 import com.demo.androidapp.R;
 import com.demo.androidapp.databinding.ClockFragmentBinding;
+import com.demo.androidapp.model.common.RCodeEnum;
+import com.demo.androidapp.model.common.ReturnData;
 import com.demo.androidapp.model.entity.Bill;
 import com.demo.androidapp.model.entity.Clock;
 import com.demo.androidapp.view.myView.AddClockDialog;
@@ -92,7 +94,20 @@ public class ClockFragment extends Fragment implements View.OnClickListener {
         clockItemAdapter = new ClockItemAdapter((List<Clock>)(new ArrayList<Clock>()));
         clockFragmentBinding.clockRecyclerView.setLayoutManager(new LinearLayoutManager(requireActivity()));
         clockFragmentBinding.clockRecyclerView.setAdapter(clockItemAdapter);
-        clocksLiveData = clockViewModel.getReturnLiveData();
+        clockViewModel.getAllClocksLiveDataInServer();
+        clockViewModel.getReturnLiveData().observe(getViewLifecycleOwner(), new Observer<ReturnData<List<Clock>>>() {
+            @Override
+            public void onChanged(ReturnData<List<Clock>> listReturnData) {
+                if (listReturnData.getCode() == RCodeEnum.OK.getCode()) {
+                    clockItemAdapter.setClocks(listReturnData.getData());
+                }
+            }
+        });
+        getAllClocksLiveDataInDB();
+        setListener();
+    }
+
+    private void getAllClocksLiveDataInDB() {
         clocksLiveData.observe(getViewLifecycleOwner(), new Observer<List<Clock>>() {
             @Override
             public void onChanged(List<Clock> clocks) {
@@ -102,7 +117,6 @@ public class ClockFragment extends Fragment implements View.OnClickListener {
                 clockItemAdapter.setClocks(clocks);
             }
         });
-        setListener();
     }
 
     @Override
@@ -164,7 +178,7 @@ public class ClockFragment extends Fragment implements View.OnClickListener {
                     @Override
                     public void enterBtnOnClicked() {
                         clockViewModel.upDateClocksInDB(addClockDialog.getClock());
-                        clocksLiveData = clockViewModel.getReturnLiveData();
+                        clocksLiveData = clockViewModel.getAllClocksLiveDataInDB();
                     }
                 });
                 addClockDialog.show(fragmentManager,"editClockDialog");
@@ -188,7 +202,7 @@ public class ClockFragment extends Fragment implements View.OnClickListener {
                             @Override
                             public void enterBtnOnClicked() {
                                 clockViewModel.addClocksInDB(addClockDialog.getClock());
-                                clocksLiveData = clockViewModel.getReturnLiveData();
+                                clocksLiveData = clockViewModel.getAllClocksLiveDataInDB();
                             }
                         });
                         addClockDialog.show(fragmentManager,"addClockDialogByMenu");
@@ -230,7 +244,7 @@ public class ClockFragment extends Fragment implements View.OnClickListener {
                     @Override
                     public void enterBtnOnClicked() {
                         clockViewModel.addClocksInDB(addClockDialog.getClock());
-                        clocksLiveData = clockViewModel.getReturnLiveData();
+                        clocksLiveData = clockViewModel.getAllClocksLiveDataInDB();
                     }
                 });
                 addClockDialog.show(fragmentManager,"addClockDialogByFloatingActionButton");

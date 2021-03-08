@@ -41,4 +41,7 @@ public interface ClockDao {
     @Delete
     void deleteClock(Clock... clocks);
 
+    @Query("DELETE FROM clock WHERE uid = :uid ")
+    void deleteAllClocksByUid(String uid);
+
 }

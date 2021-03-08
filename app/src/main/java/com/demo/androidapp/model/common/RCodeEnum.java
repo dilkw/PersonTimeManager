@@ -8,6 +8,7 @@ public enum RCodeEnum {
     GET_TASKS_SERVER_OK(2001,"SERVER正常"),
 
     ERROR(201,"请求错误"),
+    DATA_ERROR(202,"提交数据错误"),
     DB_ERROR(2010,"DB请求错误"),
     SERVER_ERROR(2011,"SERVER请求错误"),
 

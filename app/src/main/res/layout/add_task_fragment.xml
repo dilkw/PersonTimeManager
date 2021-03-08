@@ -69,14 +69,15 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <CheckBox
-                    android:id="@+id/redoCheckBox"
+                <ToggleButton
+                    android:id="@+id/stateToggleButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="10dp"
                     android:layout_marginRight="10dp"
-                    android:checked="@={addTaskViewModel.taskMutableLiveData.redo}"
-                    android:text="@string/addTaskIsRedo"
+                    android:checked="@={addTaskViewModel.taskMutableLiveData.state}"
+                    android:textOn="完成"
+                    android:textOff="未完成"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -150,7 +151,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="2"
                     android:gravity="center"
-                    android:text="@={addTaskViewModel.timeStr}" />
+                    android:text="@={addTaskViewModel.endTimeStr}" />
 
                 <ImageButton
                     android:id="@+id/addTaskSelectEndTimeImgButton"
@@ -183,7 +184,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="2"
                     android:gravity="center"
-                    android:text="@={addTaskViewModel.alertOfTaskMutableLiveData.alertTime}" />
+                    android:text="@={addTaskViewModel.alertTimeStr}" />
 
                 <ImageButton
                     android:id="@+id/addTaskAlertTimeClearImgBtn"

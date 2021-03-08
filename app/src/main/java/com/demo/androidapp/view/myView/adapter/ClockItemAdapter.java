@@ -102,9 +102,9 @@ public class ClockItemAdapter extends RecyclerView.Adapter<ClockItemAdapter.MyVi
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         Clock clock = clocks.get(position);
         holder.clockTaskTextView.setText(clock.getTask());
-        holder.clockMinuteTextView.setText(clock.getClockMinuet() + "分钟");
+        holder.clockMinuteTextView.setText(clock.getClock_minuet() + "分钟");
         holder.checkBox.setVisibility(isShow ? View.VISIBLE : View.GONE);
-        holder.clockAlertTimeTextView.setText(dateTimeUtil.longToStrYMDHM(clock.getAlertTime()));
+        holder.clockAlertTimeTextView.setText(dateTimeUtil.longToStrYMDHM(clock.getAlert_Time()));
         holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {

@@ -18,7 +18,6 @@ import androidx.fragment.app.DialogFragment;
 import com.demo.androidapp.R;
 import com.demo.androidapp.databinding.AddbillDialogBinding;
 import com.demo.androidapp.model.entity.Bill;
-import com.demo.androidapp.model.entity.Clock;
 import com.demo.androidapp.util.DateTimeUtil;
 
 import java.sql.Date;
@@ -68,7 +67,7 @@ public class AddBillDialog extends DialogFragment implements View.OnClickListene
         if (!isAdd) {
             dialogTitle = "编辑账单";
             addBillDialogBinding.addBillDialogContentTextInputEditText.setText(bill.getContent());
-            addBillDialogBinding.addBillDialogMoneyTextInputEditText.setText(bill.getMoney() + " 元");
+            addBillDialogBinding.addBillDialogMoneyTextInputEditText.setText(bill.getAmount() + " 元");
             addBillDialogBinding.inComeToggleButton.setChecked(bill.isCategory());
         }
         addBillDialogBinding.addBillTitleTextView.setText(dialogTitle);
@@ -114,8 +113,8 @@ public class AddBillDialog extends DialogFragment implements View.OnClickListene
     public Bill getBill() {
         DateTimeUtil dateTimeUtil = new DateTimeUtil();
         bill.setContent(addBillDialogBinding.addBillDialogContentTextInputEditText.getText().toString());
-        bill.setMoney(Long.parseLong(addBillDialogBinding.addBillDialogMoneyTextInputEditText.getText().toString()));
-        bill.setCreatedTime(dateTimeUtil.localDateTimeToLong(LocalDateTime.now()) / 1000L);
+        bill.setAmount(Long.parseLong(addBillDialogBinding.addBillDialogMoneyTextInputEditText.getText().toString()));
+        bill.setConsume_time(dateTimeUtil.localDateTimeToLong(LocalDateTime.now()) / 1000L);
         bill.setCategory(addBillDialogBinding.inComeToggleButton.isChecked());
         Log.d("imageView", "getClock: " + bill.toString());
         return bill;

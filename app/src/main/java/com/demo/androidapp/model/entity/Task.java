@@ -1,16 +1,12 @@
 package com.demo.androidapp.model.entity;
 
 
-import android.util.Log;
-
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import com.demo.androidapp.MyApplication;
-
-import java.io.Serializable;
 
 
 /**
@@ -44,38 +40,38 @@ public class Task {
     private boolean state;
 
     //结束时间
-    @ColumnInfo(name = "time")
-    private long time;
+    @ColumnInfo(name = "end_time")
+    private long end_time;
 
     //提醒
     @ColumnInfo(name = "alert")
     private boolean alert;
 
-    //重复做
-    @ColumnInfo(name = "redo")
-    private boolean redo;
+    //结束时间
+    @ColumnInfo(name = "alert_time")
+    private long alert_time;
 
     @Ignore
     public Task() {
     }
 
-    public Task(Long id, long created_at,String userId, String task, String category, boolean state, long time, boolean alert, boolean redo) {
+    public Task(long id, long created_at, String userId, String task, String category, boolean state, long end_time, boolean alert, long alert_time) {
         this.id = id;
         this.created_at = created_at;
         this.userId = userId;
         this.task = task;
         this.category = category;
         this.state = state;
-        this.time = time;
+        this.end_time = end_time;
         this.alert = alert;
-        this.redo = redo;
+        this.alert_time = alert_time;
     }
 
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -111,7 +107,7 @@ public class Task {
         this.category = category;
     }
 
-    public boolean getState() {
+    public boolean isState() {
         return state;
     }
 
@@ -119,15 +115,15 @@ public class Task {
         this.state = state;
     }
 
-    public long getTime() {
-        return time;
+    public long getEnd_time() {
+        return end_time;
     }
 
-    public void setTime(long time) {
-        this.time = time;
+    public void setEnd_time(long end_time) {
+        this.end_time = end_time;
     }
 
-    public boolean getAlert() {
+    public boolean isAlert() {
         return alert;
     }
 
@@ -135,26 +131,11 @@ public class Task {
         this.alert = alert;
     }
 
-    public boolean getRedo() {
-        return redo;
+    public long getAlert_time() {
+        return alert_time;
     }
 
-    public void setRedo(boolean redo) {
-        this.redo = redo;
-    }
-
-    @Override
-    public String toString() {
-        return "Task{" +
-                "id=" + id +
-                ", created_at=" + created_at +
-                ", userId='" + userId + '\'' +
-                ", task='" + task + '\'' +
-                ", category='" + category + '\'' +
-                ", state=" + state +
-                ", time=" + time +
-                ", alert=" + alert +
-                ", redo=" + redo +
-                '}';
+    public void setAlert_time(long alert_time) {
+        this.alert_time = alert_time;
     }
 }

@@ -97,9 +97,9 @@ public class TasksItemAdapter extends RecyclerView.Adapter<TasksItemAdapter.MyVi
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         Task task = tasks.get(position);
         holder.createTimeTextView.setText(dateTimeUtil.longToStrYMDHM(task.getCreated_at()));
-        holder.endTimeTextView.setText(dateTimeUtil.longToStrYMDHM(task.getTime()));
+        holder.endTimeTextView.setText(dateTimeUtil.longToStrYMDHM(task.getEnd_time()));
         Log.d("imageView", "onBindViewHolder: endTime " + holder.endTimeTextView.getText());
-        holder.stateTextView.setText(task.getState() ? "完成" : "未完成");
+        holder.stateTextView.setText(task.isState() ? "完成" : "未完成");
         holder.taskTextView.setText(task.getTask());
         holder.checkBox.setVisibility(isShow ? View.VISIBLE : View.GONE);
         if (isShow) {

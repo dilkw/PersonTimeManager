@@ -16,9 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.demo.androidapp.R;
 import com.demo.androidapp.model.entity.Bill;
-import com.demo.androidapp.model.entity.Clock;
 import com.demo.androidapp.util.DateTimeUtil;
-import com.google.android.material.button.MaterialButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -103,8 +101,8 @@ public class BillItemAdapter extends RecyclerView.Adapter<BillItemAdapter.MyView
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         Bill bill = bills.get(position);
         holder.billContentTextView.setText(bill.getContent());
-        holder.billCreateTimeTextView.setText(dateTimeUtil.longToStrYMDHM(bill.getCreatedTime()));
-        holder.billItemMoneyTextView.setText((bill.isCategory() ? "-" : "+") + bill.getMoney());
+        holder.billCreateTimeTextView.setText(dateTimeUtil.longToStrYMDHM(bill.getConsume_time()));
+        holder.billItemMoneyTextView.setText((bill.isCategory() ? "-" : "+") + bill.getAmount());
         holder.billItemCheckBox.setVisibility(isShow ? View.VISIBLE : View.GONE);
         holder.billItemCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override

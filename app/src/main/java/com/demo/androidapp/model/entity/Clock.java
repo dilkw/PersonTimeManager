@@ -25,7 +25,7 @@ public class Clock {
 
     //创建时间
     @ColumnInfo(name = "clock_minuet")
-    private long clockMinuet;
+    private long clock_minuet;
 
     //用户uid
     @ColumnInfo(name = "uid")
@@ -45,21 +45,21 @@ public class Clock {
 
     //提醒
     @ColumnInfo(name = "alert_time")
-    private long alertTime;
+    private long alert_Time;
 
     @Ignore
     public Clock() {
     }
 
-    public Clock(long id, long created_at, long clockMinuet, String userId, String task, boolean state, boolean alert, long alertTime) {
+    public Clock(long id, long created_at, long clock_minuet, String userId, String task, boolean state, boolean alert, long alert_Time) {
         this.id = id;
         this.created_at = created_at;
-        this.clockMinuet = clockMinuet;
+        this.clock_minuet = clock_minuet;
         this.userId = userId;
         this.task = task;
         this.state = state;
         this.alert = alert;
-        this.alertTime = alertTime;
+        this.alert_Time = alert_Time;
     }
 
     public long getId() {
@@ -78,12 +78,12 @@ public class Clock {
         this.created_at = created_at;
     }
 
-    public long getClockMinuet() {
-        return clockMinuet;
+    public long getClock_minuet() {
+        return clock_minuet;
     }
 
-    public void setClockMinuet(long clockMinuet) {
-        this.clockMinuet = clockMinuet;
+    public void setClock_minuet(long clock_minuet) {
+        this.clock_minuet = clock_minuet;
     }
 
     public String getUserId() {
@@ -118,12 +118,12 @@ public class Clock {
         this.alert = alert;
     }
 
-    public long getAlertTime() {
-        return alertTime;
+    public long getAlert_Time() {
+        return alert_Time;
     }
 
-    public void setAlertTime(long alertTime) {
-        this.alertTime = alertTime;
+    public void setAlert_Time(long alert_Time) {
+        this.alert_Time = alert_Time;
     }
 
 
@@ -132,12 +132,12 @@ public class Clock {
         return "Clock{" +
                 "id=" + id +
                 ", created_at=" + created_at +
-                ", clockMinuet=" + clockMinuet +
+                ", clockMinuet=" + clock_minuet +
                 ", userId='" + userId + '\'' +
                 ", task='" + task + '\'' +
                 ", state=" + state +
                 ", alert=" + alert +
-                ", alertTime=" + alertTime +
+                ", alertTime=" + alert_Time +
                 '}';
     }
 }

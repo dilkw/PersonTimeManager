@@ -11,8 +11,11 @@ import androidx.room.Room;
 import com.demo.androidapp.MyApplication;
 import com.demo.androidapp.api.Api;
 import com.demo.androidapp.db.AppDatabase;
+import com.demo.androidapp.db.BillDao;
 import com.demo.androidapp.db.TaskDao;
 import com.demo.androidapp.model.commitObject.UpdateTaskCommit;
+import com.demo.androidapp.model.entity.Bill;
+import com.demo.androidapp.model.entity.Clock;
 import com.demo.androidapp.model.entity.Task;
 import com.demo.androidapp.model.common.RCodeEnum;
 import com.demo.androidapp.model.common.ReturnData;
@@ -69,7 +72,8 @@ public class TaskRepository {
             @Override
             public void onResponse(Call<ReturnData<ReturnListObject<Task>>> call, Response<ReturnData<ReturnListObject<Task>>> response) {
                 Log.d("imageView", "TaskRepository: 获取任务清单成功");
-                returnDataLiveData.postValue(new ReturnData<List<Task>>(RCodeEnum.GET_TASKS_SERVER_OK,response.body().getData().getItems()));
+                returnDataLiveData.postValue(new ReturnData<List<Task>>(response.body().getCode(),response.body().getMsg(),response.body().getData().getItems()));
+                deleteALLTasksAndAdd((Task[])(response.body().getData().getItems().toArray()));
             }
             @Override
             public void onFailure(Call<ReturnData<ReturnListObject<Task>>> call, Throwable t) {
@@ -212,6 +216,35 @@ public class TaskRepository {
         String userName = MyApplication.getApplication().getUSER_NAME();
         String password = MyApplication.getApplication().getPASSWORD();
 //        api.signIn()
+    }
+
+
+    private void deleteALLTasksAndAdd(Task ... tasks) {
+        new DeleteALLTasksAndAdd(taskDao).equals(tasks);
+    }
+    //删除并更新数据
+    public static class DeleteALLTasksAndAdd extends AsyncTask<Task,Void,Void> {
+
+        TaskDao taskDao;
+
+        DeleteALLTasksAndAdd(TaskDao taskDao) {
+            this.taskDao = taskDao;
+        }
+
+        Task[] tasks;
+
+        @Override
+        protected Void doInBackground(Task... tasks) {
+            this.tasks = tasks;
+            taskDao.deleteAllTasksByUid(MyApplication.getApplication().getUID());
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            taskDao.addTasks(tasks);
+        }
     }
 
 }

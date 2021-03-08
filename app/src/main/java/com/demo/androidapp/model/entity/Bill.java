@@ -16,12 +16,12 @@ import com.demo.androidapp.MyApplication;
 public class Bill {
 
     //id
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey(autoGenerate = false)
     private long id;
 
     //创建时间
-    @ColumnInfo(name = "created_time")
-    private long createdTime;
+    @ColumnInfo(name = "consume_time")
+    private long consume_time;
 
     //用户uid
     @ColumnInfo(name = "uid")
@@ -36,21 +36,21 @@ public class Bill {
     private boolean category;
 
     //分类(支出/收入)
-    @ColumnInfo(name = "money")
-    private float money;
+    @ColumnInfo(name = "amount")
+    private float amount;
 
 
     @Ignore
     public Bill() {
     }
 
-    public Bill(long id, long createdTime, String userId, String content, boolean category, float money) {
+    public Bill(long id, long consume_time, String userId, String content, boolean category, float amount) {
         this.id = id;
-        this.createdTime = createdTime;
+        this.consume_time = consume_time;
         this.userId = userId;
         this.content = content;
         this.category = category;
-        this.money = money;
+        this.amount = amount;
     }
 
     public long getId() {
@@ -61,12 +61,12 @@ public class Bill {
         this.id = id;
     }
 
-    public long getCreatedTime() {
-        return createdTime;
+    public long getConsume_time() {
+        return consume_time;
     }
 
-    public void setCreatedTime(long createdTime) {
-        this.createdTime = createdTime;
+    public void setConsume_time(long consume_time) {
+        this.consume_time = consume_time;
     }
 
     public String getUserId() {
@@ -93,23 +93,23 @@ public class Bill {
         this.category = category;
     }
 
-    public float getMoney() {
-        return money;
+    public float getAmount() {
+        return amount;
     }
 
-    public void setMoney(float money) {
-        this.money = money;
+    public void setAmount(float amount) {
+        this.amount = amount;
     }
 
     @Override
     public String toString() {
         return "Bill{" +
                 "id=" + id +
-                ", createdTime=" + createdTime +
+                ", createdTime=" + consume_time +
                 ", userId='" + userId + '\'' +
                 ", content='" + content + '\'' +
                 ", category=" + category +
-                ", money=" + money +
+                ", money=" + amount +
                 '}';
     }
 }

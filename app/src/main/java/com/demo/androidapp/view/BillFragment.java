@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SearchView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,6 +21,7 @@ import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -30,6 +32,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.demo.androidapp.R;
 import com.demo.androidapp.databinding.BillFragmentBinding;
+import com.demo.androidapp.model.common.RCodeEnum;
+import com.demo.androidapp.model.common.ReturnData;
 import com.demo.androidapp.model.entity.Bill;
 import com.demo.androidapp.view.myView.AddBillDialog;
 import com.demo.androidapp.view.myView.AddClockDialog;
@@ -53,7 +57,7 @@ public class BillFragment extends Fragment implements View.OnClickListener {
 
     private BillItemAdapter billItemAdapter;
 
-    private LiveData<List<Bill>> billsLiveData;
+    private MutableLiveData<ReturnData<List<Bill>>> billsLiveData;
 
     private AppBarConfiguration appBarConfiguration;
 
@@ -85,10 +89,17 @@ public class BillFragment extends Fragment implements View.OnClickListener {
         billFragmentBinding.billRecyclerView.setLayoutManager(new LinearLayoutManager(requireActivity()));
         billFragmentBinding.billRecyclerView.setAdapter(billItemAdapter);
         billsLiveData = billViewModel.getReturnLiveData();
-        billsLiveData.observe(getViewLifecycleOwner(), new Observer<List<Bill>>() {
+        billViewModel.getAllBillsInServer();
+        billsLiveData.observe(getViewLifecycleOwner(), new Observer<ReturnData<List<Bill>>>() {
             @Override
-            public void onChanged(List<Bill> bills) {
-                billItemAdapter.setBills(bills);
+            public void onChanged(ReturnData<List<Bill>> listReturnData) {
+                RCodeEnum rCodeEnum = RCodeEnum.returnRCodeEnumByCode(listReturnData.getCode());
+                if (rCodeEnum == RCodeEnum.OK) {
+                    billItemAdapter.setBills(listReturnData.getData());
+                }else {
+                    Toast.makeText(getContext(),rCodeEnum.getMessage(),Toast.LENGTH_SHORT);
+                }
+
             }
         });
         setListener();
@@ -111,8 +122,7 @@ public class BillFragment extends Fragment implements View.OnClickListener {
             public boolean onQueryTextChange(String newText) {
                 Log.d("imageView", "onQueryTextChange:");
                 billsLiveData.removeObservers(getViewLifecycleOwner());
-                billsLiveData = billViewModel.getBillsLiveDataByContent(newText.trim());
-                billsLiveData.observe(getViewLifecycleOwner(), new Observer<List<Bill>>() {
+                billViewModel.getBillsLiveDataByContent(newText.trim()).observe(getViewLifecycleOwner(), new Observer<List<Bill>>() {
                     @Override
                     public void onChanged(List<Bill> bills) {
                         Log.d("imageView", "onChanged: 查找返回" + bills.size());
@@ -146,13 +156,22 @@ public class BillFragment extends Fragment implements View.OnClickListener {
         billItemAdapter.setItemOnClickListener(new BillItemAdapter.ItemOnClickListener() {
             @Override
             public void itemOnClick(int position) {
-                Log.d("imageView", "setListener: " + billsLiveData.getValue().get(position).toString());
-                AddBillDialog addBillDialog = new AddBillDialog(billsLiveData.getValue().get(position));
+                Log.d("imageView", "setListener: " + billsLiveData.getValue().getData().get(position).toString());
+                AddBillDialog addBillDialog = new AddBillDialog(billsLiveData.getValue().getData().get(position));
                 addBillDialog.setEnterClicked(new AddBillDialog.EnterListener() {
                     @RequiresApi(api = Build.VERSION_CODES.O)
                     @Override
                     public void enterBtnOnClicked() {
-                        billViewModel.upDateBillsInDB(addBillDialog.getBill());
+                        billViewModel.upDateBillInServer(addBillDialog.getBill()).observe(getViewLifecycleOwner(), new Observer<ReturnData<Object>>() {
+                            @Override
+                            public void onChanged(ReturnData<Object> objectReturnData) {
+                                if (objectReturnData.getCode() == RCodeEnum.OK.getCode()) {
+                                    billViewModel.getAllBillsInServer();
+                                }else {
+                                    Toast.makeText(getContext(),objectReturnData.getMsg(),Toast.LENGTH_SHORT);
+                                }
+                            }
+                        });
                         billsLiveData = billViewModel.getReturnLiveData();
                     }
                 });

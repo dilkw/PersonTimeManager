@@ -6,7 +6,10 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
+import com.demo.androidapp.model.common.RCodeEnum;
+import com.demo.androidapp.model.common.ReturnData;
 import com.demo.androidapp.model.entity.Bill;
 import com.demo.androidapp.model.entity.Clock;
 import com.demo.androidapp.repository.BillRepository;
@@ -25,8 +28,18 @@ public class BillViewModel extends AndroidViewModel {
     }
 
     //获取clockRepository中的returnLiveData
-    public LiveData<List<Bill>> getReturnLiveData() {
+    public MutableLiveData<ReturnData<List<Bill>>> getReturnLiveData() {
         return billRepository.getBillLiveData();
+    }
+
+    //云端获取bill
+    public void getAllBillsInServer() {
+        billRepository.getBillLiveDataInServer();
+    }
+
+    //本地数据库获取bill
+    public LiveData<List<Bill>> getBillLiveDataInDB() {
+        return billRepository.getBillLiveDataInDB();
     }
 
     //根据账单内容获取clockRepository中的returnLiveData
@@ -57,6 +70,13 @@ public class BillViewModel extends AndroidViewModel {
         //在数据库中没有数据时尝试从无服务器中获取
         if (bills.length == 0) return;
         billRepository.updateBills(bills);
+    }
+
+    //更新时钟
+    public LiveData<ReturnData<Object>> upDateBillInServer(Bill bill) {
+        //在数据库中没有数据时尝试从无服务器中获取
+        if (bill == null) return new MutableLiveData<>(new ReturnData<>(RCodeEnum.DATA_ERROR));
+        return billRepository.upDateBillInServer(bill);
     }
 
 }

@@ -8,28 +8,19 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.DatePicker;
-import android.widget.ImageButton;
-import android.widget.TextView;
-import android.widget.TimePicker;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.DialogFragment;
-import androidx.lifecycle.MutableLiveData;
 
 import com.demo.androidapp.R;
 import com.demo.androidapp.databinding.AddclockDialogBinding;
-import com.demo.androidapp.databinding.DatetimepickerBinding;
 import com.demo.androidapp.model.entity.Clock;
 import com.demo.androidapp.util.DateTimeUtil;
-import com.google.android.material.button.MaterialButton;
-import com.google.android.material.textfield.TextInputEditText;
 
 import java.sql.Date;
-import java.time.LocalDateTime;
 
 public class AddClockDialog extends DialogFragment implements View.OnClickListener {
 
@@ -75,13 +66,13 @@ public class AddClockDialog extends DialogFragment implements View.OnClickListen
         if (!isAdd) {
             dialogTitle = "编辑时钟";
             addclockDialogBinding.addClockDialogTaskTextInputEditText.setText(clock.getTask());
-            addclockDialogBinding.addClockDialogMinuteTextInputEditText.setText("" + clock.getClockMinuet());
+            addclockDialogBinding.addClockDialogMinuteTextInputEditText.setText("" + clock.getClock_minuet());
 
-            addclockDialogBinding.addClockAlertTimeTextView.setText(dateTimeUtil.longToStrYMDHM(clock.getAlertTime()));
+            addclockDialogBinding.addClockAlertTimeTextView.setText(dateTimeUtil.longToStrYMDHM(clock.getAlert_Time()));
             if (clock.isAlert()) {
                 addclockDialogBinding.addClockDialogAlertTimeLinearLayout.setVisibility(View.VISIBLE);
             }
-            addclockDialogBinding.addClockDialogMinuteTextInputEditText.setText("" + clock.getClockMinuet());
+            addclockDialogBinding.addClockDialogMinuteTextInputEditText.setText("" + clock.getClock_minuet());
         }
         addclockDialogBinding.addClockDialogTitle.setText(dialogTitle);
         setListener();
@@ -120,7 +111,7 @@ public class AddClockDialog extends DialogFragment implements View.OnClickListen
                     @Override
                     public void enterBtnOnClicked() {
                         addclockDialogBinding.addClockAlertTimeTextView.setText(dateTimePickerDialog.getSelectTimeString());
-                        clock.setAlertTime(dateTimePickerDialog.getSelectedDateToLong() / 1000);
+                        clock.setAlert_Time(dateTimePickerDialog.getSelectedDateToLong() / 1000);
                         clock.setAlert(true);
                         addclockDialogBinding.addClockDialogAlertTimeLinearLayout.setVisibility(View.VISIBLE);
                     }
@@ -130,7 +121,7 @@ public class AddClockDialog extends DialogFragment implements View.OnClickListen
             }
             case R.id.addClockAlertTimeClearImgBtn: {
                 addclockDialogBinding.addClockAlertTimeTextView.setText("");
-                clock.setAlertTime(0);
+                clock.setAlert_Time(0);
                 clock.setAlert(false);
                 addclockDialogBinding.addClockDialogAlertTimeLinearLayout.setVisibility(View.GONE);
                 break;
@@ -149,7 +140,7 @@ public class AddClockDialog extends DialogFragment implements View.OnClickListen
     @RequiresApi(api = Build.VERSION_CODES.O)
     public Clock getClock() {
         clock.setTask(addclockDialogBinding.addClockDialogTaskTextInputEditText.getText().toString());
-        clock.setClockMinuet(Long.parseLong(addclockDialogBinding.addClockDialogMinuteTextInputEditText.getText().toString()));
+        clock.setClock_minuet(Long.parseLong(addclockDialogBinding.addClockDialogMinuteTextInputEditText.getText().toString()));
         Log.d("imageView", "getClock: " + clock.toString());
         return clock;
     }

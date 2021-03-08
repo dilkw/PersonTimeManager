@@ -1,10 +1,8 @@
 package com.demo.androidapp.viewmodel;
 
-import android.annotation.SuppressLint;
 import android.app.Application;
 import android.os.Build;
 import android.util.Log;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -13,7 +11,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.demo.androidapp.MyApplication;
-import com.demo.androidapp.model.commitObject.UpdateTaskCommit;
+import com.demo.androidapp.R;
 import com.demo.androidapp.model.common.ReturnData;
 import com.demo.androidapp.model.entity.AlertOfTask;
 import com.demo.androidapp.model.entity.CategoryOfTask;
@@ -22,7 +20,6 @@ import com.demo.androidapp.repository.CategoryRepository;
 import com.demo.androidapp.repository.TaskRepository;
 import com.demo.androidapp.util.DateTimeUtil;
 
-import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
@@ -51,16 +48,30 @@ public class AddTaskViewModel extends AndroidViewModel {
 
     //对任务的结束时间的setter和getter方法
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public String getTimeStr() {
-        long endTime = taskMutableLiveData.getValue().getTime();
+    public String getEndTimeStr() {
+        long endTime = taskMutableLiveData.getValue().getEnd_time();
         if (endTime == 0) {
             return "";
         }
         return dateTimeUtil.longToStrYMDHM(endTime);
     }
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public void setTimeStr(String timeStr) {
-        Objects.requireNonNull(taskMutableLiveData.getValue()).setTime(dateTimeUtil.strToLong(timeStr));
+    public void setEndTimeStr(String timeStr) {
+        Objects.requireNonNull(taskMutableLiveData.getValue()).setEnd_time(dateTimeUtil.strToLong(timeStr));
+    }
+
+    //对任务的结束时间的setter和getter方法
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public String getAlertTimeStr() {
+        long alertTime = taskMutableLiveData.getValue().getAlert_time();
+        if (alertTime == 0) {
+            return "";
+        }
+        return dateTimeUtil.longToStrYMDHM(alertTime);
+    }
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void setAlertTimeStr(String timeStr) {
+        Objects.requireNonNull(taskMutableLiveData.getValue()).setAlert_time(dateTimeUtil.strToLong(timeStr));
     }
 
     //对任务的创建时间的setter和getter方法
@@ -80,7 +91,7 @@ public class AddTaskViewModel extends AndroidViewModel {
     //对任务的创建时间的setter和getter方法
     @RequiresApi(api = Build.VERSION_CODES.O)
     public boolean getAlert() {
-        return taskMutableLiveData.getValue().getAlert();
+        return taskMutableLiveData.getValue().isAlert();
     }
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void setAlert(boolean alert) {
@@ -109,12 +120,12 @@ public class AddTaskViewModel extends AndroidViewModel {
 
     //添加任务
     public LiveData<ReturnData<Object>> addTask(){
+        Log.d("imageView", "addTask: " + taskMutableLiveData.getValue().toString());
         return taskRepository.addTasksToServer(taskMutableLiveData.getValue());
     }
 
     //更新任务
     public LiveData<ReturnData<Object>> updateTaskInServer(){
-        //UpdateTaskCommit updateTaskCommit = new UpdateTaskCommit(taskMutableLiveData.getValue());
         long id = taskMutableLiveData.getValue().getId();
         return taskRepository.updateTaskInServer(id,taskMutableLiveData.getValue());
     }

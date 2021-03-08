@@ -12,12 +12,20 @@ import com.demo.androidapp.MyApplication;
 import com.demo.androidapp.api.Api;
 import com.demo.androidapp.db.AppDatabase;
 import com.demo.androidapp.db.ClockDao;
+import com.demo.androidapp.db.TaskDao;
+import com.demo.androidapp.model.common.RCodeEnum;
 import com.demo.androidapp.model.common.ReturnData;
 import com.demo.androidapp.model.entity.Bill;
 import com.demo.androidapp.model.entity.Clock;
+import com.demo.androidapp.model.entity.Task;
+import com.demo.androidapp.model.returnObject.ReturnListObject;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ClockRepository {
 
@@ -25,7 +33,7 @@ public class ClockRepository {
 
     private ClockDao clockDao;
 
-    private LiveData<List<Clock>> returnDataLiveData;
+    private MutableLiveData<ReturnData<List<Clock>>> returnDataLiveData;
 
     private MutableLiveData<ReturnData> deleteReturnDataLiveData;
 
@@ -37,24 +45,42 @@ public class ClockRepository {
                 .databaseBuilder(application.getApplicationContext(), AppDatabase.class, "clock")
                 .build()
                 .clockDao();
-        returnDataLiveData = clockDao.getAllClockLiveDataByUid(MyApplication.getApplication().getUID());
+        returnDataLiveData = new MutableLiveData<>();
+        //returnDataLiveData = clockDao.getAllClockLiveDataByUid(MyApplication.getApplication().getUID());
     }
 
-    public LiveData<List<Clock>> getLiveData() {
+
+    //从服务器中获取时钟列表
+    public void getAllClocksInServer() {
+        api.getAllClocks().enqueue(new Callback<ReturnData<ReturnListObject<Clock>>>() {
+            @Override
+            public void onResponse(Call<ReturnData<ReturnListObject<Clock>>> call, Response<ReturnData<ReturnListObject<Clock>>> response) {
+                returnDataLiveData.postValue(new ReturnData<List<Clock>>(response.body().getCode(),response.body().getMsg(),response.body().getData().getItems()));
+                deleteALLClocksAndAdd((Clock[]) response.body().getData().getItems().toArray());
+            }
+
+            @Override
+            public void onFailure(Call<ReturnData<ReturnListObject<Clock>>> call, Throwable t) {
+                returnDataLiveData.postValue(new ReturnData<List<Clock>>(RCodeEnum.ERROR));
+            }
+        });
+    }
+
+    public LiveData<ReturnData<List<Clock>>> getLiveData() {
         if (returnDataLiveData == null) {
             Log.d("imageView", "getReturnDataLiveData: returnDataLiveData为空");
         }
         return returnDataLiveData;
     }
 
-    public LiveData<List<Clock>> getClocksLiveDataByPattern(String s) {
+    public LiveData<List<Clock>> getClocksLiveDataByPatternInDB(String s) {
         return clockDao.getAllClockByByPattern("%" + s + "%");
     }
 
     //根据uid在本地数据库中获取任务列表
-    public void getAllTaskByUidInDB() {
+    public LiveData<List<Clock>> getAllClocksLiveDataInDB() {
         String uid = MyApplication.getApplication().getUID();
-        new GetAllClockByUid(clockDao,returnDataLiveData).execute(uid);
+        return clockDao.getAllClockLiveDataByUid(uid);
     }
 
     //在本地数据库中删除多个数据
@@ -62,6 +88,13 @@ public class ClockRepository {
         String uid = MyApplication.getApplication().getUID();
         Log.d("imageView", "getAllTaskByUidInDB: 数据库删除数据");
         new DeleteClocks(clockDao).execute(clocks);
+    }
+
+    //在服务器中删除单个数据
+    public LiveData<ReturnData<Object>> deleteClockByClockIdInServer(long clockId) {
+        String uid = MyApplication.getApplication().getUID();
+        Log.d("imageView", "getAllTaskByUidInDB: 数据库删除数据");
+        return api.deleteClock(clockId);
     }
 
     //插入本地数据库任务列表
@@ -78,8 +111,13 @@ public class ClockRepository {
     }
 
     //更新本地数据库任务列表
-    public void updateTasks(Clock... clocks) {
+    public void updateClocksInDB(Clock... clocks) {
         new ClockRepository.UpdateClockList(clockDao).execute(clocks);
+    }
+
+    //更新本地数据库任务列表
+    public LiveData<ReturnData<Object>> updateClocksInServer(Clock clock) {
+        return api.updateClock(clock.getId(),clock);
     }
 
     public static class InsertClockList extends AsyncTask<Clock,Void, Long[]> {
@@ -96,25 +134,6 @@ public class ClockRepository {
         }
     }
 
-    public static class GetAllClockByUid extends AsyncTask<String,Void,Void> {
-
-        ClockDao clockDao;
-
-        private LiveData<List<Clock>> returnDataLiveData;
-
-        GetAllClockByUid(ClockDao clockDao,LiveData<List<Clock>> returnDataLiveData) {
-            this.clockDao = clockDao;
-            this.returnDataLiveData = returnDataLiveData;
-        }
-
-        @Override
-        protected Void doInBackground(String... strings) {
-//            List<Task> tasks = taskDao.getAllTaskListByUid(strings[0]);
-//            Log.d("imageView", "doInBackground: 本地数据库数据长度" + tasks.size());
-//            returnDataLiveData.postValue(new ReturnData<List<Task>>(RCodeEnum.DB_OK,tasks));
-            return null;
-        }
-    }
 
     public static class UpdateClockList extends AsyncTask<Clock,Void,Void> {
 
@@ -143,6 +162,35 @@ public class ClockRepository {
         protected Void doInBackground(Clock... clocks) {
             clockDao.deleteClock(clocks);
             return null;
+        }
+    }
+
+    //删除并更新数据
+    private void deleteALLClocksAndAdd(Clock... clocks) {
+        new DeleteALLClocksAndAdd(clockDao).equals(clocks);
+    }
+    //删除并更新数据
+    public static class DeleteALLClocksAndAdd extends AsyncTask<Clock,Void,Void> {
+
+        ClockDao clockDao;
+
+        DeleteALLClocksAndAdd(ClockDao clockDao) {
+            this.clockDao = clockDao;
+        }
+
+        Clock[] clocks;
+
+        @Override
+        protected Void doInBackground(Clock... clocks) {
+            this.clocks = clocks;
+            clockDao.deleteAllClocksByUid(MyApplication.getApplication().getUID());
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            clockDao.addClocks(clocks);
         }
     }
 

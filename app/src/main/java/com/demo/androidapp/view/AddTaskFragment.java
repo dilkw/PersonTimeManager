@@ -27,6 +27,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.Toast;
 
 import com.demo.androidapp.MainActivity;
@@ -131,6 +132,20 @@ public class AddTaskFragment extends Fragment implements View.OnClickListener {
         //弹出时间选择对话框并返回时间字符串
         addTaskFragmentBinding.addTaskSelectEndTimeImgButton.setOnClickListener(this);
         addTaskFragmentBinding.addTaskAlertTimeClearImgBtn.setOnClickListener(this);
+        addTaskFragmentBinding.stateToggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @SuppressLint("UseCompatLoadingForDrawables")
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                Log.d("imageView", "onChanged:数据变化task ");
+                if (isChecked) {
+                    addTaskFragmentBinding.stateToggleButton.setBackground(getResources().getDrawable(R.color.colorTextTrue));
+                    //addTaskFragmentBinding.stateToggleButton.setBackgroundColor(getResources().getColor(R.color.colorTextTrue));
+                }else {
+                    addTaskFragmentBinding.stateToggleButton.setBackground(getResources().getDrawable(R.color.backgroundColor));
+                    //addTaskFragmentBinding.stateToggleButton.setBackgroundColor(getResources().getColor(R.color.backgroundColor));
+                }
+            }
+        });
         //导航栏Menu菜单监听事件
         addTaskFragmentBinding.addTaskFragmentToolBar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @SuppressLint("NonConstantResourceId")

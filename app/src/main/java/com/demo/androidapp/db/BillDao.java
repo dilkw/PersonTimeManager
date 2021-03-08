@@ -19,8 +19,8 @@ public interface BillDao {
     public LiveData<List<Bill>> getAllBillLiveDataByUid(String uid);
 
     //根据uid查询出所有任务
-    @Query("SELECT * FROM bill")
-    public List<Bill> getAllBillListByUid();
+    @Query("SELECT * FROM bill WHERE uid = :uid")
+    public List<Bill> getAllBillListByUid(String uid);
 
     //根据uid添加单个任务
     @Insert
@@ -43,5 +43,11 @@ public interface BillDao {
 
     @Delete
     void deleteBill(Bill...bills);
+
+    @Delete
+    void deleteBill(List<Bill> billLists);
+
+    @Query("DELETE FROM bill WHERE uid = :uid ")
+    void deleteAllBillsByUid(String uid);
 
 }
