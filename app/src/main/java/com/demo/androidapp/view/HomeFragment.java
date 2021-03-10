@@ -34,6 +34,7 @@ import com.demo.androidapp.MainActivity;
 import com.demo.androidapp.MyApplication;
 import com.demo.androidapp.R;
 import com.demo.androidapp.databinding.HomeFragmentBinding;
+import com.demo.androidapp.model.entity.Bill;
 import com.demo.androidapp.model.entity.Task;
 import com.demo.androidapp.model.common.RCodeEnum;
 import com.demo.androidapp.model.common.ReturnData;
@@ -128,6 +129,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 switch (rCodeEnum) {
                     case OK:{
                         Log.d("imageView", "onChanged: 成功");
+                        tasksItemAdapter.setTasks(tasks);
+                        tasksItemAdapter.notifyDataSetChanged();
                         break;
                     }
                     case DB_OK:{
@@ -196,7 +199,17 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 break;
             }
             case R.id.deleteImageButton: {
-                homeViewModel.deleteTasksByUidInServer(tasksItemAdapter.deleteSelectedTask());
+                homeViewModel.deleteTaskByIdsInServer(tasksItemAdapter.getEditModelSelectedTasks()).observe(getViewLifecycleOwner(), new Observer<ReturnData<Object>>() {
+                    @Override
+                    public void onChanged(ReturnData<Object> objectReturnData) {
+                        if (objectReturnData.getCode() == RCodeEnum.OK.getCode()) {
+                            tasksItemAdapter.deleteSelectedTask();
+                            Toast.makeText(getContext(),"删除成功",Toast.LENGTH_SHORT).show();
+                        }else {
+                            Toast.makeText(getContext(),objectReturnData.getMsg(),Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
                 break;
             }
             case R.id.allSelectImageButton: {

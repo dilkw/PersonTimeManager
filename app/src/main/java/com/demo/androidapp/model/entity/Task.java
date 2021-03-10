@@ -33,7 +33,7 @@ public class Task {
 
     //分类
     @ColumnInfo(name = "category")
-    private String category;
+    private String category = "未分类";
 
     //状态
     @ColumnInfo(name = "state")
@@ -137,5 +137,20 @@ public class Task {
 
     public void setAlert_time(long alert_time) {
         this.alert_time = alert_time;
+    }
+
+    @Override
+    public String toString() {
+        return "Task{" +
+                "id=" + id +
+                ", created_at=" + created_at +
+                ", userId='" + userId + '\'' +
+                ", task='" + task + '\'' +
+                ", category='" + category + '\'' +
+                ", state=" + state +
+                ", end_time=" + end_time +
+                ", alert=" + alert +
+                ", alert_time=" + alert_time +
+                '}';
     }
 }

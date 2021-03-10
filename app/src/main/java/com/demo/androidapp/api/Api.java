@@ -4,12 +4,14 @@ import androidx.lifecycle.LiveData;
 import androidx.room.Delete;
 import androidx.room.Update;
 
+import com.demo.androidapp.model.Friend;
 import com.demo.androidapp.model.commitObject.UpdateTaskCommit;
 import com.demo.androidapp.model.entity.Bill;
 import com.demo.androidapp.model.entity.Clock;
 import com.demo.androidapp.model.entity.Task;
 import com.demo.androidapp.model.commitObject.RegisterCommit;
 import com.demo.androidapp.model.common.ReturnData;
+import com.demo.androidapp.model.entity.User;
 import com.demo.androidapp.model.returnObject.LoginAndRegisterReturn;
 import com.demo.androidapp.model.returnObject.ReturnListObject;
 
@@ -66,14 +68,20 @@ public interface Api {
     @POST("user/logout")
     LiveData<ReturnData<Object>> signOut();
 
-    @GET("/todo")
-    Call<ReturnData> todo();
-
     //获取某个用户的所有任务列表
     @GET("todo/list")
     Call<ReturnData<ReturnListObject<Task>>> getTaskList();
 
-    //获取某个用户的所有任务列表
+    // 获取用户个人信息
+    @GET("user/me")
+    LiveData<ReturnData<User>> getUserInfo();
+
+    // 修改个人信息
+    @PUT("user/edit")
+    LiveData<ReturnData<Object>> upDateUserInfo(@Body User user);
+
+
+    //获取任务列表
     @GET("todo/list")
     Call<ReturnData<ReturnListObject<Task>>> getTaskListLiveData();
 
@@ -83,11 +91,11 @@ public interface Api {
 
     //添加任务
     @POST("todo/add")
-    LiveData<ReturnData<Object>> addTask(@Body Task task);
+    LiveData<ReturnData<Task>> addTask(@Body Task task);
 
     //删除任务
-    @HTTP(method = "DELETE", path = "todo/{taskId}", hasBody = false)
-    Call<ReturnData<Object>> deleteTask(@Path("taskId") long taskId);
+    @HTTP(method = "DELETE", path = "todo/{ids}", hasBody = false)
+    LiveData<ReturnData<Object>> deleteTasksByIds(@Path("ids") String taskIds);
 
     //修改任务
     @PUT("todo/{id}")
@@ -99,13 +107,17 @@ public interface Api {
     @GET("clock/list")
     Call<ReturnData<ReturnListObject<Clock>>> getAllClocks();
 
+    //添加时钟
+    @POST("clock/add")
+    LiveData<ReturnData<Clock>> addClock(@Body Clock clock);
+
     //更新时钟
     @PUT("clock/{clockId}")
     LiveData<ReturnData<Object>> upDateClock(@Body Clock clock);
 
     //删除时钟
-    @HTTP(method = "DELETE", path = "clock/{clockId}", hasBody = false)
-    LiveData<ReturnData<Object>> deleteClock(@Path("clockId") long clockId);
+    @HTTP(method = "DELETE", path = "clock/{ids}", hasBody = false)
+    LiveData<ReturnData<Object>> deleteClock(@Path("ids") String clockIds);
 
     //修改时钟
     @PUT("clock/{id}")
@@ -119,33 +131,28 @@ public interface Api {
     Call<ReturnData<ReturnListObject<Bill>>> getAllBills();
 
     //更新账单
-    @PUT("bill/{billId}")
-    LiveData<ReturnData<Object>> upDateBill(@Body Bill bill);
+    @POST("bill/add")
+    LiveData<ReturnData<Bill>> addBill(@Body Bill bill);
 
     //删除账单
-    @HTTP(method = "DELETE", path = "bill/{billId}", hasBody = false)
-    LiveData<ReturnData<Object>> deleteBill(@Path("billId") long billId);
+    @HTTP(method = "DELETE", path = "bill/{ids}", hasBody = false)
+    LiveData<ReturnData<Object>> deleteBillsByIds(@Path("ids") String billIds);
 
     //修改账单
     @PUT("bill/{id}")
     LiveData<ReturnData<Object>> updateBill(@Path("id")long billId, @Body Bill bill);
 
 
-//    //获取账单
-//    @GET("bill/list")
-//    Call<ReturnData<ReturnListObject<Bill>>> getAllFriends();
-//
-//    //更新账单
-//    @PUT("bill/{billId}")
-//    LiveData<ReturnData<Object>> upDateBill(@Body Bill bill);
-//
-//    //删除账单
-//    @HTTP(method = "DELETE", path = "bill/{taskId}", hasBody = false)
-//    Call<ReturnData<Object>> deleteBill(@Path("taskId") long billId);
-//
-//    //修改账单
-//    @PUT("bill/{id}")
-//    LiveData<ReturnData<Object>> updateBill(@Path("id")long billId, @Body Bill bill);
+    //获取好友
+    @GET("friend/list")
+    Call<ReturnData<ReturnListObject<Friend>>> getAllFriends();
 
+    //添加好友
+    @POST("friend/{billId}")
+    LiveData<ReturnData<Friend>> addFriend(@Body Friend friend);
+
+    //删除好友
+    @HTTP(method = "DELETE", path = "friend/{ids}", hasBody = false)
+    LiveData<ReturnData<Object>> deleteFriendsByIds(@Path("ids") String friendIds);
 
 }

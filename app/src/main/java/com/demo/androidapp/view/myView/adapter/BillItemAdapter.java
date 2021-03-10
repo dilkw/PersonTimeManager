@@ -49,16 +49,21 @@ public class BillItemAdapter extends RecyclerView.Adapter<BillItemAdapter.MyView
         notifyDataSetChanged();
     }
     //长按Item时弹出编辑菜单，删除按钮（删除所选择的）
-    public List<Bill> deleteSelectedBills() {
+    public void deleteSelectedBills() {
         allChecked = false;
-        if (editModelSelectedBills.size() == 0)return null;
+        if (editModelSelectedBills.size() == 0)return ;
         bills.removeAll(Objects.requireNonNull(editModelSelectedBills));
         notifyDataSetChanged();
-        return editModelSelectedBills;
     }
     //长按Item时弹出编辑菜单，全选按钮
     public void selectedAllBills() {
         allChecked = true;
+        notifyDataSetChanged();
+    }
+
+    //添加账单
+    public void addBill(Bill bill) {
+        this.bills.add(bill);
         notifyDataSetChanged();
     }
 

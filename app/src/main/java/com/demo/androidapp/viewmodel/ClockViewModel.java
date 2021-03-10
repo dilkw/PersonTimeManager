@@ -13,6 +13,7 @@ import com.demo.androidapp.model.common.ReturnData;
 import com.demo.androidapp.model.entity.Clock;
 import com.demo.androidapp.repository.ClockRepository;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class ClockViewModel extends AndroidViewModel {
@@ -56,11 +57,20 @@ public class ClockViewModel extends AndroidViewModel {
         clockRepository.deleteClocksByUidInDB(clockArray);
     }
 
-    //添加时钟
+    //在数据库中添加时钟
     public void addClocksInDB(Clock... clocks) {
         //在数据库中没有数据时尝试从无服务器中获取
         if (clocks.length == 0) return;
         clockRepository.addClocksToDB(clocks);
+    }
+
+    //在服务器中添加时钟
+    public LiveData<ReturnData<Clock>> addClockToServer(Clock clock) {
+        //在服务器中删除
+        if (clock == null) {
+            return new MutableLiveData<>(new ReturnData<>(RCodeEnum.DATA_ERROR));
+        }
+        return clockRepository.addClockToServer(clock);
     }
 
     //在数据库中更新时钟
@@ -79,8 +89,17 @@ public class ClockViewModel extends AndroidViewModel {
         return clockRepository.updateClocksInServer(clock);
     }
 
-    public LiveData<ReturnData<Object>> deleteClockByClockIdInServer(Clock clock){
-        return clockRepository.deleteClockByClockIdInServer(clock.getId());
+    //在服务器中删除时钟
+    public LiveData<ReturnData<Object>> deleteClocksByClockIdsInServer(List<Clock> clocks){
+        Log.d("imageView", "deleteTasksByUidInServer: 删除任务");
+        if (clocks == null || clocks.size() == 0) {
+            return new MutableLiveData<>(new ReturnData<>(RCodeEnum.DATA_ERROR));
+        }
+        long[] clockIds = new long[clocks.size()];
+        for (int i =0 ; i < clocks.size() ; i++) {
+            clockIds[i] = clocks.get(i).getId();
+        }
+        return clockRepository.deleteClockByClockIdInServer(Arrays.toString(clockIds));
     }
 
 }

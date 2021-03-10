@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
@@ -29,6 +30,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SearchView;
+import android.widget.Toast;
 
 import com.demo.androidapp.R;
 import com.demo.androidapp.databinding.ClockFragmentBinding;
@@ -177,8 +179,7 @@ public class ClockFragment extends Fragment implements View.OnClickListener {
                     @RequiresApi(api = Build.VERSION_CODES.O)
                     @Override
                     public void enterBtnOnClicked() {
-                        clockViewModel.upDateClocksInDB(addClockDialog.getClock());
-                        clocksLiveData = clockViewModel.getAllClocksLiveDataInDB();
+                        upDateClock(addClockDialog.getClock());
                     }
                 });
                 addClockDialog.show(fragmentManager,"editClockDialog");
@@ -227,7 +228,17 @@ public class ClockFragment extends Fragment implements View.OnClickListener {
             }
             case R.id.clockDeleteImageButton: {
                 Log.d("imageView", "onClick: 删除按钮");
-                clockViewModel.deleteClocksByUidInDB(clockItemAdapter.deleteSelectedClocks());
+                clockViewModel.deleteClocksByClockIdsInServer(clockItemAdapter.getEditModelSelectedTasks()).observe(getViewLifecycleOwner(), new Observer<ReturnData<Object>>() {
+                    @Override
+                    public void onChanged(ReturnData<Object> objectReturnData) {
+                        if (objectReturnData.getCode() == RCodeEnum.OK.getCode()) {
+                            clockItemAdapter.deleteSelectedClocks();
+                            Toast.makeText(getContext(),"删除成功",Toast.LENGTH_SHORT).show();
+                        }else {
+                            Toast.makeText(getContext(),objectReturnData.getMsg(),Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
                 break;
             }
             case R.id.clockAllSelectImageButton: {
@@ -243,8 +254,12 @@ public class ClockFragment extends Fragment implements View.OnClickListener {
                     @RequiresApi(api = Build.VERSION_CODES.O)
                     @Override
                     public void enterBtnOnClicked() {
-                        clockViewModel.addClocksInDB(addClockDialog.getClock());
-                        clocksLiveData = clockViewModel.getAllClocksLiveDataInDB();
+                        Clock clock = addClockDialog.getClock();
+                        if (clock.getId() == 0) {
+                            addClock(clock);
+                        }else {
+                            upDateClock(clock);
+                        }
                     }
                 });
                 addClockDialog.show(fragmentManager,"addClockDialogByFloatingActionButton");
@@ -255,5 +270,38 @@ public class ClockFragment extends Fragment implements View.OnClickListener {
                 break;
             }
         }
+    }
+
+    private void addClock(Clock clock) {
+        clockViewModel.addClockToServer(clock).observe(getViewLifecycleOwner(), new Observer<ReturnData<Clock>>() {
+            @Override
+            public void onChanged(ReturnData<Clock> clockReturnData) {
+                if (clockReturnData.getCode() == RCodeEnum.OK.getCode()) {
+                    Toast.makeText(getContext(),"添加时钟成功",Toast.LENGTH_SHORT).show();
+                    Log.d("imageView", "onChanged: " + clockReturnData.getData().toString());
+                    clockItemAdapter.addClock(clockReturnData.getData());
+                    clockViewModel.addClocksInDB(clock);
+                }else {
+                    Toast.makeText(getContext(),"添加时钟失败",Toast.LENGTH_SHORT).show();
+                    Log.d("imageView",clockReturnData.getCode() + clockReturnData.getMsg());
+                }
+            }
+        });
+    }
+
+    private void upDateClock(Clock clock) {
+        clockViewModel.upDateClocksInServer(clock).observe(getViewLifecycleOwner(), new Observer<ReturnData<Object>>() {
+            @Override
+            public void onChanged(ReturnData<Object> clockReturnData) {
+                if (clockReturnData.getCode() == RCodeEnum.OK.getCode()) {
+                    Toast.makeText(getContext(),"更新时钟成功",Toast.LENGTH_SHORT).show();
+                    Log.d("imageView", "onChanged: " + clockReturnData.getData().toString());
+                    clockViewModel.upDateClocksInDB(clock);
+                }else {
+                    Toast.makeText(getContext(),"更新时钟失败",Toast.LENGTH_SHORT).show();
+                    Log.d("imageView",clockReturnData.getCode() + clockReturnData.getMsg());
+                }
+            }
+        });
     }
 }

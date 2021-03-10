@@ -128,8 +128,6 @@ public class AddTaskFragment extends Fragment implements View.OnClickListener {
 
     //按钮设置监听事件
     private void setClickListener() {
-        //为选择时间的imgBtn按钮添加点击事件
-        //弹出时间选择对话框并返回时间字符串
         addTaskFragmentBinding.addTaskSelectEndTimeImgButton.setOnClickListener(this);
         addTaskFragmentBinding.addTaskAlertTimeClearImgBtn.setOnClickListener(this);
         addTaskFragmentBinding.stateToggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -233,11 +231,12 @@ public class AddTaskFragment extends Fragment implements View.OnClickListener {
     //添加任务
     private void addTask() {
         Log.d("imageView", "saveTask: 添加任务");
-        addTaskViewModel.addTask().observe(getViewLifecycleOwner(), new Observer<ReturnData<Object>>() {
+        addTaskViewModel.addTask().observe(getViewLifecycleOwner(), new Observer<ReturnData<Task>>() {
             @Override
-            public void onChanged(ReturnData<Object> objectReturnData) {
+            public void onChanged(ReturnData<Task> objectReturnData) {
                 if (objectReturnData.getCode() == RCodeEnum.OK.getCode()) {
                     Toast.makeText(getContext(),"添加任务成功",Toast.LENGTH_SHORT).show();
+                    Log.d("imageView", "onChanged: " + objectReturnData.getData().toString());
                     NavController navController = Navigation.findNavController(getView());
                     navController.navigateUp();
                 }else {

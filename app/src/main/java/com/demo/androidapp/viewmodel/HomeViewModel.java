@@ -5,12 +5,15 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.demo.androidapp.model.common.RCodeEnum;
 import com.demo.androidapp.model.entity.Task;
 import com.demo.androidapp.model.common.ReturnData;
 import com.demo.androidapp.repository.TaskRepository;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class HomeViewModel extends AndroidViewModel {
@@ -60,15 +63,16 @@ public class HomeViewModel extends AndroidViewModel {
         taskRepository.deleteAllTaskByUidInDB();
     }
 
-    //删除服务器中任务
-    public void deleteTasksByUidInServer(List<Task> tasks) {
+    //删除服务器中单个任务
+    public LiveData<ReturnData<Object>> deleteTaskByIdsInServer(List<Task> tasks) {
         Log.d("imageView", "deleteTasksByUidInServer: 删除任务");
         if (tasks == null || tasks.size() == 0) {
-            return;
+            return new MutableLiveData<>(new ReturnData<>(RCodeEnum.DATA_ERROR));
         }
-        for (Task task : tasks) {
-            taskRepository.deleteTaskByUidInServer(task.getId());
+        long[] taskIds = new long[tasks.size()];
+        for (int i =0 ; i < tasks.size() ; i++) {
+            taskIds[i] = tasks.get(i).getId();
         }
+        return taskRepository.deleteTaskByIdsInServer(Arrays.toString(taskIds));
     }
-
 }

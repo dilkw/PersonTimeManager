@@ -15,6 +15,7 @@ import com.demo.androidapp.model.entity.Clock;
 import com.demo.androidapp.repository.BillRepository;
 import com.demo.androidapp.repository.ClockRepository;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class BillViewModel extends AndroidViewModel {
@@ -58,21 +59,42 @@ public class BillViewModel extends AndroidViewModel {
         billRepository.deleteBillsByUidInDB(billArray);
     }
 
-    //添加时钟
+    //根据时钟id从服务器中删除时钟（多个删除）
+    public LiveData<ReturnData<Object>> deleteClocksByIdsInServer(List<Bill> bills) {
+        Log.d("imageView", "deleteTasksByUidInServer: 删除任务");
+        if (bills == null || bills.size() == 0) {
+            return new MutableLiveData<>(new ReturnData<>(RCodeEnum.DATA_ERROR));
+        }
+        long[] billsIds = new long[bills.size()];
+        for (int i =0 ; i < bills.size() ; i++) {
+            billsIds[i] = bills.get(i).getId();
+        }
+        return billRepository.deleteBillsByIdInServer(Arrays.toString(billsIds));
+    }
+
+    //数据库添加时钟
     public void addBillsInDB(Bill... bills) {
         //在数据库中没有数据时尝试从无服务器中获取
         if (bills.length == 0) return;
         billRepository.addBillsToDB(bills);
     }
 
-    //更新时钟
+    //数据库添加时钟
+    public LiveData<ReturnData<Bill>> addBillInServer(Bill bill) {
+        if (bill == null) {
+            return new MutableLiveData<>(new ReturnData<>(RCodeEnum.DATA_ERROR));
+        }
+        return billRepository.addBillToServer(bill);
+    }
+
+    //数据库更新时钟
     public void upDateBillsInDB(Bill... bills) {
         //在数据库中没有数据时尝试从无服务器中获取
         if (bills.length == 0) return;
         billRepository.updateBills(bills);
     }
 
-    //更新时钟
+    //服务器更新时钟
     public LiveData<ReturnData<Object>> upDateBillInServer(Bill bill) {
         //在数据库中没有数据时尝试从无服务器中获取
         if (bill == null) return new MutableLiveData<>(new ReturnData<>(RCodeEnum.DATA_ERROR));

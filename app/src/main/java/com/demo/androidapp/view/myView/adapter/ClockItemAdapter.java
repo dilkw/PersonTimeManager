@@ -50,12 +50,11 @@ public class ClockItemAdapter extends RecyclerView.Adapter<ClockItemAdapter.MyVi
         notifyDataSetChanged();
     }
     //长按Item时弹出编辑菜单，删除按钮（删除所选择的）
-    public List<Clock> deleteSelectedClocks() {
+    public void deleteSelectedClocks() {
         allChecked = false;
-        if (editModelSelectedClocks.size() == 0)return null;
+        if (editModelSelectedClocks.size() == 0)return;
         clocks.removeAll(Objects.requireNonNull(editModelSelectedClocks));
         notifyDataSetChanged();
-        return editModelSelectedClocks;
     }
     //长按Item时弹出编辑菜单，全选按钮
     public void selectedAllClocks() {
@@ -73,6 +72,11 @@ public class ClockItemAdapter extends RecyclerView.Adapter<ClockItemAdapter.MyVi
     public void setClocks(List<Clock> clocks) {
         this.clocks.clear();
         this.clocks = clocks;
+        notifyDataSetChanged();
+    }
+
+    public void addClock(Clock clock) {
+        this.clocks.add(clock);
         notifyDataSetChanged();
     }
 

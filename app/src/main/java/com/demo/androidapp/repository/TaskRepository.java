@@ -22,6 +22,7 @@ import com.demo.androidapp.model.common.ReturnData;
 import com.demo.androidapp.model.returnObject.ReturnListObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -73,7 +74,9 @@ public class TaskRepository {
             public void onResponse(Call<ReturnData<ReturnListObject<Task>>> call, Response<ReturnData<ReturnListObject<Task>>> response) {
                 Log.d("imageView", "TaskRepository: 获取任务清单成功");
                 returnDataLiveData.postValue(new ReturnData<List<Task>>(response.body().getCode(),response.body().getMsg(),response.body().getData().getItems()));
-                deleteALLTasksAndAdd((Task[])(response.body().getData().getItems().toArray()));
+                Task[] taskArray = new Task[response.body().getData().getItems().size()];
+                response.body().getData().getItems().toArray(taskArray);
+                deleteALLTasksAndAdd(taskArray);
             }
             @Override
             public void onFailure(Call<ReturnData<ReturnListObject<Task>>> call, Throwable t) {
@@ -98,24 +101,10 @@ public class TaskRepository {
         new DeleteAllTasks(taskDao).execute(tasks);
     }
 
-    //在服务器中删除数据
-    public void deleteTaskByUidInServer(long taskId) {
-        Log.d("imageView", "deleteTaskByUidInServer: 服务器删除数据" + taskId);
-        api.deleteTask(taskId).enqueue(new Callback<ReturnData<Object>>() {
-            @Override
-            public void onResponse(Call<ReturnData<Object>> call, Response<ReturnData<Object>> response) {
-                Log.d("imageView", "deleteTaskByUidInServer: 服务器删除数据" + response.body().getCode());
-                if (response.body().getCode() != 200) {
-                    returnDataLiveData.postValue(new ReturnData<List<Task>>(RCodeEnum.DELETE_TASK_ERROR));
-                }
-                returnDataLiveData.postValue(new ReturnData<>(RCodeEnum.OK));
-            }
-
-            @Override
-            public void onFailure(Call<ReturnData<Object>> call, Throwable t) {
-                returnDataLiveData.postValue(new ReturnData<>(RCodeEnum.ERROR));
-            }
-        });
+    //在服务器中删除数据(可以多个)
+    public LiveData<ReturnData<Object>> deleteTaskByIdsInServer(String taskIds) {
+        Log.d("imageView", "deleteTaskByUidInServer: 服务器删除数据" + taskIds);
+        return api.deleteTasksByIds(taskIds);
     }
 
 
@@ -133,7 +122,7 @@ public class TaskRepository {
     }
 
     //添加到服务器任务列表
-    public LiveData<ReturnData<Object>> addTasksToServer(Task task) {
+    public LiveData<ReturnData<Task>> addTasksToServer(Task task) {
         return api.addTask(task);
     }
 

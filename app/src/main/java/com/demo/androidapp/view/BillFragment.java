@@ -35,6 +35,7 @@ import com.demo.androidapp.databinding.BillFragmentBinding;
 import com.demo.androidapp.model.common.RCodeEnum;
 import com.demo.androidapp.model.common.ReturnData;
 import com.demo.androidapp.model.entity.Bill;
+import com.demo.androidapp.model.entity.Clock;
 import com.demo.androidapp.view.myView.AddBillDialog;
 import com.demo.androidapp.view.myView.AddClockDialog;
 import com.demo.androidapp.view.myView.adapter.BillItemAdapter;
@@ -91,6 +92,7 @@ public class BillFragment extends Fragment implements View.OnClickListener {
         billsLiveData = billViewModel.getReturnLiveData();
         billViewModel.getAllBillsInServer();
         billsLiveData.observe(getViewLifecycleOwner(), new Observer<ReturnData<List<Bill>>>() {
+            @SuppressLint("ShowToast")
             @Override
             public void onChanged(ReturnData<List<Bill>> listReturnData) {
                 RCodeEnum rCodeEnum = RCodeEnum.returnRCodeEnumByCode(listReturnData.getCode());
@@ -163,16 +165,16 @@ public class BillFragment extends Fragment implements View.OnClickListener {
                     @Override
                     public void enterBtnOnClicked() {
                         billViewModel.upDateBillInServer(addBillDialog.getBill()).observe(getViewLifecycleOwner(), new Observer<ReturnData<Object>>() {
+                            @SuppressLint("ShowToast")
                             @Override
                             public void onChanged(ReturnData<Object> objectReturnData) {
                                 if (objectReturnData.getCode() == RCodeEnum.OK.getCode()) {
-                                    billViewModel.getAllBillsInServer();
+                                    Toast.makeText(getContext(),"更新成功",Toast.LENGTH_SHORT);
                                 }else {
                                     Toast.makeText(getContext(),objectReturnData.getMsg(),Toast.LENGTH_SHORT);
                                 }
                             }
                         });
-                        billsLiveData = billViewModel.getReturnLiveData();
                     }
                 });
                 addBillDialog.show(fragmentManager,"editBillDialog");
@@ -192,8 +194,7 @@ public class BillFragment extends Fragment implements View.OnClickListener {
                             @RequiresApi(api = Build.VERSION_CODES.O)
                             @Override
                             public void enterBtnOnClicked() {
-                                billViewModel.addBillsInDB(addBillDialog.getBill());
-                                billsLiveData = billViewModel.getReturnLiveData();
+                                addBill(addBillDialog.getBill());
                             }
                         });
                         addBillDialog.show(fragmentManager,"addBillDialogByMenu");
@@ -218,7 +219,17 @@ public class BillFragment extends Fragment implements View.OnClickListener {
             }
             case R.id.billDeleteImageButton: {
                 Log.d("imageView", "onClick: 删除按钮");
-                billViewModel.deleteClocksByUidInDB(billItemAdapter.deleteSelectedBills());
+                billViewModel.deleteClocksByIdsInServer(billItemAdapter.getEditModelSelectedBills()).observe(getViewLifecycleOwner(), new Observer<ReturnData<Object>>() {
+                    @Override
+                    public void onChanged(ReturnData<Object> objectReturnData) {
+                        if (objectReturnData.getCode() == RCodeEnum.OK.getCode()) {
+                            billItemAdapter.deleteSelectedBills();
+                            Toast.makeText(getContext(),"删除成功",Toast.LENGTH_SHORT).show();
+                        }else {
+                            Toast.makeText(getContext(),objectReturnData.getMsg(),Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
                 break;
             }
             case R.id.billAllSelectImageButton: {
@@ -234,8 +245,12 @@ public class BillFragment extends Fragment implements View.OnClickListener {
                     @RequiresApi(api = Build.VERSION_CODES.O)
                     @Override
                     public void enterBtnOnClicked() {
-                        billViewModel.addBillsInDB(addBillDialog.getBill());
-                        billsLiveData = billViewModel.getReturnLiveData();
+                        Bill bill = addBillDialog.getBill();
+                        if (bill.getId() == 0){
+                            addBill(bill);
+                        }else {
+                            upDateBill(bill);
+                        }
                     }
                 });
                 addBillDialog.show(fragmentManager,"addBillDialogByFloatingActionButton");
@@ -246,5 +261,40 @@ public class BillFragment extends Fragment implements View.OnClickListener {
                 break;
             }
         }
+    }
+
+    //添加账单方法
+    private void addBill(Bill bill) {
+        billViewModel.addBillInServer(bill).observe(getViewLifecycleOwner(), new Observer<ReturnData<Bill>>() {
+            @Override
+            public void onChanged(ReturnData<Bill> billReturnData) {
+                if (billReturnData.getCode() == RCodeEnum.OK.getCode()) {
+                    Toast.makeText(getContext(),"添加账单成功",Toast.LENGTH_SHORT).show();
+                    Log.d("imageView", "onChanged: " + billReturnData.getData().toString());
+                    billItemAdapter.addBill(billReturnData.getData());
+                    billViewModel.addBillsInDB(bill);
+                }else {
+                    Toast.makeText(getContext(),"添加账单失败",Toast.LENGTH_SHORT).show();
+                    Log.d("imageView",billReturnData.getCode() + billReturnData.getMsg());
+                }
+            }
+        });
+    }
+
+    //更新账单方法
+    private void upDateBill(Bill bill) {
+        billViewModel.upDateBillInServer(bill).observe(getViewLifecycleOwner(), new Observer<ReturnData<Object>>() {
+            @Override
+            public void onChanged(ReturnData<Object> billReturnData) {
+                if (billReturnData.getCode() == RCodeEnum.OK.getCode()) {
+                    Toast.makeText(getContext(),"更新账单成功",Toast.LENGTH_SHORT).show();
+                    Log.d("imageView", "onChanged: " + billReturnData.getData().toString());
+                    billViewModel.upDateBillsInDB(bill);
+                }else {
+                    Toast.makeText(getContext(),"更新账单失败",Toast.LENGTH_SHORT).show();
+                    Log.d("imageView",billReturnData.getCode() + billReturnData.getMsg());
+                }
+            }
+        });
     }
 }

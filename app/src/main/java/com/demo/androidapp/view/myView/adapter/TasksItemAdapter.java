@@ -48,12 +48,11 @@ public class TasksItemAdapter extends RecyclerView.Adapter<TasksItemAdapter.MyVi
         notifyDataSetChanged();
     }
     //长按Item时弹出编辑菜单，删除按钮（删除所选择的）
-    public List<Task> deleteSelectedTask() {
+    public void deleteSelectedTask() {
         allChecked = false;
-        if (editModelSelectedTasks.size() == 0)return null;
+        if (editModelSelectedTasks.size() == 0)return;
         tasks.removeAll(Objects.requireNonNull(editModelSelectedTasks));
         notifyDataSetChanged();
-        return editModelSelectedTasks;
     }
     //长按Item时弹出编辑菜单，全选按钮
     public void selectedAllTasks() {

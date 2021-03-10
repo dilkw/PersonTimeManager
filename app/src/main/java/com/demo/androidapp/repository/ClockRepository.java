@@ -20,6 +20,7 @@ import com.demo.androidapp.model.entity.Clock;
 import com.demo.androidapp.model.entity.Task;
 import com.demo.androidapp.model.returnObject.ReturnListObject;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -90,11 +91,11 @@ public class ClockRepository {
         new DeleteClocks(clockDao).execute(clocks);
     }
 
-    //在服务器中删除单个数据
-    public LiveData<ReturnData<Object>> deleteClockByClockIdInServer(long clockId) {
+    //在服务器中删除单个数据参数为数组形式的字符串"[1,2,3]"
+    public LiveData<ReturnData<Object>> deleteClockByClockIdInServer(String clockIds) {
         String uid = MyApplication.getApplication().getUID();
         Log.d("imageView", "getAllTaskByUidInDB: 数据库删除数据");
-        return api.deleteClock(clockId);
+        return api.deleteClock(clockIds);
     }
 
     //插入本地数据库任务列表
@@ -108,6 +109,11 @@ public class ClockRepository {
             e.printStackTrace();
         }
         return longs;
+    }
+
+    //插入本地数据库任务列表
+    public LiveData<ReturnData<Clock>> addClockToServer(Clock clock) {
+        return api.addClock(clock);
     }
 
     //更新本地数据库任务列表

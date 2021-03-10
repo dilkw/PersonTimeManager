@@ -107,6 +107,11 @@ public class BillRepository {
         new DeleteBills(billDao).execute(bills);
     }
 
+    //在服务器中删除数据参数为数组形式的字符串："[1,2]"
+    public LiveData<ReturnData<Object>> deleteBillsByIdInServer(String billIds) {
+        return api.deleteBillsByIds(billIds);
+    }
+
     //插入本地数据库任务列表
     public Long[] addBillsToDB(Bill... bills) {
         Long[] longs = null;
@@ -120,9 +125,14 @@ public class BillRepository {
         return longs;
     }
 
-    //更新本地数据库任务列表upDateBillsInServer
+    //插入数据到服务器
+    public LiveData<ReturnData<Bill>> addBillToServer(Bill bill) {
+        return api.addBill(bill);
+    }
+
+    //更新服务器账单upDateBillsInServer
     public LiveData<ReturnData<Object>> upDateBillInServer(Bill bill) {
-        return api.upDateBill(bill);
+        return api.updateBill(bill.getId(),bill);
     }
 
     //更新本地数据库任务列表

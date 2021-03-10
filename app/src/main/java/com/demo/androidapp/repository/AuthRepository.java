@@ -1,5 +1,6 @@
 package com.demo.androidapp.repository;
 
+import android.app.Application;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
@@ -10,6 +11,7 @@ import com.demo.androidapp.api.Api;
 import com.demo.androidapp.model.commitObject.RegisterCommit;
 import com.demo.androidapp.model.common.RCodeEnum;
 import com.demo.androidapp.model.common.ReturnData;
+import com.demo.androidapp.model.entity.User;
 import com.demo.androidapp.model.returnObject.LoginAndRegisterReturn;
 
 import retrofit2.Call;
@@ -24,7 +26,7 @@ public class AuthRepository {
 
     private AuthRepository authRepository;
 
-    public AuthRepository() {
+    public AuthRepository(Application application) {
         this.api = MyApplication.getApi();
         if (api == null) {
             Log.d("imageView", "AuthRepository: api为空==========");
@@ -33,7 +35,7 @@ public class AuthRepository {
 
     public AuthRepository getInstance() {
         if (authRepository == null) {
-            return new AuthRepository();
+            return null;
         }
         return this;
     }
@@ -133,6 +135,21 @@ public class AuthRepository {
 
     public MutableLiveData<ReturnData<LoginAndRegisterReturn>> getReturnDataLiveData() {
         return returnDataLiveData;
+    }
+
+    //获取用户信息
+    public LiveData<ReturnData<User>> getUserInfoLiveData() {
+        return api.getUserInfo();
+    }
+
+    //更新用户信息
+    public LiveData<ReturnData<Object>> upDateUserInfoLiveData(User user) {
+        return api.upDateUserInfo(user);
+    }
+
+    //注销用户信息
+    public LiveData<ReturnData<Object>> deleteUserInfoInServer() {
+        return null;
     }
 
 
