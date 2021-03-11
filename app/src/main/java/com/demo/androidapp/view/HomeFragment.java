@@ -171,6 +171,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         homeFragmentBinding.myFloatingActionButton.setOnClickListener(this);
         homeFragmentBinding.turnToClockFragmentBtn.setOnClickListener(this);
         homeFragmentBinding.turnToBillFragmentBtn.setOnClickListener(this);
+        homeFragmentBinding.turnToFriendFragmentBtn.setOnClickListener(this);
         tasksItemAdapter.setItemLongOnClickListener(new TasksItemAdapter.ItemLongOnClickListener() {
             @Override
             public void itemLongOnClick() {
@@ -231,6 +232,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             case R.id.turnToBillFragmentBtn:{
                 //跳转账单界面
                 controller.navigate(R.id.action_homeFragment_to_billFragment);
+                break;
+            }
+            case R.id.turnToFriendFragmentBtn:{
+                //跳转好友界面
+                controller.navigate(R.id.action_homeFragment_to_friendFragment);
                 break;
             }
             case R.id.loginOutBtn: {

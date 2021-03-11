@@ -55,7 +55,11 @@ public class BillRepository {
             @Override
             public void onResponse(Call<ReturnData<ReturnListObject<Bill>>> call, Response<ReturnData<ReturnListObject<Bill>>> response) {
                 returnDataLiveData.postValue(new ReturnData<List<Bill>>(response.body().getCode(),response.body().getMsg(),response.body().getData().getItems()));
-                DeleteALLBillsAndAdd((Bill[]) response.body().getData().getItems().toArray());
+                if (response.body().getData().getTotal() > 0) {
+                    Bill[] bills = new Bill[response.body().getData().getTotal()];
+                    response.body().getData().getItems().toArray(bills);
+                    deleteALLBillsAndAdd(bills);
+                }
             }
 
             @Override
@@ -94,10 +98,10 @@ public class BillRepository {
     }
 
     //在本地数据库中删除所有数据并更新数据
-    public void DeleteALLBillsAndAdd(Bill... bills) {
+    public void deleteALLBillsAndAdd(Bill... bills) {
         String uid = MyApplication.getApplication().getUID();
         Log.d("imageView", "getAllTaskByUidInDB: 数据库删除数据");
-        new DeleteALLBillsAndAdd(billDao).execute(bills);
+        new DeleteALLBillsAndAdd(billDao,this).execute(bills);
     }
 
     //在本地数据库中删除所有数据并更新数据
@@ -194,8 +198,11 @@ public class BillRepository {
 
         BillDao billDao;
 
-        DeleteALLBillsAndAdd(BillDao billDao) {
+        BillRepository billRepository;
+
+        DeleteALLBillsAndAdd(BillDao billDao,BillRepository billRepository) {
             this.billDao = billDao;
+            this.billRepository = billRepository;
         }
 
         Bill[] bills;
@@ -210,7 +217,7 @@ public class BillRepository {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            billDao.addBills(bills);
+            billRepository.addBillsToDB(this.bills);
         }
     }
 

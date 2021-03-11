@@ -43,6 +43,9 @@
         <action
             android:id="@+id/action_homeFragment_to_billFragment"
             app:destination="@id/billFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_friendFragment"
+            app:destination="@id/friendFragment" />
     </fragment>
     <fragment
         android:id="@+id/registerFragment"
@@ -75,4 +78,8 @@
         android:id="@+id/billFragment"
         android:name="com.demo.androidapp.view.BillFragment"
         android:label="BillFragment" />
+    <fragment
+        android:id="@+id/friendFragment"
+        android:name="com.demo.androidapp.view.FriendFragment"
+        android:label="FriendFragment" />
 </navigation>

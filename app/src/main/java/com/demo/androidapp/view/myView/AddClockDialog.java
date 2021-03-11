@@ -66,13 +66,13 @@ public class AddClockDialog extends DialogFragment implements View.OnClickListen
         if (!isAdd) {
             dialogTitle = "编辑时钟";
             addclockDialogBinding.addClockDialogTaskTextInputEditText.setText(clock.getTask());
-            addclockDialogBinding.addClockDialogMinuteTextInputEditText.setText("" + clock.getClock_minuet());
+            addclockDialogBinding.addClockDialogMinuteTextInputEditText.setText("" + clock.getClock_minute());
 
             addclockDialogBinding.addClockAlertTimeTextView.setText(dateTimeUtil.longToStrYMDHM(clock.getAlert_Time()));
             if (clock.isAlert()) {
                 addclockDialogBinding.addClockDialogAlertTimeLinearLayout.setVisibility(View.VISIBLE);
             }
-            addclockDialogBinding.addClockDialogMinuteTextInputEditText.setText("" + clock.getClock_minuet());
+            addclockDialogBinding.addClockDialogMinuteTextInputEditText.setText("" + clock.getClock_minute());
         }
         addclockDialogBinding.addClockDialogTitle.setText(dialogTitle);
         setListener();
@@ -140,7 +140,7 @@ public class AddClockDialog extends DialogFragment implements View.OnClickListen
     @RequiresApi(api = Build.VERSION_CODES.O)
     public Clock getClock() {
         clock.setTask(addclockDialogBinding.addClockDialogTaskTextInputEditText.getText().toString());
-        clock.setClock_minuet(Long.parseLong(addclockDialogBinding.addClockDialogMinuteTextInputEditText.getText().toString()));
+        clock.setClock_minute(Long.parseLong(addclockDialogBinding.addClockDialogMinuteTextInputEditText.getText().toString()));
         Log.d("imageView", "getClock: " + clock.toString());
         return clock;
     }

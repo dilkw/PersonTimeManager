@@ -58,6 +58,8 @@ public enum RCodeEnum {
 
     BAN_ACCOUNT_RESET(30015, "账号重置冻结"),
 
+    ERROR_ACCOUNT_CANCELLATION(30016, "激活注销失败"),
+
     ERROR_ADD_TODO(30500, "任务添加失败"),
 
     NULL_TODO(30501, "任务列表为空"),

@@ -1,13 +1,10 @@
 package com.demo.androidapp.api;
 
 import androidx.lifecycle.LiveData;
-import androidx.room.Delete;
-import androidx.room.Update;
 
-import com.demo.androidapp.model.Friend;
-import com.demo.androidapp.model.commitObject.UpdateTaskCommit;
 import com.demo.androidapp.model.entity.Bill;
 import com.demo.androidapp.model.entity.Clock;
+import com.demo.androidapp.model.entity.Friend;
 import com.demo.androidapp.model.entity.Task;
 import com.demo.androidapp.model.commitObject.RegisterCommit;
 import com.demo.androidapp.model.common.ReturnData;
@@ -15,20 +12,15 @@ import com.demo.androidapp.model.entity.User;
 import com.demo.androidapp.model.returnObject.LoginAndRegisterReturn;
 import com.demo.androidapp.model.returnObject.ReturnListObject;
 
-import java.util.List;
-
-import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.HTTP;
-import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
-import retrofit2.http.Query;
 
 public interface Api {
 
@@ -148,8 +140,9 @@ public interface Api {
     Call<ReturnData<ReturnListObject<Friend>>> getAllFriends();
 
     //添加好友
-    @POST("friend/{billId}")
-    LiveData<ReturnData<Friend>> addFriend(@Body Friend friend);
+    @FormUrlEncoded
+    @POST("friend/add")
+    LiveData<ReturnData<Friend>> addFriend(@Field("email") String friendEmail);
 
     //删除好友
     @HTTP(method = "DELETE", path = "friend/{ids}", hasBody = false)

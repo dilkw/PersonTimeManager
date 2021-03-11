@@ -33,7 +33,7 @@ public class ActiveViewModel extends AndroidViewModel {
         super(application);
         this.codesLiveData = new MutableLiveData<String>();
         codesLiveData.setValue("");
-        authRepository = new AuthRepository();
+        authRepository = new AuthRepository(application);
     }
 
     public void setCodesLiveData(MutableLiveData<String> codesLiveData) {

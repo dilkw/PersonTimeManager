@@ -16,6 +16,7 @@ import com.demo.androidapp.db.TaskDao;
 import com.demo.androidapp.model.commitObject.UpdateTaskCommit;
 import com.demo.androidapp.model.entity.Bill;
 import com.demo.androidapp.model.entity.Clock;
+import com.demo.androidapp.model.entity.Friend;
 import com.demo.androidapp.model.entity.Task;
 import com.demo.androidapp.model.common.RCodeEnum;
 import com.demo.androidapp.model.common.ReturnData;
@@ -74,9 +75,11 @@ public class TaskRepository {
             public void onResponse(Call<ReturnData<ReturnListObject<Task>>> call, Response<ReturnData<ReturnListObject<Task>>> response) {
                 Log.d("imageView", "TaskRepository: 获取任务清单成功");
                 returnDataLiveData.postValue(new ReturnData<List<Task>>(response.body().getCode(),response.body().getMsg(),response.body().getData().getItems()));
-                Task[] taskArray = new Task[response.body().getData().getItems().size()];
-                response.body().getData().getItems().toArray(taskArray);
-                deleteALLTasksAndAdd(taskArray);
+                if (response.body().getData().getTotal() > 0) {
+                    Task[] tasks = new Task[response.body().getData().getTotal()];
+                    response.body().getData().getItems().toArray(tasks);
+                    deleteALLTasksAndAdd(tasks);
+                }
             }
             @Override
             public void onFailure(Call<ReturnData<ReturnListObject<Task>>> call, Throwable t) {
@@ -209,15 +212,18 @@ public class TaskRepository {
 
 
     private void deleteALLTasksAndAdd(Task ... tasks) {
-        new DeleteALLTasksAndAdd(taskDao).equals(tasks);
+        new DeleteALLTasksAndAdd(taskDao,this).equals(tasks);
     }
     //删除并更新数据
     public static class DeleteALLTasksAndAdd extends AsyncTask<Task,Void,Void> {
 
         TaskDao taskDao;
 
-        DeleteALLTasksAndAdd(TaskDao taskDao) {
+        TaskRepository taskRepository;
+
+        DeleteALLTasksAndAdd(TaskDao taskDao,TaskRepository taskRepository) {
             this.taskDao = taskDao;
+            this.taskRepository = taskRepository;
         }
 
         Task[] tasks;
@@ -232,7 +238,7 @@ public class TaskRepository {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            taskDao.addTasks(tasks);
+            taskRepository.addTasksToDB(tasks);
         }
     }
 

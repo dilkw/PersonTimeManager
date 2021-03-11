@@ -15,50 +15,57 @@ import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.demo.androidapp.R;
-import com.demo.androidapp.model.entity.Clock;
+import com.demo.androidapp.model.entity.Bill;
+import com.demo.androidapp.model.entity.Friend;
 import com.demo.androidapp.util.DateTimeUtil;
-import com.google.android.material.button.MaterialButton;
+import com.google.android.material.imageview.ShapeableImageView;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class ClockItemAdapter extends RecyclerView.Adapter<ClockItemAdapter.MyViewHolder> {
+public class FriendItemAdapter extends RecyclerView.Adapter<FriendItemAdapter.MyViewHolder> {
 
     private boolean isShow = false;
 
     private boolean allChecked = false;
 
-    private List<Clock> clocks;
+    private List<Friend> friends;
 
-    private List<Clock> editModelSelectedClocks;
+    private List<Friend> editModelSelectedFriends;
 
     private ItemLongOnClickListener itemLongOnClickListener;
 
     private ItemOnClickListener itemOnClickListener;
 
-    public List<Clock> getEditModelSelectedTasks() {
-        return editModelSelectedClocks;
+    public List<Friend> getEditModelSelectedBills() {
+        return editModelSelectedFriends;
     }
 
     private DateTimeUtil dateTimeUtil;
 
     //长按Item时弹出编辑菜单，取消按钮（删除所选择的）
-    public void cancelTask() {
+    public void cancelFriend() {
         isShow = false;
         allChecked = false;
         notifyDataSetChanged();
     }
     //长按Item时弹出编辑菜单，删除按钮（删除所选择的）
-    public void deleteSelectedClocks() {
+    public void deleteSelectedFriends() {
         allChecked = false;
-        if (editModelSelectedClocks.size() == 0)return;
-        clocks.removeAll(Objects.requireNonNull(editModelSelectedClocks));
+        if (editModelSelectedFriends.size() == 0)return ;
+        friends.removeAll(Objects.requireNonNull(editModelSelectedFriends));
         notifyDataSetChanged();
     }
     //长按Item时弹出编辑菜单，全选按钮
-    public void selectedAllClocks() {
+    public void selectedAllFriends() {
         allChecked = true;
+        notifyDataSetChanged();
+    }
+
+    //添加账单
+    public void addFriend(Friend friend) {
+        this.friends.add(friend);
         notifyDataSetChanged();
     }
 
@@ -69,14 +76,10 @@ public class ClockItemAdapter extends RecyclerView.Adapter<ClockItemAdapter.MyVi
         this.itemOnClickListener = itemOnClickListener;
     }
 
-    public void setClocks(List<Clock> clocks) {
-        this.clocks.clear();
-        this.clocks = clocks;
-        notifyDataSetChanged();
-    }
-
-    public void addClock(Clock clock) {
-        this.clocks.add(clock);
+    public void setFriends(List<Friend> friends) {
+        this.friends.clear();
+        if (friends == null || friends.size() == 0)return ;
+        this.friends.addAll(friends);
         notifyDataSetChanged();
     }
 
@@ -85,10 +88,10 @@ public class ClockItemAdapter extends RecyclerView.Adapter<ClockItemAdapter.MyVi
         notifyDataSetChanged();
     }
 
-    public ClockItemAdapter(List<Clock> clocks) {
-        Log.d("imageView", "TasksItemAdapter: 数据长度：" + clocks.size());
-        this.clocks = clocks;
-        editModelSelectedClocks = new ArrayList<>();
+    public FriendItemAdapter(List<Friend> friends) {
+        Log.d("imageView", "TasksItemAdapter: 数据长度：" + friends.size());
+        this.friends = friends;
+        editModelSelectedFriends = new ArrayList<>();
         dateTimeUtil = new DateTimeUtil();
     }
 
@@ -96,7 +99,7 @@ public class ClockItemAdapter extends RecyclerView.Adapter<ClockItemAdapter.MyVi
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        View view = layoutInflater.inflate(R.layout.clock_item,parent,false);
+        View view = layoutInflater.inflate(R.layout.friend_item,parent,false);
         return new MyViewHolder(view);
     }
 
@@ -104,75 +107,70 @@ public class ClockItemAdapter extends RecyclerView.Adapter<ClockItemAdapter.MyVi
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        Clock clock = clocks.get(position);
-        holder.clockTaskTextView.setText(clock.getTask());
-        Log.d("imageView", "onBindViewHolder: " + clock.getClock_minute() + "分钟");
-        holder.clockMinuteTextView.setText(clock.getClock_minute() + "分钟");
-        holder.checkBox.setVisibility(isShow ? View.VISIBLE : View.GONE);
-        holder.clockAlertTimeTextView.setText(dateTimeUtil.longToStrYMDHM(clock.getAlert_Time()));
-        holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        Friend friend = friends.get(position);
+        Log.d("imageView", "onBindViewHolder: " + friend.toString());
+        holder.friendItemFNameTextView.setText(friend.getFriend_name());
+        holder.friendItemImageView.setImageResource(R.drawable.background);
+        holder.itemFriendCheckBox.setVisibility(isShow ? View.VISIBLE : View.GONE);
+        holder.itemFriendCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    editModelSelectedClocks.add(clocks.get(position));
+                    editModelSelectedFriends.add(friends.get(position));
                 }else {
-                    editModelSelectedClocks.remove(clocks.get(position));
+                    editModelSelectedFriends.remove(friends.get(position));
                 }
             }
         });
         if (isShow) {
-            holder.checkBox.setChecked(allChecked);
+            holder.itemFriendCheckBox.setChecked(allChecked);
         }
-        holder.clockTaskTextView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                if (itemLongOnClickListener == null)return false;
-                if (editModelSelectedClocks == null) {
-                    editModelSelectedClocks = new ArrayList<>();
-                }
-                itemLongOnClickListener.itemLongOnClick();
-                return false;
-            }
-        });
 
-        holder.clockTaskTextView.setOnClickListener(new View.OnClickListener() {
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (itemOnClickListener == null) return;
                 itemOnClickListener.itemOnClick(position);
             }
         });
+
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                if (itemLongOnClickListener == null) return false;
+                itemLongOnClickListener.itemLongOnClick();
+                return false;
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
-        return clocks == null ? 0 : clocks.size();
+        return friends == null ? 0 : friends.size();
     }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
 
         public View itemView;
-        public TextView clockTaskTextView;
-        public TextView clockMinuteTextView;
-        public MaterialButton clockStartButton;
-        public CheckBox checkBox;
-        public TextView clockAlertTimeTextView;
+        public TextView friendItemFNameTextView;
+        public ShapeableImageView friendItemImageView;
+        public CheckBox itemFriendCheckBox;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
             this.itemView = itemView;
-            this.clockTaskTextView = itemView.findViewById(R.id.clockTaskTextView);
-            this.clockMinuteTextView = itemView.findViewById(R.id.clockMinuteTextView);
-            this.clockStartButton = itemView.findViewById(R.id.clockStartButton);
-            this.checkBox = itemView.findViewById(R.id.clockItemCheckBox);
-            this.clockAlertTimeTextView = itemView.findViewById(R.id.clockAlertTimeTextView);
+            this.friendItemFNameTextView = itemView.findViewById(R.id.friendItemFNameTextView);
+            this.friendItemImageView = itemView.findViewById(R.id.friendItemImageView);
+            this.itemFriendCheckBox = itemView.findViewById(R.id.itemFriend_checkBox);
         }
     }
 
+    //item长按接口
     public interface ItemLongOnClickListener {
         void itemLongOnClick();
     }
 
+    //item点击接口
     public interface ItemOnClickListener {
         void itemOnClick(int position);
     }

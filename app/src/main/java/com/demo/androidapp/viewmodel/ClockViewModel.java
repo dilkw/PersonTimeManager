@@ -57,6 +57,10 @@ public class ClockViewModel extends AndroidViewModel {
         clockRepository.deleteClocksByUidInDB(clockArray);
     }
 
+    public void deleteALLClocksAndAdd() {
+        clockRepository.deleteALLClocksAndAdd();
+    }
+
     //在数据库中添加时钟
     public void addClocksInDB(Clock... clocks) {
         //在数据库中没有数据时尝试从无服务器中获取

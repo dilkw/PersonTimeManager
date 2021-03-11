@@ -57,7 +57,11 @@ public class ClockRepository {
             @Override
             public void onResponse(Call<ReturnData<ReturnListObject<Clock>>> call, Response<ReturnData<ReturnListObject<Clock>>> response) {
                 returnDataLiveData.postValue(new ReturnData<List<Clock>>(response.body().getCode(),response.body().getMsg(),response.body().getData().getItems()));
-                deleteALLClocksAndAdd((Clock[]) response.body().getData().getItems().toArray());
+                if (response.body().getData().getTotal() > 0) {
+                    Clock[] clocks = new Clock[response.body().getData().getTotal()];
+                    response.body().getData().getItems().toArray(clocks);
+                    deleteALLClocksAndAdd(clocks);
+                }
             }
 
             @Override
@@ -87,14 +91,14 @@ public class ClockRepository {
     //在本地数据库中删除多个数据
     public void deleteClocksByUidInDB(Clock... clocks) {
         String uid = MyApplication.getApplication().getUID();
-        Log.d("imageView", "getAllTaskByUidInDB: 数据库删除数据");
+        Log.d("imageView", "deleteClocksByUidInDB: 数据库删除数据");
         new DeleteClocks(clockDao).execute(clocks);
     }
 
     //在服务器中删除单个数据参数为数组形式的字符串"[1,2,3]"
     public LiveData<ReturnData<Object>> deleteClockByClockIdInServer(String clockIds) {
         String uid = MyApplication.getApplication().getUID();
-        Log.d("imageView", "getAllTaskByUidInDB: 数据库删除数据");
+        Log.d("imageView", "deleteClockByClockIdInServer: 删除数据" + clockIds);
         return api.deleteClock(clockIds);
     }
 
@@ -172,16 +176,19 @@ public class ClockRepository {
     }
 
     //删除并更新数据
-    private void deleteALLClocksAndAdd(Clock... clocks) {
-        new DeleteALLClocksAndAdd(clockDao).equals(clocks);
+    public void deleteALLClocksAndAdd(Clock... clocks) {
+        new DeleteALLClocksAndAdd(clockDao,this).equals(clocks);
     }
     //删除并更新数据
     public static class DeleteALLClocksAndAdd extends AsyncTask<Clock,Void,Void> {
 
         ClockDao clockDao;
 
-        DeleteALLClocksAndAdd(ClockDao clockDao) {
+        ClockRepository clockRepository;
+
+        DeleteALLClocksAndAdd(ClockDao clockDao,ClockRepository clockRepository) {
             this.clockDao = clockDao;
+            this.clockRepository = clockRepository;
         }
 
         Clock[] clocks;
@@ -196,7 +203,7 @@ public class ClockRepository {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            clockDao.addClocks(clocks);
+            clockRepository.addClocksToDB(clocks);
         }
     }
 

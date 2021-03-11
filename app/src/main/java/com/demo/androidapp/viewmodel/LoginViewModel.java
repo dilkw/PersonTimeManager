@@ -37,7 +37,7 @@ public class LoginViewModel extends AndroidViewModel {
         super(application);
         this.authLiveData = new MutableLiveData<Auth>();
         this.authLiveData.setValue(new Auth());
-        this.authRepository = new AuthRepository();
+        this.authRepository = new AuthRepository(application);
     }
     // TODO: Implement the ViewModel
 
@@ -68,7 +68,6 @@ public class LoginViewModel extends AndroidViewModel {
         public void onClick(View v) {
             Log.d("imageView","ViewModel-----login");
             StringBuilder token = new StringBuilder();
-            AuthRepository authRepository = new AuthRepository();
             Log.d("imageView",authLiveData.getValue().getUserName() + authLiveData.getValue().getPassword());
             authRepository.login(authLiveData.getValue().getUserName(),authLiveData.getValue().getPassword());
         }

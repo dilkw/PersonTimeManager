@@ -105,11 +105,12 @@ public class ClockFragment extends Fragment implements View.OnClickListener {
                 }
             }
         });
-        getAllClocksLiveDataInDB();
+        //getAllClocksLiveDataInDB();
         setListener();
     }
 
     private void getAllClocksLiveDataInDB() {
+        clocksLiveData = clockViewModel.getAllClocksLiveDataInDB();
         clocksLiveData.observe(getViewLifecycleOwner(), new Observer<List<Clock>>() {
             @Override
             public void onChanged(List<Clock> clocks) {
@@ -173,13 +174,14 @@ public class ClockFragment extends Fragment implements View.OnClickListener {
         clockItemAdapter.setItemOnClickListener(new ClockItemAdapter.ItemOnClickListener() {
             @Override
             public void itemOnClick(int position) {
-                Log.d("imageView", "setListener: " + clocksLiveData.getValue().get(position).toString());
-                AddClockDialog addClockDialog = new AddClockDialog(clocksLiveData.getValue().get(position));
+                Log.d("imageView", "setListener: " + clockViewModel.getReturnLiveData().getValue().getData().get(position).toString());
+                AddClockDialog addClockDialog = new AddClockDialog(clockViewModel.getReturnLiveData().getValue().getData().get(position));
                 addClockDialog.setEnterClicked(new AddClockDialog.EnterListener() {
                     @RequiresApi(api = Build.VERSION_CODES.O)
                     @Override
                     public void enterBtnOnClicked() {
-                        upDateClock(addClockDialog.getClock());
+                        Clock clock = addClockDialog.getClock();
+                        upDateClock(clock,position);
                     }
                 });
                 addClockDialog.show(fragmentManager,"editClockDialog");
@@ -255,11 +257,7 @@ public class ClockFragment extends Fragment implements View.OnClickListener {
                     @Override
                     public void enterBtnOnClicked() {
                         Clock clock = addClockDialog.getClock();
-                        if (clock.getId() == 0) {
-                            addClock(clock);
-                        }else {
-                            upDateClock(clock);
-                        }
+                        addClock(clock);
                     }
                 });
                 addClockDialog.show(fragmentManager,"addClockDialogByFloatingActionButton");
@@ -280,7 +278,7 @@ public class ClockFragment extends Fragment implements View.OnClickListener {
                     Toast.makeText(getContext(),"添加时钟成功",Toast.LENGTH_SHORT).show();
                     Log.d("imageView", "onChanged: " + clockReturnData.getData().toString());
                     clockItemAdapter.addClock(clockReturnData.getData());
-                    clockViewModel.addClocksInDB(clock);
+                    clockViewModel.addClocksInDB(clockReturnData.getData());
                 }else {
                     Toast.makeText(getContext(),"添加时钟失败",Toast.LENGTH_SHORT).show();
                     Log.d("imageView",clockReturnData.getCode() + clockReturnData.getMsg());
@@ -289,13 +287,13 @@ public class ClockFragment extends Fragment implements View.OnClickListener {
         });
     }
 
-    private void upDateClock(Clock clock) {
+    private void upDateClock(Clock clock,int position) {
         clockViewModel.upDateClocksInServer(clock).observe(getViewLifecycleOwner(), new Observer<ReturnData<Object>>() {
             @Override
             public void onChanged(ReturnData<Object> clockReturnData) {
                 if (clockReturnData.getCode() == RCodeEnum.OK.getCode()) {
                     Toast.makeText(getContext(),"更新时钟成功",Toast.LENGTH_SHORT).show();
-                    Log.d("imageView", "onChanged: " + clockReturnData.getData().toString());
+                    clockItemAdapter.notifyItemChanged(position,clock);
                     clockViewModel.upDateClocksInDB(clock);
                 }else {
                     Toast.makeText(getContext(),"更新时钟失败",Toast.LENGTH_SHORT).show();

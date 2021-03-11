@@ -26,7 +26,7 @@ public class ResetPasswordViewModel extends AndroidViewModel {
 
     public ResetPasswordViewModel(@NonNull Application application){
         super(application);
-        authRepository = new AuthRepository();
+        authRepository = new AuthRepository(application);
         resetPwdMutableLiveData = new MutableLiveData();
     }
 

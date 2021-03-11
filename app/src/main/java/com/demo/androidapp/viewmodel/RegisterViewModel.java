@@ -31,7 +31,7 @@ public class RegisterViewModel extends AndroidViewModel {
         super(application);
         registerCommitLiveData = new MutableLiveData<>();
         registerCommitLiveData.setValue(new RegisterCommit());
-        authRepository = new AuthRepository();
+        authRepository = new AuthRepository(application);
     }
 
     //注册方法

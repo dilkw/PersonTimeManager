@@ -108,7 +108,7 @@ public class UserInfoFragment extends Fragment implements View.OnClickListener {
             }
             case R.id.billDeleteImageButton: {
                 Log.d("imageView", "onClick: 删除按钮");
-                billViewModel.deleteClocksByUidInDB(billItemAdapter.deleteSelectedBills());
+//                billViewModel.deleteClocksByUidInDB(billItemAdapter.deleteSelectedBills());
                 break;
             }
             case R.id.billAllSelectImageButton: {

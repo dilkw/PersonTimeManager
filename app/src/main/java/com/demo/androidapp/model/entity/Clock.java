@@ -24,8 +24,8 @@ public class Clock {
     private long created_at;
 
     //创建时间
-    @ColumnInfo(name = "clock_minuet")
-    private long clock_minuet;
+    @ColumnInfo(name = "clock_minute")
+    private long clock_minute;
 
     //用户uid
     @ColumnInfo(name = "uid")
@@ -51,10 +51,10 @@ public class Clock {
     public Clock() {
     }
 
-    public Clock(long id, long created_at, long clock_minuet, String userId, String task, boolean state, boolean alert, long alert_Time) {
+    public Clock(long id, long created_at, long clock_minute, String userId, String task, boolean state, boolean alert, long alert_Time) {
         this.id = id;
         this.created_at = created_at;
-        this.clock_minuet = clock_minuet;
+        this.clock_minute = clock_minute;
         this.userId = userId;
         this.task = task;
         this.state = state;
@@ -78,12 +78,12 @@ public class Clock {
         this.created_at = created_at;
     }
 
-    public long getClock_minuet() {
-        return clock_minuet;
+    public long getClock_minute() {
+        return clock_minute;
     }
 
-    public void setClock_minuet(long clock_minuet) {
-        this.clock_minuet = clock_minuet;
+    public void setClock_minute(long clock_minute) {
+        this.clock_minute = clock_minute;
     }
 
     public String getUserId() {
@@ -132,7 +132,7 @@ public class Clock {
         return "Clock{" +
                 "id=" + id +
                 ", created_at=" + created_at +
-                ", clockMinuet=" + clock_minuet +
+                ", clockMinuet=" + clock_minute +
                 ", userId='" + userId + '\'' +
                 ", task='" + task + '\'' +
                 ", state=" + state +
