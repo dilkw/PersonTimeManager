@@ -10,39 +10,30 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.SearchView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.widget.Toolbar;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
-import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.demo.androidapp.R;
-import com.demo.androidapp.databinding.BillFragmentBinding;
-import com.demo.androidapp.model.entity.Bill;
-import com.demo.androidapp.view.myView.AddBillDialog;
-import com.demo.androidapp.view.myView.adapter.BillItemAdapter;
-import com.demo.androidapp.viewmodel.BillViewModel;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.demo.androidapp.databinding.UserinfoFragmentBinding;
+import com.demo.androidapp.model.entity.User;
+import com.demo.androidapp.viewmodel.UserInfoViewModel;
 
 public class UserInfoFragment extends Fragment implements View.OnClickListener {
 
-    private BillViewModel billViewModel;
+    private UserInfoViewModel userInfoViewModel;
 
-    private BillFragmentBinding billFragmentBinding;
+    private UserinfoFragmentBinding userinfoFragmentBinding;
 
     private FragmentManager fragmentManager;
 
@@ -50,9 +41,7 @@ public class UserInfoFragment extends Fragment implements View.OnClickListener {
 
     private NavController controller;
 
-    private BillItemAdapter billItemAdapter;
-
-    private LiveData<List<Bill>> billsLiveData;
+    private LiveData<User> userInfoLiveData;
 
     private AppBarConfiguration appBarConfiguration;
 
@@ -63,16 +52,16 @@ public class UserInfoFragment extends Fragment implements View.OnClickListener {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        billFragmentBinding = DataBindingUtil.inflate(inflater,R.layout.bill_fragment,container,false);
-        billViewModel = new ViewModelProvider(this).get(BillViewModel.class);
-        View view = billFragmentBinding.getRoot();
-        Log.d("imageView", "onCreateView: " + view.getClass().getSimpleName());
+        userinfoFragmentBinding = DataBindingUtil.inflate(inflater,R.layout.userinfo_fragment,container,false);
+        userInfoViewModel = new ViewModelProvider(this).get(UserInfoViewModel.class);
+        View view = userinfoFragmentBinding.getRoot();
+        Log.d("imageView", "onCreateView: userInfo_fragment " + view.getClass().getSimpleName());
         fragmentManager = requireActivity().getSupportFragmentManager();
         navHostFragment = (NavHostFragment)fragmentManager.findFragmentById(R.id.fragment);
         assert navHostFragment != null;
         controller = navHostFragment.getNavController();
         appBarConfiguration = new AppBarConfiguration.Builder(controller.getGraph()).build();
-        NavigationUI.setupWithNavController(billFragmentBinding.billFragmentToolBar,controller,appBarConfiguration);
+        NavigationUI.setupWithNavController(userinfoFragmentBinding.userInfoFragmentToolBar,controller,appBarConfiguration);
         return view;
     }
 
@@ -80,19 +69,15 @@ public class UserInfoFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-    }
-
-    @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        return super.onOptionsItemSelected(item);
+        Log.d("imageView", "onCreateView: userInfo_fragment ");
+        userInfoViewModel.getUserInfoLiveData();
     }
 
     public void setListener() {
+        userinfoFragmentBinding.userInfoImageView.setOnClickListener(this);
+        userinfoFragmentBinding.userInfoEditNameButton.setOnClickListener(this);
+        userinfoFragmentBinding.userInfoResetEmailButton.setOnClickListener(this);
+        userinfoFragmentBinding.userInfoCancellationButton.setOnClickListener(this);
     }
 
     @SuppressLint({"NonConstantResourceId", "ResourceAsColor"})
@@ -100,33 +85,20 @@ public class UserInfoFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.billCancelImageButton: {
-                Log.d("imageView", "onClick: 取消按钮");
-                billItemAdapter.cancelBill();
-                billFragmentBinding.billItemLongClickEditWindow.setVisibility(View.GONE);
+            case R.id.userInfoImageView: {
+                Log.d("imageView", "onClick: 用户头像点击");
                 break;
             }
-            case R.id.billDeleteImageButton: {
-                Log.d("imageView", "onClick: 删除按钮");
-//                billViewModel.deleteClocksByUidInDB(billItemAdapter.deleteSelectedBills());
+            case R.id.userInfoEditNameButton: {
+                Log.d("imageView", "onClick: 更改昵称按钮");
                 break;
             }
-            case R.id.billAllSelectImageButton: {
-                Log.d("imageView", "onClick: 全选按钮");
-                billFragmentBinding.billAllSelectImageButton.setBackgroundColor(R.color.colorTextTrue);
-                billItemAdapter.selectedAllBills();
+            case R.id.userInfoResetEmailButton: {
+                Log.d("imageView", "onClick: 更改邮箱按钮");
                 break;
             }
-            case R.id.billMyFloatingActionButton: {
-                Log.d("imageView", "onClick: 添加按钮");
-                AddBillDialog addBillDialog = new AddBillDialog();
-                addBillDialog.setEnterClicked(new AddBillDialog.EnterListener() {
-                    @RequiresApi(api = Build.VERSION_CODES.O)
-                    @Override
-                    public void enterBtnOnClicked() {
-                    }
-                });
-                addBillDialog.show(fragmentManager,"addBillDialogByFloatingActionButton");
+            case R.id.userInfoCancellationButton: {
+                Log.d("imageView", "onClick: 注销帐号按钮");
                 break;
             }
             default:{

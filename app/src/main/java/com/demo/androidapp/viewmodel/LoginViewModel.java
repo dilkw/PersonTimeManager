@@ -35,6 +35,7 @@ public class LoginViewModel extends AndroidViewModel {
 
     public LoginViewModel(@NonNull Application application) {
         super(application);
+        Log.d("imageView", "LoginViewModel:-=-=-=-=-= " + application.getClass().getName());
         this.authLiveData = new MutableLiveData<Auth>();
         this.authLiveData.setValue(new Auth());
         this.authRepository = new AuthRepository(application);

@@ -17,20 +17,20 @@ import java.time.format.DateTimeFormatter;
 public class DateTimeUtil {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public String intToStrDateTime(int year, int moth, int day, int hour, int minute) {
+    public static String intToStrDateTime(int year, int moth, int day, int hour, int minute) {
         LocalDateTime localDateTime = LocalDateTime.of(year,moth,day,hour,minute);
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         return localDateTime.format(dateTimeFormatter);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public LocalDateTime intToLocalDateTime(int year, int moth, int day, int hour, int minute) {
+    public static LocalDateTime intToLocalDateTime(int year, int moth, int day, int hour, int minute) {
         LocalDateTime localDateTime = LocalDateTime.of(year,moth,day,hour,minute);
         return localDateTime;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public long intToLong(int year, int moth, int day, int hour, int minute) {
+    public static long intToLong(int year, int moth, int day, int hour, int minute) {
         LocalDateTime localDateTime = LocalDateTime.of(year,moth,day,hour,minute);
         ZoneId zone = ZoneId.systemDefault();
         Instant instant = localDateTime.atZone(zone).toInstant();
@@ -38,7 +38,7 @@ public class DateTimeUtil {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public Date intToDateTime(int year, int moth, int day, int hour, int minute) {
+    public static Date intToDateTime(int year, int moth, int day, int hour, int minute) {
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         LocalDateTime localDateTime = LocalDateTime.of(year,moth,day,hour,minute);
         String str = localDateTime.format(dateTimeFormatter);
@@ -46,20 +46,20 @@ public class DateTimeUtil {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public String sqlDateToStrYMDHM(Date sqlDate) {
+    public static String sqlDateToStrYMDHM(Date sqlDate) {
         @SuppressLint("SimpleDateFormat")
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         return format.format(sqlDate);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public String utilDateToStrYMDHM(java.util.Date utilDate) {
+    public static String utilDateToStrYMDHM(java.util.Date utilDate) {
         @SuppressLint("SimpleDateFormat")
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         return format.format(utilDate);
     }
 
-    public String strToDateFormatYMDHM(String str){
+    public static String strToDateFormatYMDHM(String str){
         @SuppressLint("SimpleDateFormat")
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         java.util.Date date = null;
@@ -75,7 +75,7 @@ public class DateTimeUtil {
 
     //将long类型转换成LocalDateTime
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public LocalDateTime longToLocalDateTime(long l) {
+    public static LocalDateTime longToLocalDateTime(long l) {
         Instant instant = Instant.ofEpochMilli(l);
         ZoneId zone = ZoneId.systemDefault();
         return LocalDateTime.ofInstant(instant, zone);
@@ -83,7 +83,7 @@ public class DateTimeUtil {
 
     //将long类型转换成字符串（年-月-日 时:分)格式
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public String longToStrYMDHM(long l) {
+    public static String longToStrYMDHM(long l) {
         if (l == 0) {
             return "";
         }
@@ -93,7 +93,7 @@ public class DateTimeUtil {
 
     //将字符串（年-月-日 时:分)格式类型转换成long
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public long strToLong(String dateStr) {
+    public static long strToLong(String dateStr) {
         if (dateStr == null || dateStr.equals("")) {
             return 0;
         }
@@ -105,7 +105,7 @@ public class DateTimeUtil {
 
     //将LocalDateTime类型转换成long(毫秒)
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public long localDateTimeToLong(LocalDateTime localDateTime) {
+    public static long localDateTimeToLong(LocalDateTime localDateTime) {
         ZoneId zone = ZoneId.systemDefault();
         Instant instant = localDateTime.atZone(zone).toInstant();
         return instant.toEpochMilli();
@@ -113,14 +113,14 @@ public class DateTimeUtil {
 
     //将LocalDateTime类型转换成long(秒)
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public long localDateTimeToSecLong(LocalDateTime localDateTime) {
+    public static long localDateTimeToSecLong(LocalDateTime localDateTime) {
         ZoneId zone = ZoneId.systemDefault();
         Instant instant = localDateTime.atZone(zone).toInstant();
         return instant.toEpochMilli() / 1000L;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public String localDateTimeToStrYMDHM(LocalDateTime localDateTime) {
+    public static String localDateTimeToStrYMDHM(LocalDateTime localDateTime) {
         String string = longToStrYMDHM(localDateTimeToLong(localDateTime) / 1000L);
         return string;
     }

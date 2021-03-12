@@ -15,7 +15,7 @@ public class Auth {
 
     public Auth() {
         this.userName = "aaaaa";
-        this.password = "aaaaaaaa";
+        this.password = "123456aa";
         this.uid = "123456";
         this.cookieStr = "";
     }

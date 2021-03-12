@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/userInfoSearch"
+        android:icon="@drawable/ic_home_toolbar_search"
+        android:title="@string/homeFragmentToolBarSearchMenuTitle"
+        app:actionViewClass="android.widget.SearchView"
+        android:contentDescription="@string/addTask_DeleteImgContentDescription"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/userInfoAdd"
+        android:icon="@drawable/ic_addclock_btnic_24"
+        android:title="添加"
+        android:contentDescription="@string/addTask_DeleteImgContentDescription"
+        app:showAsAction="ifRoom" />
+
+</menu>

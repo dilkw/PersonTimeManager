@@ -63,8 +63,6 @@ public class AddTaskFragment extends Fragment implements View.OnClickListener {
 
     private FragmentManager fragmentManager;
 
-    private DateTimeUtil dateTimeUtil;
-
     private boolean isAddTask = true;
 
     @Override
@@ -83,14 +81,13 @@ public class AddTaskFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        dateTimeUtil = new DateTimeUtil();
         Task task = (Task)((MainActivity)requireActivity()).getDataFromMapByKey("task");
         addTaskViewModel = new ViewModelProvider(this).get(AddTaskViewModel.class);
         if (task == null) {
             isAddTask = true;
             task = new Task();
             LocalDateTime localDateTime = LocalDateTime.now();
-            task.setCreated_at(dateTimeUtil.localDateTimeToSecLong(localDateTime));
+            task.setCreated_at(DateTimeUtil.localDateTimeToSecLong(localDateTime));
         }else {
             isAddTask = false;
         }

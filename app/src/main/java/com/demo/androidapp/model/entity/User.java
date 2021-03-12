@@ -12,27 +12,32 @@ public class User {
     @PrimaryKey(autoGenerate = false)
     private int id;
 
-    //状态
+    //昵称
     @ColumnInfo(name = "name")
     private String name;
 
-    //状态
+    //uid
     @ColumnInfo(name = "state")
     private String uid;
 
-    //状态
+    //邮箱
     @ColumnInfo(name = "email")
     private String email;
 
-    //状态
+    //创建时间
+    @ColumnInfo(name = "state")
+    private String state;
+
+    //创建时间
     @ColumnInfo(name = "created_at")
     private long created_at;
 
-    public User(int id, String name, String uid, String email, long created_at) {
+    public User(int id, String name, String uid, String email, String state, long created_at) {
         this.id = id;
         this.name = name;
         this.uid = uid;
         this.email = email;
+        this.state = state;
         this.created_at = created_at;
     }
 
@@ -76,6 +81,14 @@ public class User {
         this.created_at = created_at;
     }
 
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -83,6 +96,7 @@ public class User {
                 ", name='" + name + '\'' +
                 ", uid='" + uid + '\'' +
                 ", email='" + email + '\'' +
+                ", state='" + state + '\'' +
                 ", created_at=" + created_at +
                 '}';
     }

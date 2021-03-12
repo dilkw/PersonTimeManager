@@ -62,9 +62,8 @@ public class DateTimePickerDialog extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         datetimepickerBinding = DataBindingUtil.inflate(LayoutInflater.from(requireContext()),R.layout.datetimepicker,null,false);
         setListener();
-        DateTimeUtil dateTimeUtil = new DateTimeUtil();
         datetimepickerBinding.timePicker.setIs24HourView(true);
-        datetimepickerBinding.datePicker.setMinDate(dateTimeUtil.localDateTimeToLong(localDateTime));
+        datetimepickerBinding.datePicker.setMinDate(DateTimeUtil.localDateTimeToLong(localDateTime));
         datetimepickerBinding.timePicker.setHour(createHour);
         datetimepickerBinding.timePicker.setMinute(createMinute);
         datetimepickerBinding.timePickerEnterBtn.setOnClickListener(new View.OnClickListener() {
@@ -121,8 +120,7 @@ public class DateTimePickerDialog extends DialogFragment {
         day = datetimepickerBinding.datePicker.getDayOfMonth();
         hour = datetimepickerBinding.timePicker.getHour();
         minute = datetimepickerBinding.timePicker.getMinute();
-        DateTimeUtil dateTimeUtil = new DateTimeUtil();
-        return dateTimeUtil.intToStrDateTime(year,moth,day,hour,minute);
+        return DateTimeUtil.intToStrDateTime(year,moth,day,hour,minute);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -133,8 +131,7 @@ public class DateTimePickerDialog extends DialogFragment {
         day = datetimepickerBinding.datePicker.getDayOfMonth();
         hour = datetimepickerBinding.timePicker.getHour();
         minute = datetimepickerBinding.timePicker.getMinute();
-        DateTimeUtil dateTimeUtil = new DateTimeUtil();
-        return dateTimeUtil.intToLocalDateTime(year,moth,day,hour,minute);
+        return DateTimeUtil.intToLocalDateTime(year,moth,day,hour,minute);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -145,8 +142,7 @@ public class DateTimePickerDialog extends DialogFragment {
         day = datetimepickerBinding.datePicker.getDayOfMonth();
         hour = datetimepickerBinding.timePicker.getHour();
         minute = datetimepickerBinding.timePicker.getMinute();
-        DateTimeUtil dateTimeUtil = new DateTimeUtil();
-        return dateTimeUtil.intToLong(year,moth,day,hour,minute);
+        return DateTimeUtil.intToLong(year,moth,day,hour,minute);
     }
 
 }

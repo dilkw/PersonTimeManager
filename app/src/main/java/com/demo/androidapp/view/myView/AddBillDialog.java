@@ -60,7 +60,6 @@ public class AddBillDialog extends DialogFragment implements View.OnClickListene
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        DateTimeUtil dateTimeUtil = new DateTimeUtil();
         addBillDialogBinding = DataBindingUtil.inflate(LayoutInflater.from(requireContext()),R.layout.addbill_dialog,null,false);
         View contentView = addBillDialogBinding.getRoot();
         String dialogTitle = "添加账单";
@@ -111,10 +110,9 @@ public class AddBillDialog extends DialogFragment implements View.OnClickListene
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public Bill getBill() {
-        DateTimeUtil dateTimeUtil = new DateTimeUtil();
         bill.setContent(addBillDialogBinding.addBillDialogContentTextInputEditText.getText().toString());
         bill.setAmount(Long.parseLong(addBillDialogBinding.addBillDialogMoneyTextInputEditText.getText().toString()));
-        bill.setConsume_time(dateTimeUtil.localDateTimeToLong(LocalDateTime.now()) / 1000L);
+        bill.setConsume_time(DateTimeUtil.localDateTimeToLong(LocalDateTime.now()) / 1000L);
         bill.setCategory(addBillDialogBinding.inComeToggleButton.isChecked());
         Log.d("imageView", "getClock: " + bill.toString());
         return bill;

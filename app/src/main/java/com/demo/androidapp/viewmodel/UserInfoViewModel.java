@@ -10,27 +10,26 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.demo.androidapp.model.common.RCodeEnum;
 import com.demo.androidapp.model.common.ReturnData;
-import com.demo.androidapp.model.entity.Clock;
 import com.demo.androidapp.model.entity.User;
 import com.demo.androidapp.repository.AuthRepository;
-import com.demo.androidapp.repository.ClockRepository;
 
-import java.util.Arrays;
-import java.util.List;
 
 public class UserInfoViewModel extends AndroidViewModel {
 
     private AuthRepository authRepository;
 
+    private LiveData<ReturnData<User>> userReturnLiveData;
+
     public UserInfoViewModel(@NonNull Application application) {
         super(application);
-        Log.d("imageView", "HomeViewModel:-=-=-=-=-= " + application.getClass().getName());
+        Log.d("imageView", "UserInfoViewModel:-=-=-=-=-= " + application.getClass().getName());
         authRepository = new AuthRepository(application);
+        userReturnLiveData = authRepository.getUserInfoLiveData();
     }
 
-    //获取clockRepository中的returnLiveData
+    //获取AuthRepository中的returnLiveData
     public LiveData<ReturnData<User>> getUserInfoLiveData() {
-        return authRepository.getUserInfoLiveData();
+        return this.userReturnLiveData;
     }
 
     //在服务器中中更新用户信息

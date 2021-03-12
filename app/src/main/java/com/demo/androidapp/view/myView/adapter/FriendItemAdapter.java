@@ -15,9 +15,7 @@ import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.demo.androidapp.R;
-import com.demo.androidapp.model.entity.Bill;
 import com.demo.androidapp.model.entity.Friend;
-import com.demo.androidapp.util.DateTimeUtil;
 import com.google.android.material.imageview.ShapeableImageView;
 
 import java.util.ArrayList;
@@ -41,8 +39,6 @@ public class FriendItemAdapter extends RecyclerView.Adapter<FriendItemAdapter.My
     public List<Friend> getEditModelSelectedBills() {
         return editModelSelectedFriends;
     }
-
-    private DateTimeUtil dateTimeUtil;
 
     //长按Item时弹出编辑菜单，取消按钮（删除所选择的）
     public void cancelFriend() {
@@ -92,7 +88,6 @@ public class FriendItemAdapter extends RecyclerView.Adapter<FriendItemAdapter.My
         Log.d("imageView", "TasksItemAdapter: 数据长度：" + friends.size());
         this.friends = friends;
         editModelSelectedFriends = new ArrayList<>();
-        dateTimeUtil = new DateTimeUtil();
     }
 
     @NonNull

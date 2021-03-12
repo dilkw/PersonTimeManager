@@ -34,8 +34,6 @@ public class AddTaskViewModel extends AndroidViewModel {
 
     private final TaskRepository taskRepository;
 
-    private final DateTimeUtil dateTimeUtil;
-
     @RequiresApi(api = Build.VERSION_CODES.O)
     public AddTaskViewModel(@NonNull Application application) {
         super(application);
@@ -43,7 +41,6 @@ public class AddTaskViewModel extends AndroidViewModel {
         alertOfTaskMutableLiveData = new MutableLiveData<>(new AlertOfTask());
         taskRepository = new TaskRepository(application);
         categoryRepository = new CategoryRepository(application, MyApplication.getApplication().getUID());
-        dateTimeUtil = new DateTimeUtil();
     }
 
     //对任务的结束时间的setter和getter方法
@@ -53,11 +50,11 @@ public class AddTaskViewModel extends AndroidViewModel {
         if (endTime == 0) {
             return "";
         }
-        return dateTimeUtil.longToStrYMDHM(endTime);
+        return DateTimeUtil.longToStrYMDHM(endTime);
     }
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void setEndTimeStr(String timeStr) {
-        Objects.requireNonNull(taskMutableLiveData.getValue()).setEnd_time(dateTimeUtil.strToLong(timeStr));
+        Objects.requireNonNull(taskMutableLiveData.getValue()).setEnd_time(DateTimeUtil.strToLong(timeStr));
     }
 
     //对任务的结束时间的setter和getter方法
@@ -67,11 +64,11 @@ public class AddTaskViewModel extends AndroidViewModel {
         if (alertTime == 0) {
             return "";
         }
-        return dateTimeUtil.longToStrYMDHM(alertTime);
+        return DateTimeUtil.longToStrYMDHM(alertTime);
     }
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void setAlertTimeStr(String timeStr) {
-        Objects.requireNonNull(taskMutableLiveData.getValue()).setAlert_time(dateTimeUtil.strToLong(timeStr));
+        Objects.requireNonNull(taskMutableLiveData.getValue()).setAlert_time(DateTimeUtil.strToLong(timeStr));
     }
 
     //对任务的创建时间的setter和getter方法
@@ -81,11 +78,11 @@ public class AddTaskViewModel extends AndroidViewModel {
         if (createTime == 0) {
             return "";
         }
-        return dateTimeUtil.longToStrYMDHM(createTime);
+        return DateTimeUtil.longToStrYMDHM(createTime);
     }
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void setCreateTimeStr(String timeStr) {
-        Objects.requireNonNull(taskMutableLiveData.getValue()).setCreated_at(dateTimeUtil.strToLong(timeStr));
+        Objects.requireNonNull(taskMutableLiveData.getValue()).setCreated_at(DateTimeUtil.strToLong(timeStr));
     }
 
     //对任务的创建时间的setter和getter方法

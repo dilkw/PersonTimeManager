@@ -39,8 +39,6 @@ public class TasksItemAdapter extends RecyclerView.Adapter<TasksItemAdapter.MyVi
         return editModelSelectedTasks;
     }
 
-    private DateTimeUtil dateTimeUtil;
-
     //长按Item时弹出编辑菜单，取消按钮（删除所选择的）
     public void cancelTask() {
         isShow = false;
@@ -80,7 +78,6 @@ public class TasksItemAdapter extends RecyclerView.Adapter<TasksItemAdapter.MyVi
         Log.d("imageView", "TasksItemAdapter: 数据长度：" + tasks.size());
         this.tasks = tasks;
         editModelSelectedTasks = new ArrayList<>();
-        dateTimeUtil = new DateTimeUtil();
     }
 
     @NonNull
@@ -95,8 +92,8 @@ public class TasksItemAdapter extends RecyclerView.Adapter<TasksItemAdapter.MyVi
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         Task task = tasks.get(position);
-        holder.createTimeTextView.setText(dateTimeUtil.longToStrYMDHM(task.getCreated_at()));
-        holder.endTimeTextView.setText(dateTimeUtil.longToStrYMDHM(task.getEnd_time()));
+        holder.createTimeTextView.setText(DateTimeUtil.longToStrYMDHM(task.getCreated_at()));
+        holder.endTimeTextView.setText(DateTimeUtil.longToStrYMDHM(task.getEnd_time()));
         Log.d("imageView", "onBindViewHolder: endTime " + holder.endTimeTextView.getText());
         holder.stateTextView.setText(task.isState() ? "完成" : "未完成");
         holder.taskTextView.setText(task.getTask());

@@ -40,8 +40,6 @@ public class BillItemAdapter extends RecyclerView.Adapter<BillItemAdapter.MyView
         return editModelSelectedBills;
     }
 
-    private DateTimeUtil dateTimeUtil;
-
     //长按Item时弹出编辑菜单，取消按钮（删除所选择的）
     public void cancelBill() {
         isShow = false;
@@ -89,7 +87,6 @@ public class BillItemAdapter extends RecyclerView.Adapter<BillItemAdapter.MyView
         Log.d("imageView", "TasksItemAdapter: 数据长度：" + bills.size());
         this.bills = bills;
         editModelSelectedBills = new ArrayList<>();
-        dateTimeUtil = new DateTimeUtil();
     }
 
     @NonNull
@@ -106,7 +103,7 @@ public class BillItemAdapter extends RecyclerView.Adapter<BillItemAdapter.MyView
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         Bill bill = bills.get(position);
         holder.billContentTextView.setText(bill.getContent());
-        holder.billCreateTimeTextView.setText(dateTimeUtil.longToStrYMDHM(bill.getConsume_time()));
+        holder.billCreateTimeTextView.setText(DateTimeUtil.longToStrYMDHM(bill.getConsume_time()));
         holder.billItemMoneyTextView.setText((bill.isCategory() ? "-" : "+") + bill.getAmount());
         holder.billItemCheckBox.setVisibility(isShow ? View.VISIBLE : View.GONE);
         holder.billItemCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {

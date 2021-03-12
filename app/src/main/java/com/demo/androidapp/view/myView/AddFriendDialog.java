@@ -17,14 +17,10 @@ import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.DialogFragment;
 
 import com.demo.androidapp.R;
-import com.demo.androidapp.databinding.AddbillDialogBinding;
 import com.demo.androidapp.databinding.AddfriendDialogBinding;
-import com.demo.androidapp.model.entity.Bill;
 import com.demo.androidapp.model.entity.Friend;
-import com.demo.androidapp.util.DateTimeUtil;
 
 import java.sql.Date;
-import java.time.LocalDateTime;
 
 public class AddFriendDialog extends DialogFragment implements View.OnClickListener {
 
@@ -63,7 +59,6 @@ public class AddFriendDialog extends DialogFragment implements View.OnClickListe
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        DateTimeUtil dateTimeUtil = new DateTimeUtil();
         addfriendDialogBinding = DataBindingUtil.inflate(LayoutInflater.from(requireContext()),R.layout.addfriend_dialog,null,false);
         View contentView = addfriendDialogBinding.getRoot();
         String dialogTitle = "添加账单";

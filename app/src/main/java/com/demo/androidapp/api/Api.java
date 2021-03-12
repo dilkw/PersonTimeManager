@@ -53,8 +53,7 @@ public interface Api {
     //注册完成后激活帐号
     @FormUrlEncoded
     @POST("user/active")
-    Call<ReturnData> active(@Field("email") String email,
-                              @Field("code") String code);
+    Call<ReturnData> active(@Field("email") String email,@Field("code") String code);
 
     //注销
     @POST("user/logout")
@@ -68,9 +67,21 @@ public interface Api {
     @GET("user/me")
     LiveData<ReturnData<User>> getUserInfo();
 
-    // 修改个人信息
-    @PUT("user/edit")
-    LiveData<ReturnData<Object>> upDateUserInfo(@Body User user);
+    // 修改个人信息名字（昵称）
+    @PUT("user/editName")
+    LiveData<ReturnData<Object>> userInfoEditName(@Field("name") String newName);
+
+
+    // 用户获取更换邮箱验证码
+    @FormUrlEncoded
+    @POST("user/resetEmail/code")
+    LiveData<ReturnData<Object>> getResetEmailCode(@Field("email") String email);
+
+    // 修改个人信息邮箱
+    @PUT("user/editEmail")
+    LiveData<ReturnData<Object>> userInfoEditEmail(@Field("email") String email
+                                                    ,@Field("new_email") String newEmail
+                                                    ,@Field("code") String code);
 
 
     //获取任务列表

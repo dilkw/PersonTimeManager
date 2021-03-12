@@ -59,7 +59,6 @@ public class AddClockDialog extends DialogFragment implements View.OnClickListen
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        DateTimeUtil dateTimeUtil = new DateTimeUtil();
         addclockDialogBinding = DataBindingUtil.inflate(LayoutInflater.from(requireContext()),R.layout.addclock_dialog,null,false);
         View contentView = addclockDialogBinding.getRoot();
         String dialogTitle = "添加时钟";
@@ -68,7 +67,7 @@ public class AddClockDialog extends DialogFragment implements View.OnClickListen
             addclockDialogBinding.addClockDialogTaskTextInputEditText.setText(clock.getTask());
             addclockDialogBinding.addClockDialogMinuteTextInputEditText.setText("" + clock.getClock_minute());
 
-            addclockDialogBinding.addClockAlertTimeTextView.setText(dateTimeUtil.longToStrYMDHM(clock.getAlert_Time()));
+            addclockDialogBinding.addClockAlertTimeTextView.setText(DateTimeUtil.longToStrYMDHM(clock.getAlert_Time()));
             if (clock.isAlert()) {
                 addclockDialogBinding.addClockDialogAlertTimeLinearLayout.setVisibility(View.VISIBLE);
             }

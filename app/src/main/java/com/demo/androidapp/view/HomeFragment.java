@@ -172,6 +172,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         homeFragmentBinding.turnToClockFragmentBtn.setOnClickListener(this);
         homeFragmentBinding.turnToBillFragmentBtn.setOnClickListener(this);
         homeFragmentBinding.turnToFriendFragmentBtn.setOnClickListener(this);
+        homeFragmentBinding.turnToUserInfoFragmentBtn.setOnClickListener(this);
         tasksItemAdapter.setItemLongOnClickListener(new TasksItemAdapter.ItemLongOnClickListener() {
             @Override
             public void itemLongOnClick() {
@@ -224,19 +225,24 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 controller.navigate(R.id.action_homeFragment_to_addTaskFragment);
                 break;
             }
-            case R.id.turnToClockFragmentBtn:{
+            case R.id.turnToClockFragmentBtn: {
                 //跳转时钟界面
                 controller.navigate(R.id.action_homeFragment_to_clockFragment);
                 break;
             }
-            case R.id.turnToBillFragmentBtn:{
+            case R.id.turnToBillFragmentBtn: {
                 //跳转账单界面
                 controller.navigate(R.id.action_homeFragment_to_billFragment);
                 break;
             }
-            case R.id.turnToFriendFragmentBtn:{
+            case R.id.turnToFriendFragmentBtn: {
                 //跳转好友界面
                 controller.navigate(R.id.action_homeFragment_to_friendFragment);
+                break;
+            }
+            case R.id.turnToUserInfoFragmentBtn: {
+                //跳转用户信息界面
+                controller.navigate(R.id.action_homeFragment_to_userInfoFragment);
                 break;
             }
             case R.id.loginOutBtn: {

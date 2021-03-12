@@ -41,8 +41,6 @@ public class ClockItemAdapter extends RecyclerView.Adapter<ClockItemAdapter.MyVi
         return editModelSelectedClocks;
     }
 
-    private DateTimeUtil dateTimeUtil;
-
     //长按Item时弹出编辑菜单，取消按钮（删除所选择的）
     public void cancelTask() {
         isShow = false;
@@ -89,7 +87,6 @@ public class ClockItemAdapter extends RecyclerView.Adapter<ClockItemAdapter.MyVi
         Log.d("imageView", "TasksItemAdapter: 数据长度：" + clocks.size());
         this.clocks = clocks;
         editModelSelectedClocks = new ArrayList<>();
-        dateTimeUtil = new DateTimeUtil();
     }
 
     @NonNull
@@ -109,7 +106,7 @@ public class ClockItemAdapter extends RecyclerView.Adapter<ClockItemAdapter.MyVi
         Log.d("imageView", "onBindViewHolder: " + clock.getClock_minute() + "分钟");
         holder.clockMinuteTextView.setText(clock.getClock_minute() + "分钟");
         holder.checkBox.setVisibility(isShow ? View.VISIBLE : View.GONE);
-        holder.clockAlertTimeTextView.setText(dateTimeUtil.longToStrYMDHM(clock.getAlert_Time()));
+        holder.clockAlertTimeTextView.setText(DateTimeUtil.longToStrYMDHM(clock.getAlert_Time()));
         holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
