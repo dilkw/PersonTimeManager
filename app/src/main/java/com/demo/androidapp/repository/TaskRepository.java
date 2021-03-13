@@ -73,7 +73,7 @@ public class TaskRepository {
         api.getTaskList().enqueue(new Callback<ReturnData<ReturnListObject<Task>>>() {
             @Override
             public void onResponse(Call<ReturnData<ReturnListObject<Task>>> call, Response<ReturnData<ReturnListObject<Task>>> response) {
-                Log.d("imageView", "TaskRepository: 获取任务清单成功");
+                Log.d("imageView", "TaskRepository: 获取任务清单成功" + response.body().getData().getTotal());
                 returnDataLiveData.postValue(new ReturnData<List<Task>>(response.body().getCode(),response.body().getMsg(),response.body().getData().getItems()));
                 if (response.body().getData().getTotal() > 0) {
                     Task[] tasks = new Task[response.body().getData().getTotal()];

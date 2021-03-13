@@ -17,6 +17,7 @@ import com.demo.androidapp.model.returnObject.LoginAndRegisterReturn;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.http.Field;
 
 public class AuthRepository {
 
@@ -42,27 +43,12 @@ public class AuthRepository {
 
 
     //登录
-    public void login(String userName, String password) {
+    public LiveData<ReturnData<User>> login(String userName, String password) {
         Log.d("imageView","authRepository层：repository----login");
         Log.d("imageView","authRepository层：登录信息" + "用户名：" + userName + "密码：" + password);
-        api.signIn(userName,password).enqueue(new Callback<ReturnData<LoginAndRegisterReturn>>() {
-            @Override
-            public void onResponse(Call<ReturnData<LoginAndRegisterReturn>> call, Response<ReturnData<LoginAndRegisterReturn>> response) {
-                Log.d("imageView","authRepository层：登录成功" );
-                Log.d("response", "onResponse: notNull=========" + response.body().getCode());
-                returnDataLiveData.postValue(response.body());
-            }
-
-            @Override
-            public void onFailure(Call<ReturnData<LoginAndRegisterReturn>> call, Throwable t) {
-                Log.d("imageView","authRepository层：登录失败" );
-                t.printStackTrace();
-                returnDataLiveData.postValue(new ReturnData<>(RCodeEnum.ERROR));
-                //Log.d("imageView","authRepository层：登陆失败" + returnDataLiveData.getValue().getCode());
-            }
-        });
+        return api.signIn(userName,password);
     }
-    public LiveData<ReturnData<LoginAndRegisterReturn>> signInLiveData(String userName, String password) {
+    public LiveData<ReturnData<User>> signInLiveData(String userName, String password) {
         return api.signInLiveData(userName,password);
     }
 
@@ -142,14 +128,14 @@ public class AuthRepository {
         return api.getUserInfo();
     }
 
-    //更新用户信息
-    public LiveData<ReturnData<Object>> upDateUserInfoLiveData(User user) {
-        return api.upDateUserInfo(user);
+    //更新用户名字
+    public LiveData<ReturnData<Object>> userInfoEditName(String userName) {
+        return api.userInfoEditName(userName);
     }
 
     //注销用户信息
-    public LiveData<ReturnData<Object>> deleteUserInfoInServer() {
-        return null;
+    public LiveData<ReturnData<Object>> deleteUserInfoInServer(String email,String code) {
+        return api.cancellation(email,code);
     }
 
 
@@ -174,5 +160,9 @@ public class AuthRepository {
                 t.printStackTrace();
             }
         });
+    }
+
+    public LiveData<ReturnData<Object>> resetEmail(String email,String newEmail,String code) {
+        return api.resetEmail(email,newEmail,code);
     }
 }

@@ -14,6 +14,7 @@ import com.demo.androidapp.api.Api;
 import com.demo.androidapp.api.impl.RetrofitClient;
 import com.demo.androidapp.model.Auth;
 import com.demo.androidapp.model.common.ReturnData;
+import com.demo.androidapp.model.entity.User;
 import com.demo.androidapp.model.returnObject.LoginAndRegisterReturn;
 import com.demo.androidapp.util.DataSP;
 
@@ -27,6 +28,8 @@ public class MyApplication extends Application {
     private static String PASSWORD = "";     //密码
     private static String UID = "";          //uid
     private static String COOKIE = "";       //cookie校验码
+
+    private static User user;
 
     private static Api api;
 
@@ -53,6 +56,14 @@ public class MyApplication extends Application {
         if (!USER_NAME.equals("userName")){
             signIn();
         }
+    }
+
+    public static User getUser() {
+        return user;
+    }
+
+    public static void setUser(User user) {
+        MyApplication.user = user;
     }
 
     public String getUSER_NAME() {
@@ -92,10 +103,11 @@ public class MyApplication extends Application {
         dataSP.saveCookie(cookieStr);
     }
 
-    public void signIn(String userName, String password,String uid) {
-        MyApplication.USER_NAME = userName;
-        MyApplication.PASSWORD = password;
-        MyApplication.UID = uid;
+    public void signIn(User user) {
+        MyApplication.user = user;
+        MyApplication.USER_NAME = user.getName();
+        MyApplication.PASSWORD = user.getPassword();
+        MyApplication.UID = user.getUid();
         if (dataSP == null)
             dataSP = new DataSP(mContext);
         dataSP.save(USER_NAME,PASSWORD,UID);
@@ -113,16 +125,7 @@ public class MyApplication extends Application {
     }
 
     public void signIn(){
-        api.signIn(this.getUSER_NAME(),this.getPASSWORD()).enqueue(new Callback<ReturnData<LoginAndRegisterReturn>>() {
-            @Override
-            public void onResponse(Call<ReturnData<LoginAndRegisterReturn>> call, Response<ReturnData<LoginAndRegisterReturn>> response) {
-
-            }
-            @Override
-            public void onFailure(Call<ReturnData<LoginAndRegisterReturn>> call, Throwable t) {
-                signOut();
-            }
-        });
+        api.signIn(this.getUSER_NAME(),this.getPASSWORD());
     }
 
     public void signOut() {

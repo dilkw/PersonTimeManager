@@ -27,14 +27,9 @@ import com.demo.androidapp.R;
 import com.demo.androidapp.databinding.LoginFragmentBinding;
 import com.demo.androidapp.model.common.RCodeEnum;
 import com.demo.androidapp.model.common.ReturnData;
-import com.demo.androidapp.model.returnObject.LoginAndRegisterReturn;
-import com.demo.androidapp.view.commom.MethodCommon;
-import com.demo.androidapp.view.commom.MyTextWatcher;
+import com.demo.androidapp.model.entity.User;
 import com.demo.androidapp.viewmodel.LoginViewModel;
-import com.google.android.material.textfield.TextInputEditText;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 public class LoginFragment extends Fragment implements View.OnClickListener {
@@ -106,21 +101,20 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.loginButton: {
-                loginViewModel.signInLiveData().observe(getViewLifecycleOwner(), new Observer<ReturnData<LoginAndRegisterReturn>>() {
+                loginViewModel.login().observe(getViewLifecycleOwner(), new Observer<ReturnData<User>>() {
                     @Override
-                    public void onChanged(ReturnData<LoginAndRegisterReturn> loginAndRegisterReturnReturnData) {
-                        if (loginAndRegisterReturnReturnData.getCode() == RCodeEnum.OK.getCode()) {
+                    public void onChanged(ReturnData<User> userReturnData) {
+                        if (userReturnData.getCode() == RCodeEnum.OK.getCode()) {
                             Toast.makeText(getActivity(), "登录成功", Toast.LENGTH_SHORT).show();
                             //上传数据，更新MyApplication中的数据
-                            LoginAndRegisterReturn loginAndRegisterReturn = (LoginAndRegisterReturn)loginAndRegisterReturnReturnData.getData();
-                            Log.d("imageView", "" + loginAndRegisterReturn.toString());
-                            MyApplication.getApplication().signIn(loginAndRegisterReturn.getName(),
-                                    loginViewModel.getAuthLiveData().getValue().getPassword(),
-                                    loginAndRegisterReturn.getUid());
+                            User user = userReturnData.getData();
+                            Log.d("imageView", "" + user.toString());
+                            user.setPassword(loginViewModel.getUserLiveData().getValue().getPassword());
+                            MyApplication.getApplication().signIn(user);
                             //跳转主页
                             loginViewModel.jumpToHomeFragment(getView());
                         } else {
-                            Toast.makeText(getActivity(), loginAndRegisterReturnReturnData.getMsg(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(), userReturnData.getMsg(), Toast.LENGTH_SHORT).show();
                             Log.d("imageView", "用户名或密码错误");
                         }
                     }

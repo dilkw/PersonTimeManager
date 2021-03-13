@@ -47,7 +47,7 @@
                 android:layout_height="60dp"
                 android:hint="@string/userNameHint"
                 android:shadowColor="#FFFFFF"
-                android:text="@={loginViewModel.getAuthLiveData().userName}" />
+                android:text="@={loginViewModel.userLiveData.name}" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -73,7 +73,7 @@
                 android:layout_height="60dp"
                 android:hint="@string/passwordHint"
                 android:inputType="textPassword"
-                android:text="@={loginViewModel.getAuthLiveData().password}" />
+                android:text="@={loginViewModel.userLiveData.password}" />
         </com.google.android.material.textfield.TextInputLayout>
 
 <!--        android:onClick="@{()->loginViewModel.login()}"-->

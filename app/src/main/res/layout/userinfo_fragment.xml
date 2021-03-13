@@ -7,12 +7,8 @@
         <variable
             name="userInfoViewModel"
             type="com.demo.androidapp.viewmodel.UserInfoViewModel" />
-        <variable
-            name="stateEnum"
-            type="com.demo.androidapp.model.common.StateEnum" />
-        <variable
-            name="dateTimeUtil"
-            type="com.demo.androidapp.util.DateTimeUtil" />
+        <import type="com.demo.androidapp.model.common.StateEnum" />
+        <import type="com.demo.androidapp.util.DateTimeUtil"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -85,7 +81,7 @@
                     android:layout_marginTop="20dp"
                     android:layout_marginEnd="20dp"
                     android:layout_marginRight="20dp"
-                    android:text="@{(stateEnum.returnStateEnumByStateCode(userInfoViewModel.userInfoLiveData.data.state)).stateMsg()}"
+                    android:text="@{StateEnum.returnStateEnumByStateCode(userInfoViewModel.userInfoLiveData.data.state).stateMsg}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -157,13 +153,13 @@
 
                 <Button
                     android:id="@+id/userInfoResetEmailButton"
-                    android:layout_width="wrap_content"
+                    android:layout_width="80dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="20dp"
-                    android:layout_marginRight="20dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginRight="10dp"
                     android:text="更换邮箱"
                     android:textColor="@color/design_default_color_on_secondary"
-                    android:textSize="12sp"
+                    android:textSize="10sp"
                     app:backgroundTint="#00000000"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -172,8 +168,11 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/userInfoResetPwdItem"
                 android:layout_width="match_parent"
-                android:layout_height="60dp">
+                android:layout_height="60dp"
+                android:clickable="true"
+                android:focusable="true">
 
                 <TextView
                     android:id="@+id/userInfoPwdResetPwdLabel"
@@ -219,7 +218,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="100dp"
                     android:layout_marginLeft="100dp"
-                    android:text="@{dateTimeUtil.longToStrYMDHM(userInfoViewModel.userInfoLiveData.data.created_at)}"
+                    android:text="@{DateTimeUtil.longToStrYMDHM(userInfoViewModel.userInfoLiveData.data.created_at)}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />

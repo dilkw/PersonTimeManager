@@ -242,7 +242,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             }
             case R.id.turnToUserInfoFragmentBtn: {
                 //跳转用户信息界面
-                controller.navigate(R.id.action_homeFragment_to_userInfoFragment);
+                Bundle bundle = new Bundle();
+                bundle.putBoolean("isMe",true);
+                controller.navigate(R.id.action_homeFragment_to_userInfoFragment,bundle);
                 break;
             }
             case R.id.loginOutBtn: {

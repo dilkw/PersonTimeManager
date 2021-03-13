@@ -21,6 +21,7 @@ import com.demo.androidapp.R;
 import com.demo.androidapp.model.Auth;
 import com.demo.androidapp.model.common.RCodeEnum;
 import com.demo.androidapp.model.common.ReturnData;
+import com.demo.androidapp.model.entity.User;
 import com.demo.androidapp.model.returnObject.LoginAndRegisterReturn;
 import com.demo.androidapp.repository.AuthRepository;
 import com.google.android.material.textfield.TextInputLayout;
@@ -29,15 +30,15 @@ public class LoginViewModel extends AndroidViewModel {
 
     public final int registerFragmentId = R.id.action_loginFragment_to_registerFragment;
 
-    private MutableLiveData<Auth> authLiveData;
+    private MutableLiveData<User> userLiveData;
 
     private AuthRepository authRepository;
 
     public LoginViewModel(@NonNull Application application) {
         super(application);
         Log.d("imageView", "LoginViewModel:-=-=-=-=-= " + application.getClass().getName());
-        this.authLiveData = new MutableLiveData<Auth>();
-        this.authLiveData.setValue(new Auth());
+        this.userLiveData = new MutableLiveData<User>();
+        this.userLiveData.setValue(new User());
         this.authRepository = new AuthRepository(application);
     }
     // TODO: Implement the ViewModel
@@ -47,20 +48,20 @@ public class LoginViewModel extends AndroidViewModel {
         return authRepository.getReturnDataLiveData();
     }
 
-    public MutableLiveData<Auth> getAuthLiveData() {
-        return authLiveData;
+    public MutableLiveData<User> getUserLiveData() {
+        return userLiveData;
     }
 
     //登录方法
-    public void login() {
+    public LiveData<ReturnData<User>> login() {
         Log.d("imageView","ViewModel-----login");
         StringBuilder token = new StringBuilder();
-        Log.d("imageView",authLiveData.getValue().getUserName() + authLiveData.getValue().getPassword());
-        this.authRepository.login(authLiveData.getValue().getUserName(),authLiveData.getValue().getPassword());
+        Log.d("imageView",userLiveData.getValue().getName() + userLiveData.getValue().getPassword());
+        return this.authRepository.login(userLiveData.getValue().getName(),userLiveData.getValue().getPassword());
     }
 
-    public LiveData<ReturnData<LoginAndRegisterReturn>> signInLiveData() {
-        return authRepository.signInLiveData(authLiveData.getValue().getUserName(),authLiveData.getValue().getPassword());
+    public LiveData<ReturnData<User>> signInLiveData() {
+        return authRepository.signInLiveData(userLiveData.getValue().getName(),userLiveData.getValue().getPassword());
     }
 
     //重写点击监听事件的方法
@@ -69,8 +70,8 @@ public class LoginViewModel extends AndroidViewModel {
         public void onClick(View v) {
             Log.d("imageView","ViewModel-----login");
             StringBuilder token = new StringBuilder();
-            Log.d("imageView",authLiveData.getValue().getUserName() + authLiveData.getValue().getPassword());
-            authRepository.login(authLiveData.getValue().getUserName(),authLiveData.getValue().getPassword());
+            Log.d("imageView",userLiveData.getValue().getName() + userLiveData.getValue().getPassword());
+            authRepository.login(userLiveData.getValue().getName(),userLiveData.getValue().getPassword());
         }
     };
 

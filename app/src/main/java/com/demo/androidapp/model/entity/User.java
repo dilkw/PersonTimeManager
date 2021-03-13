@@ -3,6 +3,7 @@ package com.demo.androidapp.model.entity;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 @Entity
@@ -17,20 +18,27 @@ public class User {
     private String name;
 
     //uid
-    @ColumnInfo(name = "state")
+    @ColumnInfo(name = "uid")
     private String uid;
 
     //邮箱
     @ColumnInfo(name = "email")
     private String email;
 
-    //创建时间
+    //状态
     @ColumnInfo(name = "state")
     private String state;
 
     //创建时间
     @ColumnInfo(name = "created_at")
     private long created_at;
+
+    //创建时间
+    @Ignore
+    private String password;
+
+    @Ignore
+    public User() {}
 
     public User(int id, String name, String uid, String email, String state, long created_at) {
         this.id = id;
@@ -87,6 +95,14 @@ public class User {
 
     public void setState(String state) {
         this.state = state;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     @Override

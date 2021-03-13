@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!--task-->
+    <item
+        android:id="@+id/addTaskSaveBtn"
+        android:icon="@drawable/ic_addtaskfragment_bar_savebtn"
+        android:title="@string/addTaskFragmentToolBarSaveBtnTitle"
+        android:contentDescription="@string/addTask_DeleteImgContentDescription"
+        app:showAsAction="ifRoom" />
+
+    <!--添加提醒时间-->
+    <item
+        android:id="@+id/addTaskAddAlertTimeBtn"
+        android:icon="@drawable/ic_addtask_alert_24"
+        android:title="@string/addTaskFragmentToolBarSaveBtnTitle"
+        android:contentDescription="@string/addTaskAlertTimeSelectTimeImgBtnImgContentDescription"
+        app:showAsAction="ifRoom" />
+
+<!--    <item-->
+<!--        android:id="@+id/more"-->
+<!--        android:title="454f5d6s"-->
+<!--        android:contentDescription="@string/addTask_DeleteImgContentDescription"-->
+<!--        app:showAsAction="never" />-->
+
+</menu>

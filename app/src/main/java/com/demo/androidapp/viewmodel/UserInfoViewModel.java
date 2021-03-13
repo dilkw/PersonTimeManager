@@ -18,7 +18,7 @@ public class UserInfoViewModel extends AndroidViewModel {
 
     private AuthRepository authRepository;
 
-    private LiveData<ReturnData<User>> userReturnLiveData;
+    public LiveData<ReturnData<User>> userReturnLiveData;
 
     public UserInfoViewModel(@NonNull Application application) {
         super(application);
@@ -27,27 +27,37 @@ public class UserInfoViewModel extends AndroidViewModel {
         userReturnLiveData = authRepository.getUserInfoLiveData();
     }
 
+    //服务器获取用户信息
+    public void getUserInfoInServer() {
+        this.userReturnLiveData =  authRepository.getUserInfoLiveData();
+    }
+
     //获取AuthRepository中的returnLiveData
     public LiveData<ReturnData<User>> getUserInfoLiveData() {
-        return this.userReturnLiveData;
+        return userReturnLiveData;
+    }
+
+    //更换邮箱
+    public LiveData<ReturnData<Object>> resetEmail(String email,String newEmail,String code) {
+        return authRepository.resetEmail(email,newEmail,code);
     }
 
     //在服务器中中更新用户信息
-    public LiveData<ReturnData<Object>> upDateUserInfoInServer(User user) {
+    public LiveData<ReturnData<Object>> userInfoEditName(String userName) {
         //在数据库中没有数据时尝试从无服务器中获取
-        if (user == null) {
+        if (userName == null || userName.equals("")) {
             return new MutableLiveData<>(new ReturnData<>(RCodeEnum.DATA_ERROR));
         }
-        return authRepository.upDateUserInfoLiveData(user);
+        return authRepository.userInfoEditName(userName);
     }
 
     //在服务器中删除用户信息注销用户
-    public LiveData<ReturnData<Object>> deleteUserInfoInServer(User user) {
+    public LiveData<ReturnData<Object>> deleteUserInfoInServer(String code) {
         //在数据库中没有数据时尝试从无服务器中获取
-        if (user == null) {
+        if (code == null || code.length() != 6) {
             return new MutableLiveData<>(new ReturnData<>(RCodeEnum.DATA_ERROR));
         }
-        return authRepository.upDateUserInfoLiveData(user);
+        return authRepository.deleteUserInfoInServer(userReturnLiveData.getValue().getData().getEmail(),code);
     }
 
 }

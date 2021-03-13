@@ -27,13 +27,13 @@ public interface Api {
     //登录
     @FormUrlEncoded
     @POST("user/login")
-    Call<ReturnData<LoginAndRegisterReturn>> signIn(@Field("name") String name,
+    LiveData<ReturnData<User>> signIn(@Field("name") String name,
                                                     @Field("password") String password);
 
     //登录
     @FormUrlEncoded
     @POST("user/login")
-    LiveData<ReturnData<LoginAndRegisterReturn>> signInLiveData(@Field("name") String name,
+    LiveData<ReturnData<User>> signInLiveData(@Field("name") String name,
                                                     @Field("password") String password);
 
     //注册
@@ -68,9 +68,19 @@ public interface Api {
     LiveData<ReturnData<User>> getUserInfo();
 
     // 修改个人信息名字（昵称）
+    @FormUrlEncoded
     @PUT("user/editName")
     LiveData<ReturnData<Object>> userInfoEditName(@Field("name") String newName);
 
+    // 用户获取注销用户验证码
+    @FormUrlEncoded
+    @POST("user/cancellation/code")
+    LiveData<ReturnData<Object>> getCancellationCode(@Field("email") String email);
+
+    // 用户注销
+    @FormUrlEncoded
+    @POST("user/cancellation")
+    LiveData<ReturnData<Object>> cancellation(@Field("email") String email,@Field("code") String code);
 
     // 用户获取更换邮箱验证码
     @FormUrlEncoded
@@ -78,8 +88,9 @@ public interface Api {
     LiveData<ReturnData<Object>> getResetEmailCode(@Field("email") String email);
 
     // 修改个人信息邮箱
+    @FormUrlEncoded
     @PUT("user/editEmail")
-    LiveData<ReturnData<Object>> userInfoEditEmail(@Field("email") String email
+    LiveData<ReturnData<Object>> resetEmail(@Field("email") String email
                                                     ,@Field("new_email") String newEmail
                                                     ,@Field("code") String code);
 
