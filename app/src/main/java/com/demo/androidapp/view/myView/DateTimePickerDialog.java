@@ -69,7 +69,7 @@ public class DateTimePickerDialog extends DialogFragment {
         datetimepickerBinding.timePickerEnterBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                enterListener.enterBtnOnClicked();
+                enterListener.enterBtnOnClicked(getSelectTimeString());
                 getDialog().dismiss();
             }
         });
@@ -105,7 +105,7 @@ public class DateTimePickerDialog extends DialogFragment {
     }
 
     public interface EnterListener{
-        void enterBtnOnClicked();
+        void enterBtnOnClicked(String dateTimeStr);
     }
 
     public void setEnterClicked(EnterListener enterClicked) {

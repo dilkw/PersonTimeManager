@@ -108,7 +108,7 @@ public class AddClockDialog extends DialogFragment implements View.OnClickListen
                 dateTimePickerDialog.setEnterClicked(new DateTimePickerDialog.EnterListener() {
                     @RequiresApi(api = Build.VERSION_CODES.O)
                     @Override
-                    public void enterBtnOnClicked() {
+                    public void enterBtnOnClicked(String dateTimeStr) {
                         addclockDialogBinding.addClockAlertTimeTextView.setText(dateTimePickerDialog.getSelectTimeString());
                         clock.setAlert_Time(dateTimePickerDialog.getSelectedDateToLong() / 1000);
                         clock.setAlert(true);

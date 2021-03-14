@@ -299,6 +299,8 @@ public class IdentifyCodeView extends View {
                                 Log.d("MyImageView", "粘贴板内容：" + clipData.getItemAt(0).toString());
                                 if (codes.length() == 6) {
                                     setCodes(codes);
+                                    codesChangedListener.textChanged(codes);
+
                                 }
                             }
                             mode.finish();

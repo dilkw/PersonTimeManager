@@ -66,7 +66,7 @@ public class AddBillDialog extends DialogFragment implements View.OnClickListene
         if (!isAdd) {
             dialogTitle = "编辑账单";
             addBillDialogBinding.addBillDialogContentTextInputEditText.setText(bill.getContent());
-            addBillDialogBinding.addBillDialogMoneyTextInputEditText.setText(bill.getAmount() + " 元");
+            addBillDialogBinding.addBillDialogMoneyTextInputEditText.setText(bill.getAmount() + "");
             addBillDialogBinding.inComeToggleButton.setChecked(bill.isCategory());
         }
         addBillDialogBinding.addBillTitleTextView.setText(dialogTitle);
@@ -82,6 +82,7 @@ public class AddBillDialog extends DialogFragment implements View.OnClickListene
     private void setListener() {
         addBillDialogBinding.addBillDialogCloseImgBtn.setOnClickListener(this);
         addBillDialogBinding.addBillEnterBtn.setOnClickListener(this);
+        addBillDialogBinding.addBillDialogAddConsumeTimeImgBtn.setOnClickListener(this);
     }
 
     @SuppressLint("NonConstantResourceId")
@@ -95,6 +96,17 @@ public class AddBillDialog extends DialogFragment implements View.OnClickListene
             }
             case R.id.addBillDialogCloseImgBtn: {
                 dismiss();
+                break;
+            }
+            case R.id.addBillDialogAddConsumeTimeImgBtn: {
+                DateTimePickerDialog dateTimePickerDialog = new DateTimePickerDialog();
+                dateTimePickerDialog.show(requireActivity().getSupportFragmentManager(),"addConsumeTimeDialog");
+                dateTimePickerDialog.setEnterClicked(new DateTimePickerDialog.EnterListener() {
+                    @Override
+                    public void enterBtnOnClicked(String dateTimeStr) {
+                        addBillDialogBinding.addBillDialogConsumeTimeTextView.setText(dateTimeStr);
+                    }
+                });
                 break;
             }
         }
@@ -111,10 +123,15 @@ public class AddBillDialog extends DialogFragment implements View.OnClickListene
     @RequiresApi(api = Build.VERSION_CODES.O)
     public Bill getBill() {
         bill.setContent(addBillDialogBinding.addBillDialogContentTextInputEditText.getText().toString());
-        bill.setAmount(Long.parseLong(addBillDialogBinding.addBillDialogMoneyTextInputEditText.getText().toString()));
-        bill.setConsume_time(DateTimeUtil.localDateTimeToLong(LocalDateTime.now()) / 1000L);
+        bill.setAmount(Float.parseFloat(addBillDialogBinding.addBillDialogMoneyTextInputEditText.getText().toString()));
+        String dateTimeStr = addBillDialogBinding.addBillDialogConsumeTimeTextView.getText().toString();
+        if (dateTimeStr == null || dateTimeStr.equals("")) {
+            bill.setConsume_time(DateTimeUtil.localDateTimeToLong(LocalDateTime.now()) / 1000);
+        } else {
+            bill.setConsume_time(DateTimeUtil.strToLong(addBillDialogBinding.addBillDialogConsumeTimeTextView.getText().toString()));
+        }
         bill.setCategory(addBillDialogBinding.inComeToggleButton.isChecked());
-        Log.d("imageView", "getClock: " + bill.toString());
+        Log.d("imageView", "getBill: " + bill.toString());
         return bill;
     }
 

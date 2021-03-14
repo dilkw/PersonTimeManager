@@ -15,11 +15,11 @@ import java.util.List;
 public interface FriendDao {
 
     //根据uid查询出所有任务
-    @Query("SELECT * FROM friend where user_uid = :uid")
+    @Query("SELECT * FROM friend where uid = :uid")
     public LiveData<List<Friend>> getAllFriendLiveDataByUid(String uid);
 
     //根据uid查询出所有任务
-    @Query("SELECT * FROM friend where user_uid = :uid and friend_name like :fName")
+    @Query("SELECT * FROM friend where uid = :uid and friend_name like :fName")
     public LiveData<List<Friend>> getAllFriendsInDBByUidAndFName(String uid,String fName);
 
     //根据uid查询出所有任务
@@ -44,7 +44,7 @@ public interface FriendDao {
     @Delete
     void deleteFriend(Friend...friends);
 
-    @Query("DELETE FROM friend WHERE user_uid = :uid ")
+    @Query("DELETE FROM friend WHERE uid = :uid ")
     void deleteAllFriendsByUid(String uid);
 
 }

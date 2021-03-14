@@ -17,6 +17,21 @@
         android:layout_height="match_parent"
         tools:context=".view.ActiveFragment">
 
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/activeFragmentAppBarLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/activeFragmentToolBar"
+                style="@style/Widget.MaterialComponents.Toolbar.Primary"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"/>
+        </com.google.android.material.appbar.AppBarLayout>
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/activeTextInputLayoutEmail"
             android:layout_width="250dp"
@@ -79,7 +94,6 @@
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:enabled="false"
-            android:onClick="@{()->activeViewModel.sendCodes()}"
             android:text="@string/activeBtnText"
             android:textColor="#333232"
             app:cornerRadius="20dp"

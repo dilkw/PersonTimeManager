@@ -7,13 +7,16 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.demo.androidapp.R;
 import com.demo.androidapp.model.commitObject.RegisterCommit;
+import com.demo.androidapp.model.common.RCodeEnum;
 import com.demo.androidapp.model.common.ReturnData;
+import com.demo.androidapp.model.entity.User;
 import com.demo.androidapp.model.returnObject.LoginAndRegisterReturn;
 import com.demo.androidapp.repository.AuthRepository;
 
@@ -35,14 +38,14 @@ public class RegisterViewModel extends AndroidViewModel {
     }
 
     //注册方法
-    public void register() {
+    public LiveData<ReturnData<User>> register() {
 
         if (registerCommitLiveData.getValue() == null) {
             Log.d("imageView","RegisterViewModel层，ViewModel为空！！！！！！");
-            return;
+            return new MutableLiveData<>(new ReturnData<>(RCodeEnum.DATA_ERROR));
         }
         Log.d("imageView","ViewModel-----register" + registerCommitLiveData.getValue().toString());
-        this.authRepository.register(registerCommitLiveData.getValue());
+        return this.authRepository.register(registerCommitLiveData.getValue());
     }
 
     public MutableLiveData<ReturnData<LoginAndRegisterReturn>> getReturnData() {

@@ -5,8 +5,10 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.demo.androidapp.model.common.RCodeEnum;
 import com.demo.androidapp.model.common.ReturnData;
 import com.demo.androidapp.model.returnObject.LoginAndRegisterReturn;
 import com.demo.androidapp.repository.AuthRepository;
@@ -31,8 +33,7 @@ public class ActiveViewModel extends AndroidViewModel {
 
     public ActiveViewModel(@NonNull Application application) {
         super(application);
-        this.codesLiveData = new MutableLiveData<String>();
-        codesLiveData.setValue("");
+        this.codesLiveData = new MutableLiveData<String>("");
         authRepository = new AuthRepository(application);
     }
 
@@ -52,23 +53,23 @@ public class ActiveViewModel extends AndroidViewModel {
      * email:注册页面填写的邮箱
      * codes:接收到的帐号激活码
      */
-    public void sendCodes() {
-        if (email != null && Objects.requireNonNull(codesLiveData.getValue()).length() == 6) {
-            authRepository.active(this.email,codesLiveData.getValue());
+    public LiveData<ReturnData<Object>> active() {
+        Log.d("imageView", "active: 邮箱" + email + "验证码" + codesLiveData.getValue());
+        if (email == null || email.equals("") || codesLiveData.getValue().equals("")) {
+            return new MutableLiveData<>(new ReturnData<>(RCodeEnum.DATA_ERROR));
         }
+        return authRepository.active(email,codesLiveData.getValue());
     }
 
     /**
      * 重新获取验证码
      * email:帐号关联的邮箱
      */
-    public void getActiveCodes() {
-        if (email != null) {
-            Log.d("imageView", "getActiveCodes: email不为空");
-            authRepository.getActiveCode(this.email);
-            return;
+    public LiveData<ReturnData<Object>> getActiveCodes() {
+        if (email == null && email.equals("")) {
+           return new MutableLiveData<>(new ReturnData<>(RCodeEnum.DATA_ERROR));
         }
-        Log.d("imageView", "getActiveCodes: email为空");
+        return authRepository.getActiveCode(email);
     }
 
     @Override

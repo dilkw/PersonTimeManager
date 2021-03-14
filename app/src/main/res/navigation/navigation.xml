@@ -63,7 +63,11 @@
         android:id="@+id/activeFragment"
         android:name="com.demo.androidapp.view.ActiveFragment"
         android:label="帐号激活"
-        tools:layout="@layout/active_fragment" />
+        tools:layout="@layout/active_fragment" >
+        <action
+            android:id="@+id/action_activeFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+    </fragment>
     <fragment
         android:id="@+id/retrievePasswordFragment"
         android:name="com.demo.androidapp.view.ResetPasswordFragment"
@@ -84,7 +88,11 @@
     <fragment
         android:id="@+id/friendFragment"
         android:name="com.demo.androidapp.view.FriendFragment"
-        android:label="FriendFragment" />
+        android:label="FriendFragment" >
+        <action
+            android:id="@+id/action_friendFragment_to_friendInfoFragment"
+            app:destination="@id/friendInfoFragment" />
+    </fragment>
     <fragment
         android:id="@+id/userInfoFragment"
         android:name="com.demo.androidapp.view.UserInfoFragment"
@@ -93,4 +101,8 @@
             android:id="@+id/action_userInfoFragment_to_retrievePasswordFragment"
             app:destination="@id/retrievePasswordFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/friendInfoFragment"
+        android:name="com.demo.androidapp.view.FriendInfoFragment"
+        android:label="FriendInfoFragment" />
 </navigation>

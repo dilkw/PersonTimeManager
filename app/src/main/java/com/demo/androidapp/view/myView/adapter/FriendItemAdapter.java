@@ -125,7 +125,7 @@ public class FriendItemAdapter extends RecyclerView.Adapter<FriendItemAdapter.My
             @Override
             public void onClick(View v) {
                 if (itemOnClickListener == null) return;
-                itemOnClickListener.itemOnClick(position);
+                itemOnClickListener.itemOnClick(position,friend.getId(),friend.getFuid());
             }
         });
 
@@ -167,6 +167,6 @@ public class FriendItemAdapter extends RecyclerView.Adapter<FriendItemAdapter.My
 
     //item点击接口
     public interface ItemOnClickListener {
-        void itemOnClick(int position);
+        void itemOnClick(int position,long id,String fuid);
     }
 }

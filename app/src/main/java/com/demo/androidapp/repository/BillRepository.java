@@ -136,6 +136,7 @@ public class BillRepository {
 
     //更新服务器账单upDateBillsInServer
     public LiveData<ReturnData<Object>> upDateBillInServer(Bill bill) {
+        Log.d("imageView", "repository-upDateBillInServer: " + bill.toString());
         return api.updateBill(bill.getId(),bill);
     }
 

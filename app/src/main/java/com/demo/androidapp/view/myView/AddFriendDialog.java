@@ -61,17 +61,11 @@ public class AddFriendDialog extends DialogFragment implements View.OnClickListe
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         addfriendDialogBinding = DataBindingUtil.inflate(LayoutInflater.from(requireContext()),R.layout.addfriend_dialog,null,false);
         View contentView = addfriendDialogBinding.getRoot();
-        String dialogTitle = "添加账单";
-        if (!isAdd) {
-            dialogTitle = "编辑账单";
-            addfriendDialogBinding.addFriendDialogContentTextInputEditText.setText("friend.getContent()");
-        }
-        addfriendDialogBinding.addFriendTitleTextView.setText(dialogTitle);
-        setListener();
         AlertDialog alertDialog = new AlertDialog
                 .Builder(requireContext())
                 .setView(contentView)
                 .create();
+        setListener();
         return alertDialog;
     }
 

@@ -2,6 +2,7 @@ package com.demo.androidapp.api;
 
 import androidx.lifecycle.LiveData;
 
+import com.demo.androidapp.model.FriendListItem;
 import com.demo.androidapp.model.entity.Bill;
 import com.demo.androidapp.model.entity.Clock;
 import com.demo.androidapp.model.entity.Friend;
@@ -38,12 +39,12 @@ public interface Api {
 
     //注册
     @POST("user/signup")
-    Call<ReturnData<LoginAndRegisterReturn>> signUp(@Body RegisterCommit registerCommit);
+    LiveData<ReturnData<User>> signUp(@Body RegisterCommit registerCommit);
 
     //激活帐号获取验证码（返回字符串）https://sodacoco.com/api/v1/user/forget
     @FormUrlEncoded
     @POST("user/active/code")
-    Call<ReturnData> getActiveCodes(@Field("email") String email);
+    LiveData<ReturnData<Object>> getActiveCodes(@Field("email") String email);
 
     //重置密码获取验证码（返回字符串）
     @FormUrlEncoded
@@ -53,7 +54,7 @@ public interface Api {
     //注册完成后激活帐号
     @FormUrlEncoded
     @POST("user/active")
-    Call<ReturnData> active(@Field("email") String email,@Field("code") String code);
+    LiveData<ReturnData<Object>> active(@Field("email") String email,@Field("code") String code);
 
     //注销
     @POST("user/logout")
@@ -144,7 +145,7 @@ public interface Api {
     @GET("bill/list")
     Call<ReturnData<ReturnListObject<Bill>>> getAllBills();
 
-    //更新账单
+    //添加账单
     @POST("bill/add")
     LiveData<ReturnData<Bill>> addBill(@Body Bill bill);
 
@@ -160,6 +161,10 @@ public interface Api {
     //获取好友
     @GET("friend/list")
     Call<ReturnData<ReturnListObject<Friend>>> getAllFriends();
+
+    //获取好友信息
+    @GET("friend/info/{id}")
+    LiveData<ReturnData<FriendListItem>> getFriendInfoByUid(@Path("id")String fuid);
 
     //添加好友
     @FormUrlEncoded

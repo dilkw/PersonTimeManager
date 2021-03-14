@@ -53,52 +53,20 @@ public class AuthRepository {
     }
 
     //注册
-    public void register(RegisterCommit registerCommit) {
+    public LiveData<ReturnData<User>> register(RegisterCommit registerCommit) {
         Log.d("imageView","authRepository层：repository----register");
         if (registerCommit == null) {
             Log.d("imageView","authRepository层注册信息为空");
-            return;
+            return new MutableLiveData<>(new ReturnData<>(RCodeEnum.DATA_ERROR));
         }
         Log.d("imageView","authRepository层：注册信息：" + registerCommit.toString());
-        api.signUp(registerCommit).enqueue(new Callback<ReturnData<LoginAndRegisterReturn>>() {
-            @Override
-            public void onResponse(Call<ReturnData<LoginAndRegisterReturn>> call, Response<ReturnData<LoginAndRegisterReturn>> response) {
-                Log.d("imageView","authRepository层：注册成功" );
-                //ReturnData returnData = new ReturnData(response);
-                returnDataLiveData.postValue(response.body());
-            }
-            @Override
-            public void onFailure(Call<ReturnData<LoginAndRegisterReturn>> call, Throwable t) {
-                returnDataLiveData.postValue(new ReturnData<>(RCodeEnum.ERROR));
-                Log.d("imageView","authRepository层：注册失败" + t.toString());
-                t.printStackTrace();
-            }
-        });
+        return api.signUp(registerCommit);
     }
 
 
     //帐号激活获取验证码
-    public void getActiveCode(String email) {
-        Log.d("imageView","authRepository层：repository----getActiveCode");
-        if (email == null) {
-            Log.d("imageView","邮箱为空");
-            return;
-        }
-        Log.d("imageView","authRepository层：注册信息：" + email);
-        api.getActiveCodes(email).enqueue(new Callback<ReturnData>() {
-            @Override
-            public void onResponse(Call<ReturnData> call, Response<ReturnData> response) {
-                Log.d("imageView","authRepository层：获取验证码成功" );
-                returnDataLiveData.postValue(response.body());
-            }
-
-            @Override
-            public void onFailure(Call<ReturnData> call, Throwable t) {
-                Log.d("imageView","authRepository层：获取验证码失败");
-                t.printStackTrace();
-                returnDataLiveData.postValue(new ReturnData<>(RCodeEnum.ERROR));
-            }
-        });
+    public LiveData<ReturnData<Object>> getActiveCode(String email) {
+        return api.getActiveCodes(email);
     }
 
     //重置密码获取验证码
@@ -134,8 +102,12 @@ public class AuthRepository {
     }
 
     //注销用户信息
-    public LiveData<ReturnData<Object>> deleteUserInfoInServer(String email,String code) {
+    public LiveData<ReturnData<Object>> cancellation(String email,String code) {
         return api.cancellation(email,code);
+    }
+
+    public LiveData<ReturnData<Object>> getCancellationCode(String email) {
+        return api.getCancellationCode(email);
     }
 
 
@@ -144,22 +116,8 @@ public class AuthRepository {
      * email:注册页面填写的邮箱
      * codes:接收到的帐号激活码
      */
-    public void active(String email,String codes) {
-        api.active(email,codes).enqueue(new Callback<ReturnData>() {
-            @Override
-            public void onResponse(Call<ReturnData> call, Response<ReturnData> response) {
-                Log.d("imageView","authRepository层：激活账号成功" );
-                //ReturnData returnData = new ReturnData(response);
-                returnDataLiveData.postValue(response.body());
-            }
-
-            @Override
-            public void onFailure(Call<ReturnData> call, Throwable t) {
-                returnDataLiveData.postValue(new ReturnData(201,"",null));
-                Log.d("imageView","authRepository层：激活失败" + t.toString());
-                t.printStackTrace();
-            }
-        });
+    public LiveData<ReturnData<Object>> active(String email,String codes) {
+        return api.active(email,codes);
     }
 
     public LiveData<ReturnData<Object>> resetEmail(String email,String newEmail,String code) {

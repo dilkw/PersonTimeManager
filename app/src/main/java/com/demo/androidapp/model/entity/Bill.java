@@ -39,18 +39,23 @@ public class Bill {
     @ColumnInfo(name = "amount")
     private float amount;
 
+    //分类(支出/收入)
+    @ColumnInfo(name = "created_at")
+    private long created_at;
+
 
     @Ignore
     public Bill() {
     }
 
-    public Bill(long id, long consume_time, String userId, String content, boolean category, float amount) {
+    public Bill(long id, long consume_time, String userId, String content, boolean category, float amount, long created_at) {
         this.id = id;
         this.consume_time = consume_time;
         this.userId = userId;
         this.content = content;
         this.category = category;
         this.amount = amount;
+        this.created_at = created_at;
     }
 
     public long getId() {
@@ -101,15 +106,24 @@ public class Bill {
         this.amount = amount;
     }
 
+    public long getCreated_at() {
+        return created_at;
+    }
+
+    public void setCreated_at(long created_at) {
+        this.created_at = created_at;
+    }
+
     @Override
     public String toString() {
         return "Bill{" +
                 "id=" + id +
-                ", createdTime=" + consume_time +
+                ", consume_time=" + consume_time +
                 ", userId='" + userId + '\'' +
                 ", content='" + content + '\'' +
                 ", category=" + category +
-                ", money=" + amount +
+                ", amount=" + amount +
+                ", created_at=" + created_at +
                 '}';
     }
 }

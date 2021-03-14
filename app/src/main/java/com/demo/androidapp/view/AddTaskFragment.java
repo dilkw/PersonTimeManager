@@ -160,7 +160,7 @@ public class AddTaskFragment extends Fragment implements View.OnClickListener {
                         dateTimePickerDialog.setEnterClicked(new DateTimePickerDialog.EnterListener() {
                             @RequiresApi(api = Build.VERSION_CODES.O)
                             @Override
-                            public void enterBtnOnClicked() {
+                            public void enterBtnOnClicked(String dateTimeStr) {
                                 String date = dateTimePickerDialog.getSelectTimeString();
                                 addTaskViewModel.taskMutableLiveData.getValue().setAlert(true);
                                 addTaskFragmentBinding.alertTimeLinearLayout.setVisibility(View.VISIBLE);
@@ -188,7 +188,7 @@ public class AddTaskFragment extends Fragment implements View.OnClickListener {
                     dateTimePickerDialog.setEnterClicked(new DateTimePickerDialog.EnterListener() {
                         @RequiresApi(api = Build.VERSION_CODES.O)
                         @Override
-                        public void enterBtnOnClicked() {
+                        public void enterBtnOnClicked(String dateTimeStr) {
                             addTaskFragmentBinding.endTimeEditText.setText(dateTimePickerDialog.getSelectTimeString());
                         }
                     });

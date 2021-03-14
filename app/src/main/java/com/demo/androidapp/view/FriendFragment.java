@@ -157,7 +157,11 @@ public class FriendFragment extends Fragment implements View.OnClickListener {
         });
         friendItemAdapter.setItemOnClickListener(new FriendItemAdapter.ItemOnClickListener() {
             @Override
-            public void itemOnClick(int position) {
+            public void itemOnClick(int position,long id,String fuid) {
+                Bundle bundle = new Bundle();
+                bundle.putLong("fid",id);
+                bundle.putString("fuid",fuid);
+                controller.navigate(R.id.action_friendFragment_to_friendInfoFragment,bundle);
             }
         });
 

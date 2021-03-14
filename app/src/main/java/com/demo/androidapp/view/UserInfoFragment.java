@@ -2,6 +2,7 @@ package com.demo.androidapp.view;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
@@ -10,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -27,6 +29,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.demo.androidapp.MyApplication;
 import com.demo.androidapp.R;
 import com.demo.androidapp.databinding.UserinfoFragmentBinding;
 import com.demo.androidapp.model.common.RCodeEnum;
@@ -77,9 +80,6 @@ public class UserInfoFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if (getArguments() != null) {
-            isMe = new MutableLiveData<>(getArguments().getBoolean("isMe"));
-        }
         userInfoViewModel = new ViewModelProvider(this).get(UserInfoViewModel.class);
         userinfoFragmentBinding.setUserInfoViewModel(userInfoViewModel);
         setListener();
@@ -90,6 +90,7 @@ public class UserInfoFragment extends Fragment implements View.OnClickListener {
         userinfoFragmentBinding.userInfoEditNameButton.setOnClickListener(this);
         userinfoFragmentBinding.userInfoResetEmailButton.setOnClickListener(this);
         userinfoFragmentBinding.userInfoCancellationButton.setOnClickListener(this);
+        userinfoFragmentBinding.userInfoResetPwdItem.setOnClickListener(this);
     }
 
     @SuppressLint({"NonConstantResourceId", "ResourceAsColor"})
@@ -103,7 +104,6 @@ public class UserInfoFragment extends Fragment implements View.OnClickListener {
             }
             case R.id.userInfoEditNameButton: {
                 Log.d("imageView", "onClick: 更改昵称按钮");
-                String newName = "";
                 updateUserName();
                 break;
             }
@@ -123,10 +123,12 @@ public class UserInfoFragment extends Fragment implements View.OnClickListener {
             }
             case R.id.userInfoCancellationButton: {
                 Log.d("imageView", "onClick: 注销帐号按钮");
+                cancellation();
                 break;
             }
             case R.id.userInfoResetPwdItem: {
                 Log.d("imageView", "onClick: 重置密码");
+                controller.navigate(R.id.action_userInfoFragment_to_retrievePasswordFragment);
                 break;
             }
             default:{
@@ -213,5 +215,109 @@ public class UserInfoFragment extends Fragment implements View.OnClickListener {
             }
         });
         alertDialogs.show();
+    }
+
+    //注销账号
+    private void cancellation() {
+        View contentView = getLayoutInflater().inflate(R.layout.cancellation_dialog,null,false);
+        AlertDialog cancellationAlertDialogs = new AlertDialog.Builder(getContext())
+                .setView(contentView)
+                .create();
+
+        TextInputEditText codeEditText = contentView.findViewById(R.id.cancellationCodeInputText);
+        TextView codeSendTipTextView = contentView.findViewById(R.id.cancellationCodeSendTip);
+        TextInputLayout codeTextInputLayout = contentView.findViewById(R.id.cancellationCodeInputTextLayout);
+        MaterialButton getCodeBtn = contentView.findViewById(R.id.cancellationCodeGetBtn);
+        MaterialButton negativeBtn = contentView.findViewById(R.id.cancellationCodeDialogNegativeBtn);
+        MaterialButton enterBtn = contentView.findViewById(R.id.cancellationCodeDialogEnterBtn);
+
+        codeEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                boolean b = s != null && s.length() == 6;
+                enterBtn.setEnabled(b);
+                codeTextInputLayout.setHelperTextEnabled(b);
+                codeTextInputLayout.setErrorEnabled(!b);
+                if (!b) {
+                    codeTextInputLayout.setError("请注意大小写，验证码长度为6位");
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+        getCodeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                userInfoViewModel.getCancellationCode().observe(getViewLifecycleOwner(), new Observer<ReturnData<Object>>() {
+                    @SuppressLint("SetTextI18n")
+                    @Override
+                    public void onChanged(ReturnData<Object> objectReturnData) {
+                        if (objectReturnData.getCode() == RCodeEnum.OK.getCode()) {
+                            Toast.makeText(getContext(),"验证码获取成功",Toast.LENGTH_SHORT).show();
+                            codeSendTipTextView.setText("验证码已成功发送至您的邮箱：" + userInfoViewModel.userReturnLiveData.getValue().getData().getEmail());
+                        }else {
+                            codeSendTipTextView.setText("验证码发送失败！，请检查您的网络，或是稍后再次获取");
+                            Toast.makeText(getContext(),"验证码获取失败" + objectReturnData.getMsg(),Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
+        });
+
+        negativeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cancellationAlertDialogs.dismiss();
+            }
+        });
+
+        enterBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String code = codeEditText.getText().toString().trim();
+                enterCancellationDialog(code,cancellationAlertDialogs);
+            }
+        });
+        cancellationAlertDialogs.show();
+    }
+
+    //确定注销帐号确认框
+    private void enterCancellationDialog(String code , AlertDialog cancellationAlertDialogs) {
+        String msg = "是否确定注销";
+        AlertDialog cancellationDialog = new AlertDialog.Builder(getContext())
+                .setTitle("提示")
+                .setMessage(msg)
+                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                })
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        userInfoViewModel.cancellation(code).observe(getViewLifecycleOwner(), new Observer<ReturnData<Object>>() {
+                            @Override
+                            public void onChanged(ReturnData<Object> objectReturnData) {
+                                if (objectReturnData.getCode() == RCodeEnum.OK.getCode()) {
+                                    Toast.makeText(getContext(),"帐号注销成功成功",Toast.LENGTH_SHORT).show();
+                                    MyApplication.getApplication().signOut();
+                                }else {
+                                    Toast.makeText(getContext(),"验证码获取失败" + objectReturnData.getMsg(),Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+                    }
+                })
+                .create();
+        cancellationDialog.show();
     }
 }

@@ -111,14 +111,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:clickable="true"
+            android:focusable="true"
             android:text="@string/forgetPwd"
             android:textColor="#03A9F4"
             app:layout_constraintBottom_toBottomOf="@+id/registerTextView"
-            app:layout_constraintEnd_toEndOf="@+id/loginButton"
-            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintEnd_toStartOf="@+id/activeAccount"
             app:layout_constraintStart_toEndOf="@+id/registerTextView"
-            app:layout_constraintTop_toTopOf="@+id/registerTextView"
-            android:focusable="true" />
+            app:layout_constraintTop_toTopOf="@+id/registerTextView" />
 
         <!--跳转激活帐号页面-->
         <TextView
@@ -127,10 +126,10 @@
             android:layout_height="wrap_content"
             android:text="@string/activeAccount"
             android:textColor="#03A9F4"
-            android:layout_marginEnd="411dp"
-            android:layout_marginRight="411dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintBottom_toBottomOf="@+id/forgetPwd"
+            app:layout_constraintEnd_toEndOf="@+id/loginButton"
+            app:layout_constraintStart_toEndOf="@+id/forgetPwd"
+            app:layout_constraintTop_toTopOf="@+id/forgetPwd" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

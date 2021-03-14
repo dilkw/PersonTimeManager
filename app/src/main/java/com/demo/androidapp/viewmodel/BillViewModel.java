@@ -97,6 +97,7 @@ public class BillViewModel extends AndroidViewModel {
     //服务器更新时钟
     public LiveData<ReturnData<Object>> upDateBillInServer(Bill bill) {
         //在数据库中没有数据时尝试从无服务器中获取
+        Log.d("imageView", "upDateBillInServer: " + bill.toString());
         if (bill == null) return new MutableLiveData<>(new ReturnData<>(RCodeEnum.DATA_ERROR));
         return billRepository.upDateBillInServer(bill);
     }

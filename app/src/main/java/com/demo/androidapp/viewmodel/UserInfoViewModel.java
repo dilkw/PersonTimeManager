@@ -52,12 +52,22 @@ public class UserInfoViewModel extends AndroidViewModel {
     }
 
     //在服务器中删除用户信息注销用户
-    public LiveData<ReturnData<Object>> deleteUserInfoInServer(String code) {
+    public LiveData<ReturnData<Object>> cancellation(String code) {
         //在数据库中没有数据时尝试从无服务器中获取
         if (code == null || code.length() != 6) {
             return new MutableLiveData<>(new ReturnData<>(RCodeEnum.DATA_ERROR));
         }
-        return authRepository.deleteUserInfoInServer(userReturnLiveData.getValue().getData().getEmail(),code);
+        return authRepository.cancellation(userReturnLiveData.getValue().getData().getEmail(),code);
+    }
+
+    //在服务器获取用户注销验证码
+    public LiveData<ReturnData<Object>> getCancellationCode() {
+        String email = userReturnLiveData.getValue().getData().getEmail();
+        //在数据库中没有数据时尝试从无服务器中获取
+        if (email == null || email.equals("")) {
+            return new MutableLiveData<>(new ReturnData<>(RCodeEnum.DATA_ERROR));
+        }
+        return authRepository.getCancellationCode(userReturnLiveData.getValue().getData().getEmail());
     }
 
 }

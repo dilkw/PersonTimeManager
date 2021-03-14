@@ -1,17 +1,22 @@
 package com.demo.androidapp.view;
 
+import androidx.annotation.RequiresApi;
 import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.annotation.SuppressLint;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.navigation.ui.AppBarConfiguration;
+import androidx.navigation.ui.NavigationUI;
 
 import android.os.CountDownTimer;
 import android.text.Editable;
@@ -23,25 +28,34 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.demo.androidapp.MainActivity;
+import com.demo.androidapp.MyApplication;
 import com.demo.androidapp.R;
 import com.demo.androidapp.databinding.ActiveFragmentBinding;
 import com.demo.androidapp.model.common.RCodeEnum;
 import com.demo.androidapp.model.common.ReturnData;
+import com.demo.androidapp.model.entity.User;
 import com.demo.androidapp.view.myView.IdentifyCodeView;
 import com.demo.androidapp.viewmodel.ActiveViewModel;
 
 import java.util.Objects;
 
-public class ActiveFragment extends Fragment implements IdentifyCodeView.CodesChangedListener {
+public class ActiveFragment extends Fragment implements IdentifyCodeView.CodesChangedListener, View.OnClickListener {
 
-    private ActiveViewModel mViewModel;
+    private ActiveViewModel activeViewModel;
 
     public static ActiveFragment newInstance() {
         return new ActiveFragment();
     }
 
-    private ActiveFragmentBinding binding;
+    private ActiveFragmentBinding activeFragmentBinding;
+
+    private FragmentManager fragmentManager;
+
+    private NavHostFragment navHostFragment;
+
+    private NavController controller;
+
+    private AppBarConfiguration appBarConfiguration;
 
     private CountDownTimer countDownTimer;      //
     private CountDownTimer countDownTimer2;
@@ -49,64 +63,70 @@ public class ActiveFragment extends Fragment implements IdentifyCodeView.CodesCh
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        //View view = inflater.inflate(R.layout.active_fragment, container, false);
-        binding = DataBindingUtil.inflate(inflater,R.layout.active_fragment,container,false);
-        binding.getRoot().setOnTouchListener(new View.OnTouchListener() {
+        activeFragmentBinding = DataBindingUtil.inflate(inflater,R.layout.active_fragment,container,false);
+        activeFragmentBinding.setLifecycleOwner(this);
+        activeFragmentBinding.getRoot().setOnTouchListener(new View.OnTouchListener() {
             @SuppressLint("ClickableViewAccessibility")
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if (binding.identifyCodeView.isFocused()) {
+                if (activeFragmentBinding.identifyCodeView.isFocused()) {
                     //binding.identifyCodeView.hideSoftInputOutOfVonClick();
-                    binding.identifyCodeView.clearFocus();
+                    activeFragmentBinding.identifyCodeView.clearFocus();
                 }
                 return true;
             }
         });
-        //this.getActivity().getSupportFragmentManager().putFragment(null,"activeFragment",this);
-        return binding.getRoot();
+        fragmentManager = requireActivity().getSupportFragmentManager();
+        navHostFragment = (NavHostFragment)fragmentManager.findFragmentById(R.id.fragment);
+        assert navHostFragment != null;
+        controller = navHostFragment.getNavController();
+        appBarConfiguration = new AppBarConfiguration.Builder(controller.getGraph()).build();
+        NavigationUI.setupWithNavController(activeFragmentBinding.activeFragmentToolBar,controller,appBarConfiguration);
+        return activeFragmentBinding.getRoot();
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mViewModel = new ViewModelProvider(this).get(ActiveViewModel.class);
+        activeViewModel = new ViewModelProvider(this).get(ActiveViewModel.class);
         if (getArguments() != null) {
-            mViewModel.setEmail(getArguments().getString("email"));
+            activeViewModel.setEmail(getArguments().getString("email"));
             Log.d("imageView", "onActivityCreated: " + getArguments().getString("email"));
         }
 
-        binding.setActiveViewModel(mViewModel);
-        binding.setView(binding.identifyCodeView);
-        binding.identifyCodeView.addCodesChangeListener(codes -> {
+        activeFragmentBinding.setActiveViewModel(activeViewModel);
+        activeFragmentBinding.setView(activeFragmentBinding.identifyCodeView);
+        activeFragmentBinding.identifyCodeView.addCodesChangeListener(codes -> {
             Log.d("imageView", "activityFragment:textChange" + codes);
             if (codes.length() == 6) {
-                binding.activeButton.setEnabled(true);
+                activeFragmentBinding.activeButton.setEnabled(true);
                 Log.d("imageView", "activityFragment:textChange" + "按键有效");
             }else {
-                binding.activeButton.setEnabled(false);
+                activeFragmentBinding.activeButton.setEnabled(false);
             }
         });
-        binding.identifyCodeView.setOnLongClickListener();
-        binding.identifyCodeView.setOnFocusChangeListener((v, hasFocus) -> {
+        activeFragmentBinding.identifyCodeView.setOnLongClickListener();
+        activeFragmentBinding.identifyCodeView.setOnFocusChangeListener((v, hasFocus) -> {
             if (!hasFocus) {
-                binding.identifyCodeView.hideSoftInputOutOfVonClick();
+                activeFragmentBinding.identifyCodeView.hideSoftInputOutOfVonClick();
             }
         });
+        setOnClickListener();
 
-        if (mViewModel.getEmail() == null) {
+        if (activeViewModel.getEmail() == null || activeViewModel.getEmail().equals("")) {
             NotFromRegisterFragment();
         }else {
             fromRegisterFragment();
         }
 
-        mViewModel.getCodesLiveData().observe(getViewLifecycleOwner(), new Observer<String>() {
+        activeViewModel.getCodesLiveData().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(String s) {
                 Log.d("imageView", "onChanged: mViewModel观察者" + s);
             }
         });
 
-        mViewModel.getReturnLiveData().observe(getViewLifecycleOwner(), new Observer<ReturnData>() {
+        activeViewModel.getReturnLiveData().observe(getViewLifecycleOwner(), new Observer<ReturnData>() {
             @Override
             public void onChanged(ReturnData returnData) {
                 if (returnData.getCode() == RCodeEnum.OK.getCode()) {
@@ -114,8 +134,7 @@ public class ActiveFragment extends Fragment implements IdentifyCodeView.CodesCh
                         Toast.makeText(requireActivity(),"验证码已发送至您的邮箱",Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    NavController navController = Navigation.findNavController(binding.activeButton);
-                    navController.navigate(R.id.login_fragment);
+                    controller.navigate(R.id.login_fragment);
                 } else {
                     Toast.makeText(requireActivity(),returnData.getMsg() + "或者帐号已被注册并激活了",Toast.LENGTH_SHORT).show();
                 }
@@ -125,50 +144,37 @@ public class ActiveFragment extends Fragment implements IdentifyCodeView.CodesCh
 
     //从注册页面跳转过来激活帐号（带有email）
     private void fromRegisterFragment() {
-        binding.getCodeTipsTextView.setVisibility(View.VISIBLE);
+        Log.d("imageView", "从注册页跳转");
+        activeFragmentBinding.getCodeTipsTextView.setVisibility(View.VISIBLE);
         countDownTimer = new CountDownTimer(60000,1000) {
             @SuppressLint("SetTextI18n")
             @Override
             public void onTick(long millisUntilFinished) {
                 Log.d("imageView", "倒计时：");
-                binding.getCodeTipsTextView.setClickable(false);
-                binding.getCodeTipsTextView.setTextColor(getResources().getColor(R.color.colorTextFalse));
-                binding.getCodeTipsTextView.setText((millisUntilFinished / 1000) + "s获取验证码");
+                activeFragmentBinding.getCodeTipsTextView.setClickable(false);
+                activeFragmentBinding.getCodeTipsTextView.setTextColor(getResources().getColor(R.color.colorTextFalse));
+                activeFragmentBinding.getCodeTipsTextView.setText((millisUntilFinished / 1000) + "s获取验证码");
             }
 
             @Override
             public void onFinish() {
-                binding.getCodeTipsTextView.setText("获取验证码");
-                binding.getCodeTipsTextView.setTextColor(getResources().getColor(R.color.colorTextTrue));
-                binding.getCodeTipsTextView.setClickable(true);
+                activeFragmentBinding.getCodeTipsTextView.setText("获取验证码");
+                activeFragmentBinding.getCodeTipsTextView.setTextColor(getResources().getColor(R.color.colorTextTrue));
+                activeFragmentBinding.getCodeTipsTextView.setClickable(true);
             }
         };
         countDownTimer.start();
         //重新获取验证码（访问获取验证码接口）
-        binding.getCodeTipsTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mViewModel.getActiveCodes();
-                countDownTimer.start();
-            }
-        });
     }
 
 
     //从注册页面跳转过来激活帐号（带有email）
     private void NotFromRegisterFragment() {
-        binding.activeGetCodeBtn.setVisibility(View.VISIBLE);
-        binding.activeTextInputLayoutEmail.setVisibility(View.VISIBLE);
-        binding.activeGetCodeBtn.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                mViewModel.setEmail(Objects.requireNonNull(binding.activeTextInputEditEmail.getText()).toString());
-                mViewModel.getActiveCodes();
-                Log.d("imageView", "getActiveCodes: 获取验证码");
-            }
-        });
+        Log.d("imageView", "非注册页跳转");
+        activeFragmentBinding.activeGetCodeBtn.setVisibility(View.VISIBLE);
+        activeFragmentBinding.activeTextInputLayoutEmail.setVisibility(View.VISIBLE);
 
-        binding.activeTextInputEditEmail.addTextChangedListener(new TextWatcher() {
+        activeFragmentBinding.activeTextInputEditEmail.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -177,10 +183,10 @@ public class ActiveFragment extends Fragment implements IdentifyCodeView.CodesCh
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (!s.toString().matches(getResources().getString(R.string.emailCheckStr)) && s.length() > 0) {
-                    binding.activeTextInputLayoutEmail.setError("邮箱格式错误");
+                    activeFragmentBinding.activeTextInputLayoutEmail.setError("邮箱格式错误");
                 }else {
-                    binding.activeGetCodeBtn.setEnabled(s.length() > 0);
-                    binding.activeTextInputLayoutEmail.setErrorEnabled(false);
+                    activeFragmentBinding.activeGetCodeBtn.setEnabled(s.length() > 0);
+                    activeFragmentBinding.activeTextInputLayoutEmail.setErrorEnabled(false);
                 }
             }
 
@@ -196,29 +202,29 @@ public class ActiveFragment extends Fragment implements IdentifyCodeView.CodesCh
             @Override
             public void onTick(long millisUntilFinished) {
                 Log.d("imageView", "倒计时：");
-                binding.activeGetCodeBtn.setEnabled(false);
-                binding.activeGetCodeBtn.setText((millisUntilFinished / 1000) + "s获取验证码");
+                activeFragmentBinding.activeGetCodeBtn.setEnabled(false);
+                activeFragmentBinding.activeGetCodeBtn.setText((millisUntilFinished / 1000) + "s获取验证码");
             }
 
             @Override
             public void onFinish() {
-                binding.activeGetCodeBtn.setText("获取验证码");
-                binding.activeGetCodeBtn.setEnabled(true);
+                activeFragmentBinding.activeGetCodeBtn.setText("获取验证码");
+                activeFragmentBinding.activeGetCodeBtn.setEnabled(true);
             }
         };
 
-        mViewModel.getReturnLiveData().observe(requireActivity(), new Observer<ReturnData>() {
+        activeViewModel.getReturnLiveData().observe(requireActivity(), new Observer<ReturnData>() {
             @Override
             public void onChanged(ReturnData returnData) {
                 if (returnData.getCode() == RCodeEnum.OK.getCode()) {
                     Log.d("imageView", "getActiveCodes: 获取验证码成功");
                     countDownTimer2.start();
-                    binding.codeHasBeenSentText.setVisibility(View.VISIBLE);
+                    activeFragmentBinding.codeHasBeenSentText.setVisibility(View.VISIBLE);
                 }else {
                     Log.d("imageView", "getActiveCodes: 获取验证码失败");
                     Toast.makeText(getActivity(),returnData.getMsg(),Toast.LENGTH_SHORT).show();
-                    binding.activeGetCodeBtn.setEnabled(false);
-                    binding.activeTextInputLayoutEmail.setError(returnData.getMsg());
+                    activeFragmentBinding.activeGetCodeBtn.setEnabled(false);
+                    activeFragmentBinding.activeTextInputLayoutEmail.setError(returnData.getMsg());
                 }
             }
         });
@@ -227,7 +233,58 @@ public class ActiveFragment extends Fragment implements IdentifyCodeView.CodesCh
     @Override
     public void textChanged(String codes) {
         if (codes.length() == 6) {
-            binding.activeButton.setEnabled(true);
+            activeFragmentBinding.activeButton.setEnabled(true);
         }
+    }
+
+    private void setOnClickListener() {
+        activeFragmentBinding.activeGetCodeBtn.setOnClickListener(this);
+        activeFragmentBinding.getCodeTipsTextView.setOnClickListener(this);
+        activeFragmentBinding.activeButton.setOnClickListener(this);
+    }
+
+    @SuppressLint({"NonConstantResourceId", "ResourceAsColor"})
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.activeGetCodeBtn: {
+                activeViewModel.setEmail(Objects.requireNonNull(activeFragmentBinding.activeTextInputEditEmail.getText()).toString());
+                getActiveCode();
+                Log.d("imageView", "getActiveCodes: 获取验证码");
+                break;
+            }
+            case R.id.getCodeTipsTextView: {
+                getActiveCode();
+                countDownTimer.start();
+                break;
+            }
+            case R.id.activeButton: {
+                activeViewModel.active().observe(getViewLifecycleOwner(), new Observer<ReturnData<Object>>() {
+                    @Override
+                    public void onChanged(ReturnData<Object> objectReturnData) {
+                        if (objectReturnData.getCode() == RCodeEnum.OK.getCode()) {
+                            Toast.makeText(getContext(), "激活成功", Toast.LENGTH_SHORT).show();
+                            controller.navigate(R.id.action_activeFragment_to_loginFragment);
+                        } else {
+                            Toast.makeText(getContext(), objectReturnData.getMsg(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
+        }
+    }
+
+    private void getActiveCode() {
+        activeViewModel.getActiveCodes().observe(getViewLifecycleOwner(), new Observer<ReturnData<Object>>() {
+            @Override
+            public void onChanged(ReturnData<Object> objectReturnData) {
+                if (objectReturnData.getCode() == RCodeEnum.OK.getCode()) {
+                    Toast.makeText(getContext(), "获取验证码成功", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getContext(), objectReturnData.getMsg(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 }

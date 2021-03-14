@@ -19,27 +19,27 @@ public class Friend {
     @PrimaryKey(autoGenerate = false)
     private long id;
 
-    //friendUid
-    @ColumnInfo(name = "friend_uid")
-    private String uid;
+    //fuid
+    @ColumnInfo(name = "fuid")
+    private String fuid;
 
-    //friendUid
+    //friendName
     @ColumnInfo(name = "friend_name")
     private String friend_name;
 
     //myUid
-    @ColumnInfo(name = "user_uid")
-    private String user_uid = MyApplication.getApplication().getUID();
+    @ColumnInfo(name = "uid")
+    private String uid;
 
     @Ignore
     public Friend() {
     }
 
-    public Friend(long id, String uid, String friend_name, String user_uid) {
+    public Friend(long id, String fuid, String friend_name, String uid) {
         this.id = id;
-        this.uid = uid;
+        this.fuid = fuid;
         this.friend_name = friend_name;
-        this.user_uid = user_uid;
+        this.uid = uid;
     }
 
     public long getId() {
@@ -50,20 +50,20 @@ public class Friend {
         this.id = id;
     }
 
+    public String getFuid() {
+        return fuid;
+    }
+
+    public void setFuid(String fuid) {
+        this.fuid = fuid;
+    }
+
     public String getUid() {
         return uid;
     }
 
     public void setUid(String uid) {
         this.uid = uid;
-    }
-
-    public String getUser_uid() {
-        return user_uid;
-    }
-
-    public void setUser_uid(String user_uid) {
-        this.user_uid = user_uid;
     }
 
     public String getFriend_name() {
@@ -78,7 +78,7 @@ public class Friend {
     public String toString() {
         return "Friend{" +
                 "id=" + id +
-                ", uid='" + uid + '\'' +
+                ", uid='" + fuid + '\'' +
                 '}';
     }
 }

@@ -1,6 +1,8 @@
 package com.demo.androidapp.view;
 
 import androidx.databinding.DataBindingUtil;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -14,6 +16,9 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.navigation.ui.AppBarConfiguration;
+import androidx.navigation.ui.NavigationUI;
 
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -29,9 +34,14 @@ import com.demo.androidapp.R;
 import com.demo.androidapp.databinding.RegisterFragmentBinding;
 import com.demo.androidapp.model.common.RCodeEnum;
 import com.demo.androidapp.model.common.ReturnData;
+import com.demo.androidapp.model.entity.User;
+import com.demo.androidapp.model.returnObject.LoginAndRegisterReturn;
 import com.demo.androidapp.view.commom.MethodCommon;
 import com.demo.androidapp.view.commom.MyTextWatcher;
+import com.demo.androidapp.viewmodel.HomeViewModel;
 import com.demo.androidapp.viewmodel.RegisterViewModel;
+import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -39,11 +49,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class RegisterFragment extends Fragment {
+public class RegisterFragment extends Fragment implements View.OnClickListener {
 
     private RegisterViewModel registerViewModel;
 
     private RegisterFragmentBinding registerBinding;
+
+    private FragmentManager fragmentManager;
+
+    private NavHostFragment navHostFragment;
+
+    private NavController controller;
+
+    private AppBarConfiguration appBarConfiguration;
 
     private List<TextInputEditText> textInputEditTexts = new ArrayList<>();
 
@@ -64,6 +82,12 @@ public class RegisterFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         registerBinding = DataBindingUtil.inflate(inflater,R.layout.register_fragment,container,false);
+        fragmentManager = requireActivity().getSupportFragmentManager();
+        navHostFragment = (NavHostFragment)fragmentManager.findFragmentById(R.id.fragment);
+        assert navHostFragment != null;
+        controller = navHostFragment.getNavController();
+        appBarConfiguration = new AppBarConfiguration.Builder(controller.getGraph()).build();
+        NavigationUI.setupWithNavController(registerBinding.registerFragmentToolBar,controller,appBarConfiguration);
         return registerBinding.getRoot();
     }
 
@@ -76,23 +100,8 @@ public class RegisterFragment extends Fragment {
             @Override
             public void onChanged(ReturnData returnData) {
                 Log.d("imageView","ReturnData------onchange()" + returnData.getCode() + returnData.getData());
-                if(returnData.getCode() == RCodeEnum.OK.getCode()) {
-                    //跳转激活页面
-                    Log.d("imageView","注册成功" + returnData.getCode());
-                    Bundle bundle = new Bundle();
-                    bundle.putString("email",registerViewModel.getRegisterCommitLiveData().getValue().getEmail());
-                    NavController navController = Navigation.findNavController(registerBinding.registerButton);
-                    navController.navigate(R.id.action_registerFragment_to_activeFragment);
-                }else {
-                    Toast.makeText(getActivity(),returnData.getMsg(),Toast.LENGTH_SHORT).show();
-                    Log.d("imageView","注册失败" + returnData.getCode());
-                }
             }
         });
-
-//        MethodCommon methodCommon = new MethodCommon();
-//        methodCommon.setEndIconOnClickListener(registerBinding.textInputLayoutPassword);
-//        methodCommon.setEndIconOnClickListener(registerBinding.textInputLayoutPwdConfirm);
 
         //对页面所有TextInputEditText进行监听，所有的TextInputEditText不为空登录按钮才有效
         textInputEditTexts.add(registerBinding.registerUserName);
@@ -100,6 +109,7 @@ public class RegisterFragment extends Fragment {
         textInputEditTexts.add(registerBinding.registerPassword);
         textInputEditTexts.add(registerBinding.registerPasswordConfirm);
         addTextWatcher();
+        setOnClickListener();
     }
 
     private void addTextWatcher() {
@@ -217,5 +227,36 @@ public class RegisterFragment extends Fragment {
             }
         }
         registerBinding.registerButton.setEnabled(!isNotOk);
+    }
+
+    private void setOnClickListener() {
+        registerBinding.registerButton.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.registerButton: {
+                Log.d("imageView", "onClick: 注册按钮点击");
+                registerViewModel.register().observe(getViewLifecycleOwner(), new Observer<ReturnData<User>>() {
+                    @Override
+                    public void onChanged(ReturnData<User> userReturnReturnData) {
+                        if (userReturnReturnData.getCode() == RCodeEnum.OK.getCode()) {
+                            Log.d("imageView", "注册成功:邮箱 " + userReturnReturnData.getData().getEmail());
+                            Toast.makeText(getContext(),"注册成功",Toast.LENGTH_SHORT).show();
+                            Bundle bundle = new Bundle();
+                            bundle.putString("email",userReturnReturnData.getData().getEmail());
+                            controller.navigate(R.id.action_registerFragment_to_activeFragment,bundle);
+                        }else {
+                            Toast.makeText(getContext(),"注册失败" + userReturnReturnData.getMsg(),Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+                break;
+            }
+            default:{
+                break;
+            }
+        }
     }
 }
