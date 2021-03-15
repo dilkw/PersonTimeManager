@@ -67,7 +67,7 @@ public class AddClockDialog extends DialogFragment implements View.OnClickListen
             addclockDialogBinding.addClockDialogTaskTextInputEditText.setText(clock.getTask());
             addclockDialogBinding.addClockDialogMinuteTextInputEditText.setText("" + clock.getClock_minute());
 
-            addclockDialogBinding.addClockAlertTimeTextView.setText(DateTimeUtil.longToStrYMDHM(clock.getAlert_Time()));
+            addclockDialogBinding.addClockAlertTimeTextView.setText(DateTimeUtil.longToStrYMDHM(clock.getAlert_time()));
             if (clock.isAlert()) {
                 addclockDialogBinding.addClockDialogAlertTimeLinearLayout.setVisibility(View.VISIBLE);
             }
@@ -109,8 +109,8 @@ public class AddClockDialog extends DialogFragment implements View.OnClickListen
                     @RequiresApi(api = Build.VERSION_CODES.O)
                     @Override
                     public void enterBtnOnClicked(String dateTimeStr) {
-                        addclockDialogBinding.addClockAlertTimeTextView.setText(dateTimePickerDialog.getSelectTimeString());
-                        clock.setAlert_Time(dateTimePickerDialog.getSelectedDateToLong() / 1000);
+                        addclockDialogBinding.addClockAlertTimeTextView.setText(dateTimeStr);
+                        clock.setAlert_time(dateTimePickerDialog.getSelectedDateToLong() / 1000);
                         clock.setAlert(true);
                         addclockDialogBinding.addClockDialogAlertTimeLinearLayout.setVisibility(View.VISIBLE);
                     }
@@ -120,7 +120,7 @@ public class AddClockDialog extends DialogFragment implements View.OnClickListen
             }
             case R.id.addClockAlertTimeClearImgBtn: {
                 addclockDialogBinding.addClockAlertTimeTextView.setText("");
-                clock.setAlert_Time(0);
+                clock.setAlert_time(0);
                 clock.setAlert(false);
                 addclockDialogBinding.addClockDialogAlertTimeLinearLayout.setVisibility(View.GONE);
                 break;

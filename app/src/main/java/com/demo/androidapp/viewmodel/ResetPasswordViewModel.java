@@ -5,9 +5,11 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.demo.androidapp.model.ResetPwdModel;
 import com.demo.androidapp.model.common.RCodeEnum;
 import com.demo.androidapp.model.common.ReturnData;
 import com.demo.androidapp.model.returnObject.LoginAndRegisterReturn;
@@ -22,36 +24,33 @@ public class ResetPasswordViewModel extends AndroidViewModel {
 
     private AuthRepository authRepository;
 
-    private MutableLiveData resetPwdMutableLiveData;
+    public LiveData<ResetPwdModel> resetPwdMutableLiveData;
 
     public ResetPasswordViewModel(@NonNull Application application){
         super(application);
         authRepository = new AuthRepository(application);
-        resetPwdMutableLiveData = new MutableLiveData();
+        resetPwdMutableLiveData = new MutableLiveData<ResetPwdModel>(new ResetPwdModel());
     }
 
     //重置密码获取验证码
-    public void resetPwdGetCode(String email) {
+    public LiveData<ReturnData<Object>> resetPwdGetCode() {
+        String email = resetPwdMutableLiveData.getValue().getEmail();
         if (email.isEmpty()) {
             Log.d("imageView", "resetPwdGetCode: 邮箱为空");
-            authRepository.getReturnDataLiveData().setValue(new ReturnData(201,"",null));
-            return;
+            return new MutableLiveData<>(new ReturnData<>(RCodeEnum.DATA_ERROR));
         }
-        authRepository.resetPwdGetCode(email);
+        return authRepository.resetPwdGetCode(email);
     }
 
-    public MutableLiveData<ReturnData<LoginAndRegisterReturn>> getRepositoryMutableLiveData() {
-        return authRepository.getReturnDataLiveData();
-    }
+
 
     //重置密码数据提交
-    public void resetPwdCommit(String email,String password,String passwordConfirm) {
-        if (email.isEmpty()) {
+    public LiveData<ReturnData<Object>> resetPwdCommit() {
+        if (resetPwdMutableLiveData.getValue() == null) {
             Log.d("imageView", "resetPwdGetCode: 邮箱为空");
-            authRepository.getReturnDataLiveData().setValue(new ReturnData(201,"",null));
-            return;
+            return new MutableLiveData<>(new ReturnData<>(RCodeEnum.DATA_ERROR));
         }
-        authRepository.resetPwdGetCode(email);
+        return authRepository.resetPwd(resetPwdMutableLiveData.getValue());
     }
 
 }

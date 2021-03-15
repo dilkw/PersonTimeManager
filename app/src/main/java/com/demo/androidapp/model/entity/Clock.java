@@ -45,13 +45,13 @@ public class Clock {
 
     //提醒
     @ColumnInfo(name = "alert_time")
-    private long alert_Time;
+    private long alert_time;
 
     @Ignore
     public Clock() {
     }
 
-    public Clock(long id, long created_at, long clock_minute, String userId, String task, boolean state, boolean alert, long alert_Time) {
+    public Clock(long id, long created_at, long clock_minute, String userId, String task, boolean state, boolean alert, long alert_time) {
         this.id = id;
         this.created_at = created_at;
         this.clock_minute = clock_minute;
@@ -59,7 +59,7 @@ public class Clock {
         this.task = task;
         this.state = state;
         this.alert = alert;
-        this.alert_Time = alert_Time;
+        this.alert_time = alert_time;
     }
 
     public long getId() {
@@ -118,12 +118,12 @@ public class Clock {
         this.alert = alert;
     }
 
-    public long getAlert_Time() {
-        return alert_Time;
+    public long getAlert_time() {
+        return alert_time;
     }
 
-    public void setAlert_Time(long alert_Time) {
-        this.alert_Time = alert_Time;
+    public void setAlert_time(long alert_time) {
+        this.alert_time = alert_time;
     }
 
 
@@ -137,7 +137,7 @@ public class Clock {
                 ", task='" + task + '\'' +
                 ", state=" + state +
                 ", alert=" + alert +
-                ", alertTime=" + alert_Time +
+                ", alertTime=" + alert_time +
                 '}';
     }
 }

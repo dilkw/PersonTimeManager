@@ -60,10 +60,6 @@ public class LoginViewModel extends AndroidViewModel {
         return this.authRepository.login(userLiveData.getValue().getName(),userLiveData.getValue().getPassword());
     }
 
-    public LiveData<ReturnData<User>> signInLiveData() {
-        return authRepository.signInLiveData(userLiveData.getValue().getName(),userLiveData.getValue().getPassword());
-    }
-
     //重写点击监听事件的方法
     public View.OnClickListener loginClick = new View.OnClickListener() {
         @Override

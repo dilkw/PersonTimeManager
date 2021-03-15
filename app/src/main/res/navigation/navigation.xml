@@ -71,24 +71,29 @@
     <fragment
         android:id="@+id/retrievePasswordFragment"
         android:name="com.demo.androidapp.view.ResetPasswordFragment"
-        tools:layout="@layout/reset_password_fragment"
-        android:label="找回密码" />
+        android:label="重置密码"
+        tools:layout="@layout/reset_password_fragment" />
     <fragment
         android:id="@+id/addTaskFragment"
         android:name="com.demo.androidapp.view.AddTaskFragment"
-        tools:layout="@layout/add_task_fragment"/>
+        android:label="任务"
+        tools:layout="@layout/add_task_fragment" />
     <fragment
         android:id="@+id/clockFragment"
         android:name="com.demo.androidapp.view.ClockFragment"
-        android:label="ClockFragment" />
+        android:label="时钟" >
+        <action
+            android:id="@+id/action_clockFragment_to_clockStartFragment"
+            app:destination="@id/clockStartFragment" />
+    </fragment>
     <fragment
         android:id="@+id/billFragment"
         android:name="com.demo.androidapp.view.BillFragment"
-        android:label="BillFragment" />
+        android:label="账单" />
     <fragment
         android:id="@+id/friendFragment"
         android:name="com.demo.androidapp.view.FriendFragment"
-        android:label="FriendFragment" >
+        android:label="好友">
         <action
             android:id="@+id/action_friendFragment_to_friendInfoFragment"
             app:destination="@id/friendInfoFragment" />
@@ -96,7 +101,7 @@
     <fragment
         android:id="@+id/userInfoFragment"
         android:name="com.demo.androidapp.view.UserInfoFragment"
-        android:label="UserInfoFragment" >
+        android:label="个人信息">
         <action
             android:id="@+id/action_userInfoFragment_to_retrievePasswordFragment"
             app:destination="@id/retrievePasswordFragment" />
@@ -104,5 +109,9 @@
     <fragment
         android:id="@+id/friendInfoFragment"
         android:name="com.demo.androidapp.view.FriendInfoFragment"
-        android:label="FriendInfoFragment" />
+        android:label="好友信息" />
+    <fragment
+        android:id="@+id/clockStartFragment"
+        android:name="com.demo.androidapp.view.ClockStartFragment"
+        android:label="ClockStartFragment" />
 </navigation>

@@ -78,8 +78,23 @@ public class ClockRepository {
         return returnDataLiveData;
     }
 
+    //通过模糊查询出相关时钟
     public LiveData<List<Clock>> getClocksLiveDataByPatternInDB(String s) {
         return clockDao.getAllClockByByPattern("%" + s + "%");
+    }
+
+    //根据某个时钟id获取时钟信息（网络数据库）
+    public LiveData<ReturnData<Clock>> getClockInfoInServer(long clockId) {
+        return api.getClockInfoByClockId(clockId);
+    }
+    //根据某个时钟id获取时钟信息（本地数据库）
+    public LiveData<Clock> getClockInfoInDB(long clockId) {
+        return clockDao.getClockByClockId(clockId);
+    }
+
+    //更新时钟信息（网络数据库）
+    public LiveData<ReturnData<Object>> upDateClock(Clock clock) {
+        return api.upDateClock(clock);
     }
 
     //根据uid在本地数据库中获取任务列表

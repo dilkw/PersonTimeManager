@@ -212,7 +212,6 @@ public class ActiveFragment extends Fragment implements IdentifyCodeView.CodesCh
                 activeFragmentBinding.activeGetCodeBtn.setEnabled(true);
             }
         };
-
         activeViewModel.getReturnLiveData().observe(requireActivity(), new Observer<ReturnData>() {
             @Override
             public void onChanged(ReturnData returnData) {

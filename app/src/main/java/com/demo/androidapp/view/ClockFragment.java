@@ -80,12 +80,6 @@ public class ClockFragment extends Fragment implements View.OnClickListener {
         controller = navHostFragment.getNavController();
         appBarConfiguration = new AppBarConfiguration.Builder(controller.getGraph()).build();
         NavigationUI.setupWithNavController(clockFragmentBinding.clockFragmentToolBar,controller,appBarConfiguration);
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d("imageView", "view onClick: ");
-            }
-        });
         return view;
     }
 
@@ -187,7 +181,14 @@ public class ClockFragment extends Fragment implements View.OnClickListener {
                 addClockDialog.show(fragmentManager,"editClockDialog");
             }
         });
-
+        clockItemAdapter.setItemStartOnClickListener(new ClockItemAdapter.ItemStartOnClickListener() {
+            @Override
+            public void itemStartOnClick(int position, long clockId) {
+                Bundle bundle = new Bundle();
+                bundle.putLong("clockId",clockId);
+                controller.navigate(R.id.action_clockFragment_to_clockStartFragment,bundle);
+            }
+        });
         //导航栏Menu菜单监听事件
         clockFragmentBinding.clockFragmentToolBar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -257,6 +258,7 @@ public class ClockFragment extends Fragment implements View.OnClickListener {
                     @Override
                     public void enterBtnOnClicked() {
                         Clock clock = addClockDialog.getClock();
+                        Log.d("imageView", "enterBtnOnClicked: " + clock.toString());
                         addClock(clock);
                     }
                 });

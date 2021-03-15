@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.demo.androidapp.MyApplication;
 import com.demo.androidapp.api.Api;
+import com.demo.androidapp.model.ResetPwdModel;
 import com.demo.androidapp.model.commitObject.RegisterCommit;
 import com.demo.androidapp.model.common.RCodeEnum;
 import com.demo.androidapp.model.common.ReturnData;
@@ -41,15 +42,15 @@ public class AuthRepository {
         return this;
     }
 
+    public MutableLiveData<ReturnData<LoginAndRegisterReturn>> getReturnDataLiveData() {
+        return returnDataLiveData;
+    }
 
     //登录
     public LiveData<ReturnData<User>> login(String userName, String password) {
         Log.d("imageView","authRepository层：repository----login");
         Log.d("imageView","authRepository层：登录信息" + "用户名：" + userName + "密码：" + password);
         return api.signIn(userName,password);
-    }
-    public LiveData<ReturnData<User>> signInLiveData(String userName, String password) {
-        return api.signInLiveData(userName,password);
     }
 
     //注册
@@ -63,32 +64,28 @@ public class AuthRepository {
         return api.signUp(registerCommit);
     }
 
-
     //帐号激活获取验证码
     public LiveData<ReturnData<Object>> getActiveCode(String email) {
         return api.getActiveCodes(email);
     }
 
     //重置密码获取验证码
-    public void resetPwdGetCode(String email) {
-        api.getResetPwdCode(email).enqueue(new Callback<ReturnData<LoginAndRegisterReturn>>() {
-            @Override
-            public void onResponse(Call<ReturnData<LoginAndRegisterReturn>> call, Response<ReturnData<LoginAndRegisterReturn>> response) {
-                Log.d("imageView","authRepository层：重置密码获取验证码成功" );
-                returnDataLiveData.postValue((ReturnData<LoginAndRegisterReturn>)response.body());
-            }
-
-            @Override
-            public void onFailure(Call<ReturnData<LoginAndRegisterReturn>> call, Throwable t) {
-                Log.d("imageView","authRepository层：重置密码获取验证码失败");
-                t.printStackTrace();
-                returnDataLiveData.postValue(new ReturnData<>(RCodeEnum.ERROR));
-            }
-        });
+    public LiveData<ReturnData<Object>> resetPwdGetCode(String email) {
+        return api.getResetPwdCode(email);
     }
 
-    public MutableLiveData<ReturnData<LoginAndRegisterReturn>> getReturnDataLiveData() {
-        return returnDataLiveData;
+    //重置密码
+    public LiveData<ReturnData<Object>> resetPwd(ResetPwdModel resetPwdModel) {
+        return api.resetPwd(resetPwdModel);
+    }
+
+    //验证码激活新注册帐号
+    /**
+     * email:注册页面填写的邮箱
+     * codes:接收到的帐号激活码
+     */
+    public LiveData<ReturnData<Object>> active(String email,String codes) {
+        return api.active(email,codes);
     }
 
     //获取用户信息
@@ -106,20 +103,12 @@ public class AuthRepository {
         return api.cancellation(email,code);
     }
 
+    //获取注销用户验证码
     public LiveData<ReturnData<Object>> getCancellationCode(String email) {
         return api.getCancellationCode(email);
     }
 
-
-    //验证码激活新注册帐号
-    /**
-     * email:注册页面填写的邮箱
-     * codes:接收到的帐号激活码
-     */
-    public LiveData<ReturnData<Object>> active(String email,String codes) {
-        return api.active(email,codes);
-    }
-
+    //重置邮箱
     public LiveData<ReturnData<Object>> resetEmail(String email,String newEmail,String code) {
         return api.resetEmail(email,newEmail,code);
     }

@@ -124,4 +124,12 @@ public class DateTimeUtil {
         String string = longToStrYMDHM(localDateTimeToLong(localDateTime) / 1000L);
         return string;
     }
+
+    @SuppressLint("DefaultLocale")
+    public static String secondToHMS(long second) {
+        long h = second / (60 * 60);
+        long m = (second - 3600 * h) / 60;
+        long s = second % 60;
+        return String.format("%02d:%02d:%02d",h,m,s);
+    }
 }

@@ -3,6 +3,7 @@ package com.demo.androidapp.api;
 import androidx.lifecycle.LiveData;
 
 import com.demo.androidapp.model.FriendListItem;
+import com.demo.androidapp.model.ResetPwdModel;
 import com.demo.androidapp.model.entity.Bill;
 import com.demo.androidapp.model.entity.Clock;
 import com.demo.androidapp.model.entity.Friend;
@@ -49,7 +50,11 @@ public interface Api {
     //重置密码获取验证码（返回字符串）
     @FormUrlEncoded
     @POST("user/forget")
-    Call<ReturnData<LoginAndRegisterReturn>> getResetPwdCode(@Field("email") String email);
+    LiveData<ReturnData<Object>> getResetPwdCode(@Field("email") String email);
+
+    //重置密码
+    @POST("user/reset")
+    LiveData<ReturnData<Object>> resetPwd(@Body ResetPwdModel resetPwdModel);
 
     //注册完成后激活帐号
     @FormUrlEncoded
@@ -118,9 +123,13 @@ public interface Api {
 
 
 
-    //获取时钟
+    //获取时钟列表
     @GET("clock/list")
     Call<ReturnData<ReturnListObject<Clock>>> getAllClocks();
+
+    //获取某个时钟信息
+    @GET("clock/info/{id}")
+    LiveData<ReturnData<Clock>> getClockInfoByClockId(@Path("id")long clockId);
 
     //添加时钟
     @POST("clock/add")

@@ -23,6 +23,10 @@ public interface ClockDao {
     @Query("SELECT * FROM clock")
     public List<Clock> getAllClockListByUid();
 
+    //根据id查询出所有某一个时钟信息
+    @Query("SELECT * FROM clock WHERE id = :clockId")
+    public LiveData<Clock> getClockByClockId(long clockId);
+
     //根据uid添加单个时钟
     @Insert
     public void addClock(Clock clock);

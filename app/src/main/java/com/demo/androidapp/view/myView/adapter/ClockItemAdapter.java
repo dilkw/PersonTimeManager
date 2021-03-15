@@ -37,6 +37,8 @@ public class ClockItemAdapter extends RecyclerView.Adapter<ClockItemAdapter.MyVi
 
     private ItemOnClickListener itemOnClickListener;
 
+    private ItemStartOnClickListener itemStartOnClickListener;
+
     public List<Clock> getEditModelSelectedTasks() {
         return editModelSelectedClocks;
     }
@@ -65,6 +67,10 @@ public class ClockItemAdapter extends RecyclerView.Adapter<ClockItemAdapter.MyVi
     }
     public void setItemOnClickListener(ItemOnClickListener itemOnClickListener) {
         this.itemOnClickListener = itemOnClickListener;
+    }
+
+    public void setItemStartOnClickListener(ItemStartOnClickListener itemStartOnClickListener) {
+        this.itemStartOnClickListener = itemStartOnClickListener;
     }
 
     public void setClocks(List<Clock> clocks) {
@@ -106,7 +112,7 @@ public class ClockItemAdapter extends RecyclerView.Adapter<ClockItemAdapter.MyVi
         Log.d("imageView", "onBindViewHolder: " + clock.getClock_minute() + "分钟");
         holder.clockMinuteTextView.setText(clock.getClock_minute() + "分钟");
         holder.checkBox.setVisibility(isShow ? View.VISIBLE : View.GONE);
-        holder.clockAlertTimeTextView.setText(DateTimeUtil.longToStrYMDHM(clock.getAlert_Time()));
+        holder.clockAlertTimeTextView.setText(DateTimeUtil.longToStrYMDHM(clock.getAlert_time()));
         holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -137,6 +143,13 @@ public class ClockItemAdapter extends RecyclerView.Adapter<ClockItemAdapter.MyVi
             public void onClick(View v) {
                 if (itemOnClickListener == null) return;
                 itemOnClickListener.itemOnClick(position);
+            }
+        });
+
+        holder.clockStartButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                itemStartOnClickListener.itemStartOnClick(position,clock.getId());
             }
         });
     }
@@ -172,5 +185,9 @@ public class ClockItemAdapter extends RecyclerView.Adapter<ClockItemAdapter.MyVi
 
     public interface ItemOnClickListener {
         void itemOnClick(int position);
+    }
+
+    public interface ItemStartOnClickListener {
+        void itemStartOnClick(int position,long clockId);
     }
 }
