@@ -14,37 +14,26 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.LinearInterpolator;
 import android.widget.SearchView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.widget.Toolbar;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
-import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.demo.androidapp.R;
-import com.demo.androidapp.databinding.ClockFragmentBinding;
 import com.demo.androidapp.databinding.ClockstartFragmentBinding;
 import com.demo.androidapp.model.common.RCodeEnum;
 import com.demo.androidapp.model.common.ReturnData;
 import com.demo.androidapp.model.entity.Clock;
-import com.demo.androidapp.view.myView.AddClockDialog;
-import com.demo.androidapp.view.myView.adapter.ClockItemAdapter;
 import com.demo.androidapp.viewmodel.ClockStartViewModel;
-import com.demo.androidapp.viewmodel.ClockViewModel;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class ClockStartFragment extends Fragment implements View.OnClickListener {
 
@@ -113,9 +102,11 @@ public class ClockStartFragment extends Fragment implements View.OnClickListener
     }
 
     private void initView() {
+        long progress = clockStartViewModel.clockLiveData.getValue().getClock_minute() * 60;
+        clockstartFragmentBinding.clockCountDown.setMultiple(360 / (float)progress);
         objectAnimator = ObjectAnimator
-                .ofFloat(clockstartFragmentBinding.clockCountDown,"progress",60,0);
-        objectAnimator.setDuration(1000 * 60 * clockStartViewModel.clockLiveData.getValue().getClock_minute());
+                .ofFloat(clockstartFragmentBinding.clockCountDown,"progress",progress,0);
+        objectAnimator.setDuration(1000 * progress);
         //设置动画执行次数（ValueAnimator.INFINITE为无限）
         objectAnimator.setRepeatCount(ValueAnimator.RESTART);
         //当动画执行次数大于零或是无限（ValueAnimator.INFINITE）时setRepeatMode才有效

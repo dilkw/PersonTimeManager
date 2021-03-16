@@ -87,4 +87,11 @@ dependencies {
 
     //添加material依赖
     implementation 'com.google.android.material:material:1.2.1'
+
+    //添加七牛云依赖
+    implementation ('com.qiniu:qiniu-android-sdk:8.2.0'){
+        exclude (group: 'com.squareup.okhttp3', module: 'okhttp')
+    }
+
+    implementation 'com.squareup.okhttp3:okhttp:4.5.0'
 }

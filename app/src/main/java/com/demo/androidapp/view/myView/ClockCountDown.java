@@ -5,7 +5,6 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Path;
 import android.graphics.RectF;
 import android.os.Build;
 import android.util.AttributeSet;
@@ -17,9 +16,6 @@ import androidx.annotation.RequiresApi;
 
 import com.demo.androidapp.util.DateTimeUtil;
 
-import static android.graphics.Path.Direction.CCW;
-import static android.graphics.Path.FillType.EVEN_ODD;
-
 public class ClockCountDown extends View {
 
     private Paint mPaint1;
@@ -29,6 +25,8 @@ public class ClockCountDown extends View {
     private Paint mPaint3;
 
     private float progress = 0;
+
+    private double multiple = 0;        //角度倍数
 
     private int circleX = 0, circleY = 0;
 
@@ -49,6 +47,10 @@ public class ClockCountDown extends View {
 
     public void setSecond(long second) {
         this.second = second;
+    }
+
+    public void setMultiple(double multiple) {
+        this.multiple = multiple;
     }
 
     public ClockCountDown(Context context) {
@@ -83,11 +85,11 @@ public class ClockCountDown extends View {
         if (mPaint3 == null) {
             mPaint3 = new Paint();
             mPaint3.setColor(Color.parseColor("#E91E63"));
-            mPaint3.setStyle(Paint.Style.STROKE);
+            mPaint3.setStyle(Paint.Style.FILL);
             mPaint3.setStrokeCap(Paint.Cap.ROUND);
-            mPaint3.setTextSize(20);
+            mPaint3.setTextSize(70);
             mPaint3.setAntiAlias(true);
-            mPaint3.setStrokeWidth(1);
+            mPaint3.setStrokeWidth(2);
             mPaint3.setTextAlign(Paint.Align.CENTER);
         }
     }
@@ -108,8 +110,10 @@ public class ClockCountDown extends View {
         @SuppressLint("DrawAllocation") RectF rectFPath2 = new RectF(30,30,getWidth()-30,getHeight()-30);
         canvas.drawArc(rectFPath1,0,360,false,mPaint1);
         canvas.drawArc(rectFPath2,0,360,false,mPaint1);
-        canvas.drawArc(rectF,-90,progress * 6F,false,mPaint2);
-        canvas.drawText(DateTimeUtil.secondToHMS(this.second),getWidth()/2,getWidth()/2,mPaint3);
-        Log.d("imageView", "onDraw: " + progress);
+        canvas.drawArc(rectF,-90,(float) (progress * multiple),false,mPaint2);
+        canvas.drawText(DateTimeUtil.secondToHMS((int)progress),getWidth()/2,getWidth()/2,mPaint3);
+        Log.d("imageView", "onDraw: progress" + progress);
+        Log.d("imageView", "onDraw: multiple" + multiple);
+        Log.d("imageView", "onDraw progress * multiple: " + progress * multiple);
     }
 }
