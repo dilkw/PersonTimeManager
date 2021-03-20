@@ -4,6 +4,9 @@ import android.util.Log;
 
 import com.demo.androidapp.MyApplication;
 import com.demo.androidapp.R;
+import com.demo.androidapp.api.LiveDataCallAdapter;
+import com.demo.androidapp.model.common.RCodeEnum;
+import com.demo.androidapp.model.common.ReturnData;
 
 import java.io.IOException;
 
@@ -18,11 +21,23 @@ public class InterceptorOfReceivedCookie implements Interceptor {
     @Override
     public Response intercept(Chain chain) throws IOException {
         Response response = chain.proceed(chain.request());
-        Log.d("response", "onResponse: cookieStr1" + response.code() + "\n" + response.headers(MyApplication.getMyApplicationContext().getResources().getString(R.string.headerCookie_name)));
-        String cookieStr = response.header(MyApplication.getMyApplicationContext().getResources().getString(R.string.headerCookie_name));
-        Log.d("response", "onResponse: cookieStr2" + cookieStr);
-        if (cookieStr != null && !cookieStr.equals("")) {
-            MyApplication.getApplication().saveCookie(cookieStr);
+        if (response.code() == 401) {
+            //重新发起请求
+            MyApplication.getApplication().reSignIn();
+            Request newRequest = response.request().newBuilder()
+                    .removeHeader("Cookie")   //移除旧的token
+                    .addHeader("Cookie", MyApplication.getUser().getCookie())  //添加新的token
+                    .build();
+            response.close();
+            return chain.proceed(newRequest);//重新发起请求，此时是新的token
+        }
+
+        if (MyApplication.getUser() != null
+                && MyApplication.getUser().getCookie().equals("")) {
+            String cookieStr = response.header(MyApplication.getMyApplicationContext().getResources().getString(R.string.headerCookie_name));
+            if (cookieStr != null && !cookieStr.equals("")) {
+                MyApplication.getApplication().saveCookie(cookieStr);
+            }
         }
         return response;
     }

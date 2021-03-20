@@ -18,17 +18,14 @@ import okhttp3.Response;
 public class InterceptorOfAddCookie implements Interceptor {
     @Override
     public Response intercept(Chain chain) throws IOException {
-        if (chain.request().body() != null) {
-            Log.d("imageView", "interceptmmmmmmmmmmmmmmmmmmmm:" + chain.request().body().toString());
-        }
-        Context context = MyApplication.getMyApplicationContext();
+        Log.d("imageView", "InterceptorOfAddCookie:11111111111111111");
         Request.Builder builder = chain.request().newBuilder();
-        String cookieStr = MyApplication.getApplication().getCOOKIE();
-        if (cookieStr!= null && !cookieStr.equals("")) {
-            Log.d("imageView", "intercept: 添加cookie" + cookieStr);
-            builder.addHeader("Cookie",cookieStr);
+        if (MyApplication.getUser() != null){
+            String cookieStr = MyApplication.getUser().getCookie();
+            if (cookieStr != null && !cookieStr.equals("")) {
+                builder.addHeader("Cookie",cookieStr);
+            }
         }
-        Log.d("imageView", "intercept: 添加cookie失败" + cookieStr);
         return chain.proceed(builder.build());
     }
 }

@@ -11,17 +11,19 @@ import com.demo.androidapp.model.entity.Task;
 import com.demo.androidapp.model.commitObject.RegisterCommit;
 import com.demo.androidapp.model.common.ReturnData;
 import com.demo.androidapp.model.entity.User;
-import com.demo.androidapp.model.returnObject.LoginAndRegisterReturn;
 import com.demo.androidapp.model.returnObject.ReturnListObject;
 
+import okhttp3.MultipartBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.HTTP;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
+import retrofit2.http.Part;
 import retrofit2.http.Path;
 
 public interface Api {
@@ -35,8 +37,8 @@ public interface Api {
     //登录
     @FormUrlEncoded
     @POST("user/login")
-    LiveData<ReturnData<User>> signInLiveData(@Field("name") String name,
-                                                    @Field("password") String password);
+    Call<ReturnData<User>> reSignIn(@Field("name") String name,
+                                      @Field("password") String password);
 
     //注册
     @POST("user/signup")
@@ -67,7 +69,7 @@ public interface Api {
 
     //获取某个用户的所有任务列表
     @GET("todo/list")
-    Call<ReturnData<ReturnListObject<Task>>> getTaskList();
+    LiveData<ReturnData<ReturnListObject<Task>>> getTaskList();
 
     // 获取用户个人信息
     @GET("user/me")
@@ -100,6 +102,14 @@ public interface Api {
                                                     ,@Field("new_email") String newEmail
                                                     ,@Field("code") String code);
 
+    // 用户上传头像获取七牛sdk Token
+    @GET("user/uploadImgToken")
+    LiveData<ReturnData<Object>> getUploadImgToken();
+
+    // 用户上传头像
+    @Multipart
+    @POST("user/uploadImg")
+    LiveData<ReturnData<String>> uploadImg(@Part MultipartBody.Part file1);
 
     //获取任务列表
     @GET("todo/list")

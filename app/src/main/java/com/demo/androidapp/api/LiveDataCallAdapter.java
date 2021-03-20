@@ -4,10 +4,13 @@ import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
+import com.demo.androidapp.MyApplication;
+import com.demo.androidapp.model.common.RCodeEnum;
 import com.demo.androidapp.model.common.ReturnData;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -42,11 +45,13 @@ public class LiveDataCallAdapter<T> implements CallAdapter<T, LiveData<T>> {
 
         private final AtomicBoolean stared = new AtomicBoolean(false);
         private final Call<T> call;
+        private final Call<T> callClone;
         private final boolean isApiResponse;
 
         MyLiveData(Call<T> call, boolean isApiResponse) {
             this.call = call;
             this.isApiResponse = isApiResponse;
+            this.callClone = call.clone();
         }
 
         @Override
@@ -57,19 +62,44 @@ public class LiveDataCallAdapter<T> implements CallAdapter<T, LiveData<T>> {
                 call.enqueue(new Callback<T>() {
                     @Override
                     public void onResponse(@NotNull Call<T> call, @NotNull Response<T> response) {
-                        Log.d("imageView", "onResponse: ");
+                        Log.d("imageView", "onResponse1:================ " + response.getClass().getName());
+                        T body = response.body();
+                        if (response.code() == 401) {
+                            try {
+                                MyApplication.getApplication().reSignIn();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            MyLiveData.this.call.cancel();
+                            MyLiveData.this.onActive();
+                            return;
+                        }
+                        postValue(body);
+                    }
+                    @Override
+                    public void onFailure(@NotNull Call<T> call, @NotNull Throwable t) {
+                        postValue((T) new ReturnData<>(201, t.getMessage(),null));
+                    }
+                });
+            }else {
+                callClone.enqueue(new Callback<T>() {
+                    @Override
+                    public void onResponse(@NotNull Call<T> call, @NotNull Response<T> response) {
+                        Log.d("imageView", "onResponse2:================ " + response.getClass().getName());
+                        Log.d("imageView", "onResponse2:================ " + response.body().toString());
                         T body = response.body();
                         postValue(body);
+                        callClone.cancel();
                     }
 
                     @Override
-                    public void onFailure(@NotNull Call<T> call, @NotNull Throwable t) {
-                        Log.d("imageView", "onFailure:======= ");
-                        if (isApiResponse) {
+                    public void onFailure(Call<T> call, Throwable t) {
+                        Log.d("imageView", "onFailure2:======= ");
+//                        if (isApiResponse) {
                             postValue((T) new ReturnData<>(201, t.getMessage(),null));
-                        } else {
-                            postValue(null);
-                        }
+//                        } else {
+//                            postValue(null);
+//                        }
                     }
                 });
             }

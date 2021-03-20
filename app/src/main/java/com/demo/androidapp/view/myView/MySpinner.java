@@ -213,7 +213,7 @@ public class MySpinner extends LinearLayout {
                     @Override
                     public void onClick(View v) {
                         categoryOfTask = null;
-                        categoryOfTask = new CategoryOfTask(MyApplication.getApplication().getUID(),
+                        categoryOfTask = new CategoryOfTask(MyApplication.getUser().getUid(),
                                                                             textInputEditText.getText().toString().trim());
                         mySpinnerTextView.setText(categoryOfTask.getCategoryName());
                         mySpinnerAdapter.addCategory(categoryOfTask);

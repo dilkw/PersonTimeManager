@@ -11,7 +11,7 @@ public class User {
 
     //id
     @PrimaryKey(autoGenerate = false)
-    private int id;
+    private long id;
 
     //昵称
     @ColumnInfo(name = "name")
@@ -37,10 +37,14 @@ public class User {
     @Ignore
     private String password;
 
+    //cookie
+    @Ignore
+    private String cookie;
+
     @Ignore
     public User() {}
 
-    public User(int id, String name, String uid, String email, String state, long created_at) {
+    public User(long id, String name, String uid, String email, String state, long created_at) {
         this.id = id;
         this.name = name;
         this.uid = uid;
@@ -49,11 +53,11 @@ public class User {
         this.created_at = created_at;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -105,6 +109,14 @@ public class User {
         this.password = password;
     }
 
+    public String getCookie() {
+        return cookie;
+    }
+
+    public void setCookie(String cookie) {
+        this.cookie = cookie;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -114,6 +126,8 @@ public class User {
                 ", email='" + email + '\'' +
                 ", state='" + state + '\'' +
                 ", created_at=" + created_at +
+                ", password='" + password + '\'' +
+                ", cookie='" + cookie + '\'' +
                 '}';
     }
 }

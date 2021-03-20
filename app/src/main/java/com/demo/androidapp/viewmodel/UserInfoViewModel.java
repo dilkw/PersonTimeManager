@@ -8,10 +8,17 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.demo.androidapp.MyApplication;
 import com.demo.androidapp.model.common.RCodeEnum;
 import com.demo.androidapp.model.common.ReturnData;
 import com.demo.androidapp.model.entity.User;
 import com.demo.androidapp.repository.AuthRepository;
+
+import java.io.File;
+
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 
 
 public class UserInfoViewModel extends AndroidViewModel {
@@ -68,6 +75,11 @@ public class UserInfoViewModel extends AndroidViewModel {
             return new MutableLiveData<>(new ReturnData<>(RCodeEnum.DATA_ERROR));
         }
         return authRepository.getCancellationCode(userReturnLiveData.getValue().getData().getEmail());
+    }
+
+    // 用户上传头像
+    public LiveData<ReturnData<String>> uploadImg(File file) {
+        return authRepository.uploadImg(file);
     }
 
 }

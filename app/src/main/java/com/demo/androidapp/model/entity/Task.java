@@ -25,7 +25,7 @@ public class Task {
 
     //用户uid
     @ColumnInfo(name = "uid")
-    private String userId = MyApplication.getApplication().getUID();
+    private String userId = MyApplication.getUser().getUid();
 
     //任务内容
     @ColumnInfo(name = "task")

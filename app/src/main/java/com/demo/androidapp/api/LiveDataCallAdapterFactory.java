@@ -27,6 +27,7 @@ public class LiveDataCallAdapterFactory extends CallAdapter.Factory {
     @Override
     public CallAdapter<?, ?> get(@NotNull Type returnType, @NotNull Annotation @NotNull [] annotations, @NotNull Retrofit retrofit) {
         if (getRawType(returnType) != LiveData.class) {
+            Log.d("imageView", "类型错误,不是LiveData" + getRawType(returnType).getName());
             return null;
         }
         //获取第一个泛型类型

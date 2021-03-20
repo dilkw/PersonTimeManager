@@ -50,18 +50,19 @@
                 android:layout_width="match_parent"
                 android:layout_height="100dp">
 
-                <com.google.android.material.imageview.ShapeableImageView
+                <com.demo.androidapp.view.myView.MyImageView
                     android:id="@+id/userInfoImageView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="0dp"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
                     android:layout_marginStart="10dp"
                     android:layout_marginLeft="10dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="10dp"
+                    android:clickable="true"
+                    android:focusable="true"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    tools:srcCompat="@tools:sample/avatars" />
+                    app:shapeAppearanceOverlay="@style/circleImageStyle"
+                    tools:src="@drawable/head" />
 
                 <TextView
                     android:id="@+id/userInfoStateLabel"

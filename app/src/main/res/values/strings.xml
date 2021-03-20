@@ -3,9 +3,13 @@
 
     <!--SharedPreferencesName key-->
     <string name="shName">SharedPreferencesName</string>
+    <string name="shId_key">id</string>
+    <string name="shCreateTime_key">createTime</string>
     <string name="shUserName_key">userName</string>
     <string name="shPasswordName_key">password</string>
+    <string name="shEmail_key">email</string>
     <string name="shUid_key">uid</string>
+    <string name="shState_key">state</string>
     <string name="shCookie_key">Set-Cookie</string>
 
 

@@ -40,7 +40,7 @@ public class AddTaskViewModel extends AndroidViewModel {
         taskMutableLiveData = new MutableLiveData<>();
         alertOfTaskMutableLiveData = new MutableLiveData<>(new AlertOfTask());
         taskRepository = new TaskRepository(application);
-        categoryRepository = new CategoryRepository(application, MyApplication.getApplication().getUID());
+        categoryRepository = new CategoryRepository(application, MyApplication.getUser().getUid());
     }
 
     //对任务的结束时间的setter和getter方法

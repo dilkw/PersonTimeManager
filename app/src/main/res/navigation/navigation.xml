@@ -105,6 +105,9 @@
         <action
             android:id="@+id/action_userInfoFragment_to_retrievePasswordFragment"
             app:destination="@id/retrievePasswordFragment" />
+        <action
+            android:id="@+id/action_userInfoFragment_to_clipImgFragment"
+            app:destination="@id/clipImgFragment" />
     </fragment>
     <fragment
         android:id="@+id/friendInfoFragment"
@@ -114,4 +117,8 @@
         android:id="@+id/clockStartFragment"
         android:name="com.demo.androidapp.view.ClockStartFragment"
         android:label="ClockStartFragment" />
+    <fragment
+        android:id="@+id/clipImgFragment"
+        android:name="com.demo.androidapp.view.ClipImgFragment"
+        android:label="ClipImgFragment" />
 </navigation>

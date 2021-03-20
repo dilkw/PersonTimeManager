@@ -106,7 +106,6 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
                     public void onChanged(ReturnData<User> userReturnData) {
                         if (userReturnData.getCode() == RCodeEnum.OK.getCode()) {
                             Toast.makeText(getActivity(), "登录成功", Toast.LENGTH_SHORT).show();
-                            //上传数据，更新MyApplication中的数据
                             User user = userReturnData.getData();
                             Log.d("imageView", "" + user.toString());
                             user.setPassword(loginViewModel.getUserLiveData().getValue().getPassword());

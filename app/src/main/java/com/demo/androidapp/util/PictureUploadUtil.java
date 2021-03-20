@@ -19,7 +19,9 @@ public class PictureUploadUtil {
 
     private static final String SECRET_Key = "pm_TvO87fjZAEuJPAdxXfTiYWbl7o0je5jLLH7uE";
 
-    Configuration config = new Configuration.Builder()
+    private static UploadManager uploadManager;
+
+    private static Configuration config = new Configuration.Builder()
             .connectTimeout(90)              // 链接超时。默认90秒
             .useHttps(true)                  // 是否使用https上传域名
             .useConcurrentResumeUpload(true) // 使用并发上传，使用并发上传时，除最后一块大小不定外，其余每个块大小固定为4M，
@@ -30,15 +32,9 @@ public class PictureUploadUtil {
             .zone(FixedZone.zone0)           // 设置区域，不指定会自动选择。指定不同区域的上传域名、备用域名、备用IP。
             .build();
     // 重用uploadManager。一般地，只需要创建一个uploadManager对象
-    UploadManager uploadManager = new UploadManager(config);
-    public void upLoadFile() {
-        File data = null;
-        String key = null;
-        String token = null;
-        Auth auth = Auth.create("","");
-        //token = auth.uploadToken()
-        AndroidNetwork androidNetwork = new AndroidNetwork();
-        uploadManager.put(data, key, token,
+    public static void upLoadFile(File file,String key,String token) {
+        uploadManager = new UploadManager(config);
+        uploadManager.put(file, key, token,
                 new UpCompletionHandler() {
                     @Override
                     public void complete(String key, ResponseInfo info, JSONObject res) {

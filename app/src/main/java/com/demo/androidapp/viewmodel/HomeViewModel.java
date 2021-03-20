@@ -11,6 +11,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.demo.androidapp.model.common.RCodeEnum;
 import com.demo.androidapp.model.entity.Task;
 import com.demo.androidapp.model.common.ReturnData;
+import com.demo.androidapp.model.returnObject.ReturnListObject;
 import com.demo.androidapp.repository.TaskRepository;
 
 import java.util.Arrays;
@@ -32,10 +33,10 @@ public class HomeViewModel extends AndroidViewModel {
     }
 
     //根据用户id从服务器中中加载该用户的任务列表
-    public void getAllTaskByUidInServer() {
+    public LiveData<ReturnData<ReturnListObject<Task>>> getAllTaskByUidInServer() {
         //在数据库中没有数据时尝试从无服务器中获取
         Log.d("imageView", "getAllTaskByUidInServer: 从服务器中获取数据");
-        taskRepository.getAllTaskByUidInServer();
+        return taskRepository.getAllTaskByUidInServer();
     }
 
     //根据用户id从本地数据库加载该用户的任务列表

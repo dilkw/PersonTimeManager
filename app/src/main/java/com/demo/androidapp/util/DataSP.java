@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 
 import com.demo.androidapp.R;
 import com.demo.androidapp.model.Auth;
+import com.demo.androidapp.model.entity.User;
 
 //SharedPreferences存取数据操作类
 public class DataSP {
@@ -40,21 +41,37 @@ public class DataSP {
     }
 
     //保存/删除数据
-    public void save(String userName,String password,String uid) {
+    public void save(User user) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(context.getResources().getString(R.string.shUserName_key),userName);
-        editor.putString(context.getResources().getString(R.string.shPasswordName_key),password);
-        editor.putString(context.getResources().getString(R.string.shUid_key),uid);
+        editor.putLong(context.getResources().getString(R.string.shId_key),user.getId());
+        editor.putLong(context.getResources().getString(R.string.shCreateTime_key),user.getCreated_at());
+        editor.putString(context.getResources().getString(R.string.shUid_key),user.getUid());
+        editor.putString(context.getResources().getString(R.string.shUserName_key),user.getName());
+        editor.putString(context.getResources().getString(R.string.shPasswordName_key),user.getPassword());
+        editor.putString(context.getResources().getString(R.string.shUid_key),user.getUid());
+        editor.putString(context.getResources().getString(R.string.shEmail_key),user.getEmail());
+        editor.putString(context.getResources().getString(R.string.shState_key),user.getState());
         editor.apply();
     }
 
     //获取数据
-    public Auth load() {
+    public User load() {
+        long id = this.sharedPreferences.getLong(context.getResources().getString(R.string.shId_key),0);
+        long createTime = this.sharedPreferences.getLong(context.getResources().getString(R.string.shCreateTime_key),0);
         String userName = this.sharedPreferences.getString(context.getResources().getString(R.string.shUserName_key),"userName");
         String password = this.sharedPreferences.getString(context.getResources().getString(R.string.shPasswordName_key),"password");
         String uid = this.sharedPreferences.getString(context.getResources().getString(R.string.shUid_key),"uid");
         String cookieStr = this.sharedPreferences.getString(context.getResources().getString(R.string.shCookie_key),"");
-        return new Auth(userName,password,uid,cookieStr);
+        String email = this.sharedPreferences.getString(context.getResources().getString(R.string.shEmail_key),"");
+        String state = this.sharedPreferences.getString(context.getResources().getString(R.string.shState_key),"");
+        if (id != 0) {
+            User user = new User(id, userName, uid, email, state, createTime);
+            user.setPassword(password);
+            user.setCookie(cookieStr);
+            return user;
+        }else {
+            return null;
+        }
     }
 
     //删除数据
@@ -63,7 +80,11 @@ public class DataSP {
         editor.remove(context.getResources().getString(R.string.shUserName_key));
         editor.remove(context.getResources().getString(R.string.shPasswordName_key));
         editor.remove(context.getResources().getString(R.string.shUid_key));
-        deleteCookie();
+        editor.remove(context.getResources().getString(R.string.shEmail_key));
+        editor.remove(context.getResources().getString(R.string.shId_key));
+        editor.remove(context.getResources().getString(R.string.shState_key));
+        editor.remove(context.getResources().getString(R.string.shCreateTime_key));
+        editor.remove(context.getResources().getString(R.string.shCookie_key));
         editor.apply();
     }
 

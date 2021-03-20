@@ -30,7 +30,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class RetrofitClient {
 
     //private static final String BASE_URL = "https://sodacoco.com/api/v1/";
-    private static final String BASE_URL = "http://192.168.1.4:8000/api/v1/";
+    private static final String BASE_URL = "http://192.168.1.7:8000/api/v1/";
     private static RetrofitClient retrofitClient;
     private Retrofit retrofit;
     private OkHttpClient okHttpClient;

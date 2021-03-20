@@ -34,10 +34,12 @@ import com.demo.androidapp.MainActivity;
 import com.demo.androidapp.MyApplication;
 import com.demo.androidapp.R;
 import com.demo.androidapp.databinding.HomeFragmentBinding;
+import com.demo.androidapp.model.common.StateEnum;
 import com.demo.androidapp.model.entity.Bill;
 import com.demo.androidapp.model.entity.Task;
 import com.demo.androidapp.model.common.RCodeEnum;
 import com.demo.androidapp.model.common.ReturnData;
+import com.demo.androidapp.model.returnObject.ReturnListObject;
 import com.demo.androidapp.util.DataSP;
 import com.demo.androidapp.view.myView.adapter.TasksItemAdapter;
 import com.demo.androidapp.viewmodel.HomeViewModel;
@@ -94,11 +96,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         DataSP dataSP = new DataSP(getContext());
-        Log.d("imageView", "onCreateView1: ");
         boolean isLogin = false;
         isLogin = getArguments() != null && getArguments().getBoolean("isLogin");
-        Log.d("imageView","pppppppp" + MyApplication.getApplication().getCOOKIE());
-        if((MyApplication.getApplication().getUSER_NAME()).equals("userName")){
+        if(MyApplication.getUser() == null){
             Log.d("imageView", "onCreateView2: ");
             controller.navigate(R.id.action_homeFragment_to_loginFragment);
         }else {
@@ -108,7 +108,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     }
 
     private void initData(LifecycleOwner lifecycleOwner,boolean isLogin) {
-        Log.d("imageView",MyApplication.getApplication().getUID() + "++++++++++");
+        Log.d("imageView",MyApplication.getUser().getUid() + "++++++++++");
         //        if (isLogin) {
         //            homeViewModel.getAllTaskByUidInServer();
         //            assert getArguments() != null;
@@ -116,51 +116,35 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         //        } else {
         //            homeViewModel.getAllTaskByUidInDB();
         //        }
-        homeViewModel.getAllTaskByUidInServer();
         tasksItemAdapter = new TasksItemAdapter((List<Task>)(new ArrayList<Task>()));
         StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(2, RecyclerView.VERTICAL);
         homeFragmentBinding.recyclerView.setLayoutManager(staggeredGridLayoutManager);
         homeFragmentBinding.recyclerView.setAdapter(tasksItemAdapter);
-        homeViewModel.getReturnLiveData().observe(lifecycleOwner, new Observer<ReturnData<List<Task>>>() {
+        homeViewModel.getAllTaskByUidInServer().observe(getViewLifecycleOwner(), new Observer<ReturnData<ReturnListObject<Task>>>() {
             @Override
-            public void onChanged(ReturnData<List<Task>> returnData) {
-                RCodeEnum rCodeEnum = RCodeEnum.returnRCodeEnumByCode(returnData.getCode());
-                List<Task> tasks = returnData.getData();
+            public void onChanged(ReturnData<ReturnListObject<Task>> returnListObjectReturnData) {
+                RCodeEnum rCodeEnum = RCodeEnum.returnRCodeEnumByCode(returnListObjectReturnData.getCode());
                 switch (rCodeEnum) {
-                    case OK:{
+                    case OK: {
                         Log.d("imageView", "onChanged: 成功");
-                        tasksItemAdapter.setTasks(tasks);
-                        tasksItemAdapter.notifyDataSetChanged();
-                        break;
-                    }
-                    case DB_OK:{
-                        if (tasks == null || tasks.size() == 0) {
-                            Log.d("imageView", "onChanged: 本地数据库为空");
-                            homeViewModel.getAllTaskByUidInServer();
-                            break;
-                        }
-                        Log.d("imageView", "onChanged: 本地数据库不为空");
-                        tasksItemAdapter.setTasks(tasks);
-                        tasksItemAdapter.notifyDataSetChanged();
-                        break;
-                    }
-                    case GET_TASKS_SERVER_OK:{
-                        Log.d("imageView", "onChanged: 网络请求成功");
-                        tasksItemAdapter.setTasks(tasks);
+                        taskList = returnListObjectReturnData.getData().getItems();
+                        tasksItemAdapter.setTasks(taskList);
                         tasksItemAdapter.notifyDataSetChanged();
                         break;
                     }
                     case ERROR_AUTH:{
                         Log.d("imageView", "onChanged: token_error");
+                        break;
                     }
-                    case ERROR:{
-                        Toast.makeText(getContext(), "请检查您的网络链接",Toast.LENGTH_LONG).show();
+                    case SERVER_ERROR:{
+                        Toast.makeText(getContext(), "请检查您的网络链接", Toast.LENGTH_LONG).show();
                         Log.d("imageView", "onChanged: token_error");
+                        break;
                     }
-
                 }
             }
         });
+
     }
 
     public void setListener() {
@@ -184,7 +168,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             @Override
             public void itemOnClick(int position) {
                 //将点击的task对象放到MainActivity中的map中
-                ((MainActivity)requireActivity()).putDataInToMap("task", Objects.requireNonNull(((Objects.requireNonNull(homeViewModel.getReturnLiveData().getValue())).getData())).get(position));
+                Log.d("imageView", "itemOnClick: " + position);
+                ((MainActivity)requireActivity()).putDataInToMap("task", taskList.get(position));
                 NavController navController = Navigation.findNavController(requireView());
                 navController.navigate(R.id.action_homeFragment_to_addTaskFragment);
             }
@@ -248,11 +233,16 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 break;
             }
             case R.id.loginOutBtn: {
+                Log.d("imageView", "onClick: 退出登录按钮");
                 MyApplication.getApplication().signOut();
                 requireActivity().finish();
                 Intent intent = new Intent(); //生成Intent对象
                 intent.setClass(getActivity(), MainActivity.class);
                 startActivity(intent);
+                break;
+            }
+            default:{
+                break;
             }
         }
     }

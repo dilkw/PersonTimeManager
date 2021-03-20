@@ -15,10 +15,17 @@ import com.demo.androidapp.model.common.ReturnData;
 import com.demo.androidapp.model.entity.User;
 import com.demo.androidapp.model.returnObject.LoginAndRegisterReturn;
 
+import java.io.File;
+
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.http.Field;
+import retrofit2.http.Multipart;
+import retrofit2.http.Part;
 
 public class AuthRepository {
 
@@ -111,5 +118,20 @@ public class AuthRepository {
     //重置邮箱
     public LiveData<ReturnData<Object>> resetEmail(String email,String newEmail,String code) {
         return api.resetEmail(email,newEmail,code);
+    }
+
+    // 用户上传头像获取七牛sdk Token
+    public LiveData<ReturnData<Object>> getUploadImgToken(){
+        return api.getUploadImgToken();
+    }
+
+    // 用户上传头像
+    public LiveData<ReturnData<String>> uploadImg(File file) {
+        String fileName = "img_" + MyApplication.getUser().getUid();
+        // 为file建立RequestBody实例
+        RequestBody requestFile = RequestBody.create(file,MediaType.parse("MULTIPART_FORM_DATA"));
+        // MultipartBody.Part借助文件名完成最终的上传
+        MultipartBody.Part part = MultipartBody.Part.createFormData("partName", file.getName(), requestFile);
+        return api.uploadImg(part);
     }
 }

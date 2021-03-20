@@ -3,14 +3,20 @@ package com.demo.androidapp.view;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcel;
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,7 +27,6 @@ import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -41,6 +46,8 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.Objects;
+
+import static android.app.Activity.RESULT_OK;
 
 public class UserInfoFragment extends Fragment implements View.OnClickListener {
 
@@ -100,6 +107,7 @@ public class UserInfoFragment extends Fragment implements View.OnClickListener {
         switch (v.getId()) {
             case R.id.userInfoImageView: {
                 Log.d("imageView", "onClick: 用户头像点击");
+                userImgOnclick();
                 break;
             }
             case R.id.userInfoEditNameButton: {
@@ -320,4 +328,31 @@ public class UserInfoFragment extends Fragment implements View.OnClickListener {
                 .create();
         cancellationDialog.show();
     }
+
+    //点击头像弹出对话框
+    static final int REQUEST_IMAGE_OPEN = 1;
+    private void userImgOnclick() {
+        View contentView = requireActivity().getLayoutInflater().inflate(R.layout.imgonclick_dialog,null,false);
+        AlertDialog alertDialog = new AlertDialog.Builder(getContext())
+                .setView(contentView)
+                .create();
+        alertDialog.show();
+        Button imgFromGalleryBtn = contentView.findViewById(R.id.imgClickDialogSelectImgBtn);
+        Button alertDialogCancelBtn = contentView.findViewById(R.id.imgClickDialogCancelBtn);
+        View.OnClickListener onClickListener = new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+            @SuppressLint("QueryPermissionsNeeded")
+            @Override
+            public void onClick(View v) {
+                if (v.getId() == R.id.imgClickDialogSelectImgBtn) {
+                    controller.navigate(R.id.action_userInfoFragment_to_clipImgFragment);
+                }else{
+                    alertDialog.dismiss();
+                }
+            }
+        };
+        imgFromGalleryBtn.setOnClickListener(onClickListener);
+        alertDialogCancelBtn.setOnClickListener(onClickListener);
+    }
+
 }

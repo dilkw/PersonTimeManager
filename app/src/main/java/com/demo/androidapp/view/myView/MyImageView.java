@@ -16,6 +16,7 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ImageView;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
@@ -44,20 +45,19 @@ public class MyImageView extends View {
 
     //利用代码直接new 布局时会调用一个参数的构造函数，
     public MyImageView(Context context) {
-        super(context);
-        Log.d("imageView","MyImageView(Context context)");
-        bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.head);
+        this(context,null);
     }
 
     //如果直接写在xml文件中会调用二个参数的构造函数被调用。
     public MyImageView(Context context, @Nullable AttributeSet attrs) {
-        super(context, attrs);
-        Log.d("imageView","MyImageView(Context context, @Nullable AttributeSet attrs)");
-        bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.head);
+        this(context, attrs,0);
     }
 
     public MyImageView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        Log.d("imageView","MyImageView(Context context)");
+        bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.head);
+
     }
 
     //四个参数的构造函数通常由我们自己主动调用.
@@ -75,13 +75,15 @@ public class MyImageView extends View {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         Log.d("imageView","onMeasure()");
-        int width = dp2pix();
-        setMeasuredDimension(width,width);
+        int width = MeasureSpec.getSize(widthMeasureSpec);
+        int height = MeasureSpec.getSize(heightMeasureSpec);
+        //if (MeasureSpec.getMode(widthMeasureSpec) == MeasureSpec.AT_MOST)
+        setMeasuredDimension(width,height);
     }
 
     //将dp值转化成px像素
-    private int dp2pix() {
-        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 120, Resources.getSystem().getDisplayMetrics());
+    private int dp2pix(int px) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, px, Resources.getSystem().getDisplayMetrics());
     }
 
     //单位转换sp转px

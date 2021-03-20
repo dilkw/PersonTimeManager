@@ -2,19 +2,14 @@ package com.demo.androidapp.view.myView;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.viewpager.widget.ViewPager;
-
-import com.demo.androidapp.view.myView.adapter.MySpinnerAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class MyFloatingActionButton extends FloatingActionButton {

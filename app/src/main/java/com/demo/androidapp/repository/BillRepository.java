@@ -71,7 +71,7 @@ public class BillRepository {
 
     //从服务器中获取数据
     public LiveData<List<Bill>> getBillLiveDataInDB() {
-        return billDao.getAllBillLiveDataByUid(MyApplication.getApplication().getUID());
+        return billDao.getAllBillLiveDataByUid(MyApplication.getUser().getUid());
     }
 
     public MutableLiveData<ReturnData<List<Bill>>> getBillLiveData() {
@@ -93,20 +93,20 @@ public class BillRepository {
 
     //根据uid在本地数据库中获取任务列表
     public void getAllBillByUidInDB() {
-        String uid = MyApplication.getApplication().getUID();
+        String uid = MyApplication.getUser().getUid();
         new GetAllBillByUid(billDao,returnDataLiveData).execute(uid);
     }
 
     //在本地数据库中删除所有数据并更新数据
     public void deleteALLBillsAndAdd(Bill... bills) {
-        String uid = MyApplication.getApplication().getUID();
+        String uid = MyApplication.getUser().getUid();
         Log.d("imageView", "getAllTaskByUidInDB: 数据库删除数据");
         new DeleteALLBillsAndAdd(billDao,this).execute(bills);
     }
 
     //在本地数据库中删除所有数据并更新数据
     public void deleteBillsByUidInDB(Bill... bills) {
-        String uid = MyApplication.getApplication().getUID();
+        String uid = MyApplication.getUser().getUid();
         Log.d("imageView", "getAllTaskByUidInDB: 数据库删除数据");
         new DeleteBills(billDao).execute(bills);
     }
@@ -211,7 +211,7 @@ public class BillRepository {
         @Override
         protected Void doInBackground(Bill... bills) {
             this.bills = bills;
-            billDao.deleteAllBillsByUid(MyApplication.getApplication().getUID());
+            billDao.deleteAllBillsByUid(MyApplication.getUser().getUid());
             return null;
         }
 

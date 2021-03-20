@@ -60,17 +60,6 @@ public class LoginViewModel extends AndroidViewModel {
         return this.authRepository.login(userLiveData.getValue().getName(),userLiveData.getValue().getPassword());
     }
 
-    //重写点击监听事件的方法
-    public View.OnClickListener loginClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            Log.d("imageView","ViewModel-----login");
-            StringBuilder token = new StringBuilder();
-            Log.d("imageView",userLiveData.getValue().getName() + userLiveData.getValue().getPassword());
-            authRepository.login(userLiveData.getValue().getName(),userLiveData.getValue().getPassword());
-        }
-    };
-
     //跳转注册页面方法
     public void jumpToRegisterFragment(View view) {
         Log.d("imageView","跳转注册页面");

@@ -66,6 +66,9 @@ public class TasksItemAdapter extends RecyclerView.Adapter<TasksItemAdapter.MyVi
     }
 
     public void setTasks(List<Task> tasks) {
+        if (tasks == null) {
+            return ;
+        }
         this.tasks = tasks;
     }
 

@@ -1,41 +1,22 @@
 package com.demo.androidapp;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.app.AlarmManager;
 import android.app.Application;
-import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
 import android.util.Log;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.Observer;
 
 import com.demo.androidapp.api.Api;
 import com.demo.androidapp.api.impl.RetrofitClient;
-import com.demo.androidapp.model.Auth;
-import com.demo.androidapp.model.common.ReturnData;
 import com.demo.androidapp.model.entity.User;
-import com.demo.androidapp.model.returnObject.LoginAndRegisterReturn;
 import com.demo.androidapp.util.DataSP;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import java.io.IOException;
 
 public class MyApplication extends Application {
 
-    private static String USER_NAME = "";    //用户名
-    private static String PASSWORD = "";     //密码
-    private static String UID = "";          //uid
-    private static String COOKIE = "";       //cookie校验码
-
     private static User user;
+
+    private String COOKIE = "";
 
     private static Api api;
 
@@ -59,64 +40,69 @@ public class MyApplication extends Application {
         if (api == null) {
             Log.d("imageView", "onCreate: MyApplication--------api为空");
         }
-        if (!USER_NAME.equals("userName")){
-            signIn();
-        }
     }
 
     public static User getUser() {
         return user;
     }
 
-    public static void setUser(User user) {
-        MyApplication.user = user;
-    }
-
-    public String getUSER_NAME() {
-        return USER_NAME;
-    }
-
-    public String getPASSWORD() {
-        return PASSWORD;
-    }
-
-    public String getUID() {
-        return UID;
-    }
-
-    public String getCOOKIE() {
-        return COOKIE;
-    }
-
     public static Api getApi() {
         return api;
     }
 
+    //加载用户登录成功后的信息（包括cookie）
     public void loadData() {
-        Auth auth = dataSP.load();
-        if(auth != null) {
-            USER_NAME = auth.getUserName();
-            PASSWORD = auth.getPassword();
-            UID = auth.getUid();
+        if ((user = dataSP.load()) != null){
+            COOKIE = user.getCookie();
         }
-        COOKIE = dataSP.getCookie();
     }
 
+    //保存cookie
     public void saveCookie(String cookieStr) {
-        MyApplication.COOKIE = cookieStr;
-        if (dataSP == null)
+        Log.d("imageView", "saveCookie: 保存cookie");
+        COOKIE = cookieStr;
+        user.setCookie(cookieStr);
+        if (dataSP == null) {
             dataSP = new DataSP(mContext);
-        dataSP.saveCookie(cookieStr);
+            dataSP.saveCookie(cookieStr);
+        }
+    }
+    //用于当cookie失效时将cookie清空，便于更新cookie
+    public void deleteCookie() {
+        Log.d("imageView", "saveCookie: 删除cookie");
+        COOKIE = "";
+        user.setCookie("");
+        if (dataSP == null) {
+            dataSP = new DataSP(mContext);
+            dataSP.deleteCookie();
+        }
     }
 
+    //登录成功初始化user对象
     public void signIn(User user) {
         MyApplication.user = user;
-        MyApplication.USER_NAME = user.getName();
-        MyApplication.PASSWORD = user.getPassword();
-        MyApplication.UID = user.getUid();
         if (dataSP == null)
             dataSP = new DataSP(mContext);
-        dataSP.save(USER_NAME,PASSWORD,UID);
+        Log.d("imageView", "MyApplication.signIn: " + user.toString());
+        MyApplication.user.setCookie(COOKIE);
+        dataSP.save(user);
+    }
+
+    //用于cookie失效重新登录
+    public void reSignIn() throws IOException {
+        deleteCookie();
+        api.reSignIn(user.getName(),user.getPassword()).execute();
+    }
+
+    //退出登录
+    public void signOut() {
+        api.signOut();
+        COOKIE = "";
+        user = null;
+        if (dataSP == null) {
+            dataSP = new DataSP(mContext);
+        }
+        dataSP.delete();
     }
 
     public static MyApplication getApplication() {
@@ -130,30 +116,7 @@ public class MyApplication extends Application {
         return mContext;
     }
 
-    public void signIn(){
-        api.signIn(this.getUSER_NAME(),this.getPASSWORD());
-    }
 
-    public void signOut() {
-        api.signOut();
-        USER_NAME = "userName";
-        PASSWORD = "";
-        UID = "";
-        COOKIE = "";
-        if (dataSP == null) {
-            dataSP = new DataSP(mContext);
-        }
-        dataSP.delete();
-    }
 
-//    public void reLogin(String ) {
-//        USER_NAME = "userName";
-//        PASSWORD = "";
-//        UID = "";
-//        COOKIE = "";
-//        if (dataSP == null) {
-//            dataSP = new DataSP(mContext);
-//        }
-//        dataSP.delete();
-//    }
+
 }

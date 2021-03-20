@@ -161,7 +161,7 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/constraintLayout"
                     android:layout_width="match_parent"
-                    android:layout_height="150dp"
+                    android:layout_height="120dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
@@ -183,42 +183,25 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="68dp"
                         android:layout_marginLeft="68dp"
-                        android:text="dilkw"
+                        android:text=""
                         app:layout_constraintBottom_toBottomOf="@+id/shapeableImageView2"
                         app:layout_constraintStart_toEndOf="@+id/shapeableImageView2"
                         app:layout_constraintTop_toTopOf="@+id/shapeableImageView2"
                         app:layout_constraintVertical_bias="0.414" />
 
-                    <TextView
-                        android:id="@+id/textView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginBottom="18dp"
-                        android:text="状态："
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent" />
-
-                    <TextView
-                        android:id="@+id/textView2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginLeft="10dp"
-                        android:text="激活"
-                        app:layout_constraintBottom_toBottomOf="@+id/textView"
-                        app:layout_constraintStart_toEndOf="@+id/textView"
-                        app:layout_constraintTop_toTopOf="@+id/textView" />
-
-                    <Button
+                    <com.google.android.material.button.MaterialButton
                         android:id="@+id/turnToUserInfoFragmentBtn"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="10dp"
                         android:layout_marginRight="10dp"
-                        android:layout_marginBottom="10dp"
-                        android:text="查看信息"
+                        android:background="#00000000"
+                        app:cornerRadius="20dp"
+                        app:strokeColor="@color/strokeColor"
+                        app:strokeWidth="2dp"
+                        android:text="查看信息>>"
+                        android:textColor="@color/design_default_color_on_secondary"
+                        android:textSize="10sp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent" />
                 </androidx.constraintlayout.widget.ConstraintLayout>

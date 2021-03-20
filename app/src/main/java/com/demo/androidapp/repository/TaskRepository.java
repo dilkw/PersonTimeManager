@@ -68,38 +68,21 @@ public class TaskRepository {
     }
 
     //根据cookie在服务器中获取任务列表,cookie在发送请求的时候自动添加到header中
-    public void getAllTaskByUidInServer() {
+    public LiveData<ReturnData<ReturnListObject<Task>>> getAllTaskByUidInServer() {
         Log.d("imageView", getClass().getName() + "TaskRepository: 获取任务清单" );
-        api.getTaskList().enqueue(new Callback<ReturnData<ReturnListObject<Task>>>() {
-            @Override
-            public void onResponse(Call<ReturnData<ReturnListObject<Task>>> call, Response<ReturnData<ReturnListObject<Task>>> response) {
-                Log.d("imageView", "TaskRepository: 获取任务清单成功" + response.body().getData().getTotal());
-                returnDataLiveData.postValue(new ReturnData<List<Task>>(response.body().getCode(),response.body().getMsg(),response.body().getData().getItems()));
-                if (response.body().getData().getTotal() > 0) {
-                    Task[] tasks = new Task[response.body().getData().getTotal()];
-                    response.body().getData().getItems().toArray(tasks);
-                    deleteALLTasksAndAdd(tasks);
-                }
-            }
-            @Override
-            public void onFailure(Call<ReturnData<ReturnListObject<Task>>> call, Throwable t) {
-                t.printStackTrace();
-                Log.d("imageView", "TaskRepository: 获取任务清单失败" );
-                returnDataLiveData.postValue(new ReturnData<>(RCodeEnum.ERROR));
-            }
-        });
+        return api.getTaskList();
     }
 
     //根据uid在本地数据库中获取任务列表
     public void getAllTaskByUidInDB() {
-        String uid = MyApplication.getApplication().getUID();
+        String uid = MyApplication.getUser().getUid();
         Log.d("imageView", "getAllTaskByUidInDB: 数据库获取数据");
         new GetAllTaskByUid(taskDao,returnDataLiveData).execute(uid);
     }
 
     //在本地数据库中删除数据
     public void deleteAllTaskByUidInDB(Task... tasks) {
-        String uid = MyApplication.getApplication().getUID();
+        String uid = MyApplication.getUser().getUid();
         Log.d("imageView", "getAllTaskByUidInDB: 数据库删除数据");
         new DeleteAllTasks(taskDao).execute(tasks);
     }
@@ -205,8 +188,8 @@ public class TaskRepository {
     }
 
     public void reLogin(){
-        String userName = MyApplication.getApplication().getUSER_NAME();
-        String password = MyApplication.getApplication().getPASSWORD();
+        String userName = MyApplication.getUser().getUid();
+        String password = MyApplication.getUser().getUid();
 //        api.signIn()
     }
 
@@ -231,7 +214,7 @@ public class TaskRepository {
         @Override
         protected Void doInBackground(Task... tasks) {
             this.tasks = tasks;
-            taskDao.deleteAllTasksByUid(MyApplication.getApplication().getUID());
+            taskDao.deleteAllTasksByUid(MyApplication.getUser().getUid());
             return null;
         }
 
