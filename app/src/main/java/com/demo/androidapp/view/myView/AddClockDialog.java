@@ -36,6 +36,7 @@ public class AddClockDialog extends DialogFragment implements View.OnClickListen
 
 
     public AddClockDialog(){
+        isAdd = true;
         clock = new Clock();
     }
 

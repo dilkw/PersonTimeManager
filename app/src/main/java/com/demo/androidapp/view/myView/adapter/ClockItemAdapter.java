@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -112,7 +113,8 @@ public class ClockItemAdapter extends RecyclerView.Adapter<ClockItemAdapter.MyVi
         Log.d("imageView", "onBindViewHolder: " + clock.getClock_minute() + "分钟");
         holder.clockMinuteTextView.setText(clock.getClock_minute() + "分钟");
         holder.checkBox.setVisibility(isShow ? View.VISIBLE : View.GONE);
-        holder.clockAlertTimeTextView.setText(DateTimeUtil.longToStrYMDHM(clock.getAlert_time()));
+        holder.clockAlertTimeTextView.setText(clock.isAlert() ? DateTimeUtil.longToStrYMDHM(clock.getAlert_time()) : "");
+        holder.clockItemAlertImg.setVisibility(clock.isAlert() ? View.VISIBLE : View.GONE);
         holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -167,6 +169,7 @@ public class ClockItemAdapter extends RecyclerView.Adapter<ClockItemAdapter.MyVi
         public MaterialButton clockStartButton;
         public CheckBox checkBox;
         public TextView clockAlertTimeTextView;
+        public ImageView clockItemAlertImg;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -176,6 +179,7 @@ public class ClockItemAdapter extends RecyclerView.Adapter<ClockItemAdapter.MyVi
             this.clockStartButton = itemView.findViewById(R.id.clockStartButton);
             this.checkBox = itemView.findViewById(R.id.clockItemCheckBox);
             this.clockAlertTimeTextView = itemView.findViewById(R.id.clockAlertTimeTextView);
+            this.clockItemAlertImg = itemView.findViewById(R.id.clockItemAlertImg);
         }
     }
 

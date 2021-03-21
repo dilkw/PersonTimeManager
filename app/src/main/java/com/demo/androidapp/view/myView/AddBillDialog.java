@@ -37,6 +37,7 @@ public class AddBillDialog extends DialogFragment implements View.OnClickListene
 
 
     public AddBillDialog(){
+        isAdd = true;
         bill = new Bill();
     }
 
@@ -68,6 +69,7 @@ public class AddBillDialog extends DialogFragment implements View.OnClickListene
             addBillDialogBinding.addBillDialogContentTextInputEditText.setText(bill.getContent());
             addBillDialogBinding.addBillDialogMoneyTextInputEditText.setText(bill.getAmount() + "");
             addBillDialogBinding.inComeToggleButton.setChecked(bill.isCategory());
+            addBillDialogBinding.addBillDialogConsumeTimeTextView.setText(DateTimeUtil.longToStrYMDHM(this.bill.getConsume_time()));
         }
         addBillDialogBinding.addBillTitleTextView.setText(dialogTitle);
         setListener();

@@ -18,16 +18,24 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.demo.androidapp.R;
 import com.demo.androidapp.databinding.ClipimgFragmentBinding;
 
+import java.io.File;
+import java.io.IOException;
+
 import static android.app.Activity.RESULT_OK;
 import static com.demo.androidapp.view.UserInfoFragment.REQUEST_IMAGE_OPEN;
 
-public class ClipImgFragment extends Fragment {
+public class ClipImgFragment extends Fragment implements View.OnClickListener {
 
     private ClipimgFragmentBinding clipimgFragmentBinding;
+
+    NavController controller;
 
     static final int REQUEST_IMAGE_GET = 1;
 
@@ -39,6 +47,9 @@ public class ClipImgFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         clipimgFragmentBinding = DataBindingUtil.inflate(inflater, R.layout.clipimg_fragment,container,false);
+        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+        NavHostFragment navHostFragment = (NavHostFragment)fragmentManager.findFragmentById(R.id.fragment);
+        controller = navHostFragment.getNavController();
         return clipimgFragmentBinding.getRoot();
     }
 
@@ -52,17 +63,52 @@ public class ClipImgFragment extends Fragment {
         if (intent.resolveActivity(requireActivity().getPackageManager()) != null) {
             startActivityForResult(intent, REQUEST_IMAGE_GET);
         }
+        setOnClickListener();
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode,resultCode,data);
         if (requestCode == REQUEST_IMAGE_GET && resultCode == RESULT_OK) {
             assert data != null;
-            Bitmap thumbnail = data.getParcelableExtra("data");
-            Uri fullPhotoUri = data.getData();
-            Log.d("imageView", "onActivityResult: " + (thumbnail == null ? "null" : "notNull") + fullPhotoUri.getPath());
-            clipimgFragmentBinding.clipImgFragmentClipImgView.setOriginalBitmapByUrl(fullPhotoUri.getPath());
+            Bitmap bitmap = data.getParcelableExtra("data");
+            Uri uri = data.getData();
+            try {
+                bitmap = MediaStore.Images.Media.getBitmap(requireActivity().getContentResolver(), uri);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            Log.d("imageView", "onActivityResult: " + (bitmap == null ? "null" : "notNull") + uri.getEncodedPath());
+            clipimgFragmentBinding.clipImgFragmentClipImgView.setOriginalBitmap(bitmap);
         }
+    }
 
+    private void setOnClickListener() {
+        clipimgFragmentBinding.clipImgFragmentBackBtn.setOnClickListener(this);
+        clipimgFragmentBinding.clipImgFragmentEnterBtn.setOnClickListener(this);
+        clipimgFragmentBinding.clipImgFragmentReSelectBtn.setOnClickListener(this);
+    }
+
+    @SuppressLint("NonConstantResourceId")
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.clipImgFragmentBackBtn: {
+                Log.d("imageView", "onClick: 返回按钮点击");
+                controller.navigateUp();
+                break;
+            }
+            case R.id.clipImgFragmentEnterBtn: {
+                Log.d("imageView", "onClick: 确定按钮点击");
+                break;
+            }
+            case R.id.clipImgFragmentReSelectBtn: {
+                Log.d("imageView", "onClick: 重选按钮点击");
+                break;
+            }
+            default:{
+                break;
+            }
+        }
     }
 }

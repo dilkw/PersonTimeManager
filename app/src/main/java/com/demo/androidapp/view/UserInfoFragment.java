@@ -346,9 +346,8 @@ public class UserInfoFragment extends Fragment implements View.OnClickListener {
             public void onClick(View v) {
                 if (v.getId() == R.id.imgClickDialogSelectImgBtn) {
                     controller.navigate(R.id.action_userInfoFragment_to_clipImgFragment);
-                }else{
-                    alertDialog.dismiss();
                 }
+                alertDialog.dismiss();
             }
         };
         imgFromGalleryBtn.setOnClickListener(onClickListener);

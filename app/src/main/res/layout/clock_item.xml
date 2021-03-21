@@ -102,13 +102,13 @@
                     android:layout_marginLeft="5dp"
                     android:gravity="center"
                     android:textSize="10sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/imageView5"
-                    app:layout_constraintStart_toEndOf="@+id/imageView5"
-                    app:layout_constraintTop_toTopOf="@+id/imageView5"
+                    app:layout_constraintBottom_toBottomOf="@+id/clockItemAlertImg"
+                    app:layout_constraintStart_toEndOf="@+id/clockItemAlertImg"
+                    app:layout_constraintTop_toTopOf="@+id/clockItemAlertImg"
                     tools:ignore="SmallSp" />
 
                 <ImageView
-                    android:id="@+id/imageView5"
+                    android:id="@+id/clockItemAlertImg"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:layout_marginStart="30dp"
