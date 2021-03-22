@@ -1,6 +1,11 @@
 package com.demo.androidapp;
 
+import android.util.Log;
+
 import org.junit.Test;
+
+import java.time.LocalDateTime;
+import java.util.Scanner;
 
 import static org.junit.Assert.*;
 

@@ -58,12 +58,18 @@ public class ClipImgFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        selectImgFromGallery();
+        setOnClickListener();
+    }
+
+    //跳转图库获取图片返回
+    @SuppressLint("QueryPermissionsNeeded")
+    private void selectImgFromGallery() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("image/*");
         if (intent.resolveActivity(requireActivity().getPackageManager()) != null) {
             startActivityForResult(intent, REQUEST_IMAGE_GET);
         }
-        setOnClickListener();
     }
 
     @Override
@@ -87,6 +93,7 @@ public class ClipImgFragment extends Fragment implements View.OnClickListener {
         clipimgFragmentBinding.clipImgFragmentBackBtn.setOnClickListener(this);
         clipimgFragmentBinding.clipImgFragmentEnterBtn.setOnClickListener(this);
         clipimgFragmentBinding.clipImgFragmentReSelectBtn.setOnClickListener(this);
+        clipimgFragmentBinding.clipImgFragmentCancelBtn.setOnClickListener(this);
     }
 
     @SuppressLint("NonConstantResourceId")
@@ -100,10 +107,25 @@ public class ClipImgFragment extends Fragment implements View.OnClickListener {
             }
             case R.id.clipImgFragmentEnterBtn: {
                 Log.d("imageView", "onClick: 确定按钮点击");
+                Bitmap bitmap = clipimgFragmentBinding.clipImgFragmentClipImgView.getClipBitmap();
+                if (bitmap == null) {
+                    Log.d("imageView", "onClick: bitmap为空");
+                    break;
+                }
+                clipimgFragmentBinding.clipImageView.setImageBitmap(bitmap);
+                Log.d("imageView", "onClick: bitmap不为空");
                 break;
             }
             case R.id.clipImgFragmentReSelectBtn: {
                 Log.d("imageView", "onClick: 重选按钮点击");
+                selectImgFromGallery();
+
+                break;
+            }
+            case R.id.clipImgFragmentCancelBtn: {
+                Log.d("imageView", "onClick: 取消按钮点击");
+                clipimgFragmentBinding.clipImgFragmentClipImgView.setCancelClip();
+                clipimgFragmentBinding.clipImageView.setImageBitmap(null);
                 break;
             }
             default:{

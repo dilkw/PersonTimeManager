@@ -9,9 +9,11 @@ import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Region.Op;
 import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
+import android.graphics.RectF;
 import android.graphics.Xfermode;
 import android.os.Build;
 import android.util.AttributeSet;
@@ -43,12 +45,20 @@ public class ClipImgView extends View {
     private float imgRightX = 0;
     private float imgBottomY = 0;
 
+    private boolean isClip = false;
+
     private Bitmap originalBitmap = getDrawingCache();  //原图
     private Bitmap maskBitmap;      //裁剪后图片
     private Bitmap clipBitmap;      //裁剪后图片
 
     private Xfermode xfermode;
     private BlurMaskFilter blurMaskFilter;
+
+    //裁剪后取消重新进行裁剪
+    public void setCancelClip() {
+        isClip = false;
+        invalidate();
+    }
 
     public void setOriginalBitmapByUrl(String url) {
         if (url == null) return;
@@ -88,15 +98,9 @@ public class ClipImgView extends View {
         @SuppressLint({"Recycle", "CustomViewStyleable"})
         TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.clipImgView);
         String src = ta.getString(R.styleable.clipImgView_clipImgSrc);
-        if (src == null) {
-            clipBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.head);
-        }else {
-            clipBitmap = BitmapFactory.decodeFile(src);
-        }
         ta.recycle();
     }
     private void init() {
-        mPath = new Path();
         if (mPaint1 == null) {
             mPaint1 = new Paint(Paint.ANTI_ALIAS_FLAG);
             mPaint1.setColor(Color.parseColor("#E91E63"));
@@ -107,12 +111,13 @@ public class ClipImgView extends View {
             xfermode = new PorterDuffXfermode(PorterDuff.Mode.CLEAR);
             blurMaskFilter = new BlurMaskFilter(300, BlurMaskFilter.Blur.OUTER);
         }
+        //蒙层画笔
         if (mPaint3 == null) {
             mPaint3 = new Paint(Paint.ANTI_ALIAS_FLAG);
-            mPaint3.setColor(Color.parseColor("#E91E63"));
+            mPaint3.setColor(Color.parseColor("#000000"));
             mPaint3.setStrokeWidth(8);
             mPaint3.setStyle(Paint.Style.FILL);
-            mPaint3.setAlpha(100);
+            mPaint3.setAlpha(200);
             mPaint3.setAntiAlias(true);
         }
         if (mPaint2 == null) {
@@ -134,6 +139,7 @@ public class ClipImgView extends View {
         imgRightX = pathWidth - 400;
         imgTopY = -(height - pathHeight - 400);
         imgBottomY = pathHeight - 400;
+        clipBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         setMeasuredDimension(width,height);
     }
 
@@ -141,20 +147,46 @@ public class ClipImgView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         if (originalBitmap != null) {
-            canvas.drawBitmap(originalBitmap, imgLeft, imgTop, mPaint2);
-            int saved = canvas.saveLayer(null, null, Canvas.ALL_SAVE_FLAG);
-            canvas.drawRect(0,0,getWidth(),getHeight(),mPaint3);
-            mPaint1.setXfermode(xfermode);
-            canvas.drawCircle(getWidth() / 2f , getHeight() / 2f ,400,mPaint1);
-            mPaint1.setXfermode(null);
-            canvas.restoreToCount(saved);
+//            if (!isClip) {
+                canvas.drawBitmap(originalBitmap, imgLeft, imgTop, mPaint2);
+                int saved = canvas.saveLayer(null, null, Canvas.ALL_SAVE_FLAG);
+                canvas.drawRect(0, 0, getWidth(), getHeight(), mPaint3);
+                mPaint1.setXfermode(xfermode);
+                canvas.drawCircle(getWidth() / 2f, getHeight() / 2f, 400, mPaint1);
+                mPaint1.setXfermode(null);
+                canvas.restoreToCount(saved);
+//            }
+            if(isClip) {
+                clipImg(canvas);
+            }
         }
     }
-
     private void clipImg(Canvas canvas) {
         canvas.save();
-        canvas.drawBitmap(clipBitmap,0,0,mPaint2);
-        canvas.restore();
+//        clipBitmap = Bitmap.createBitmap(getWidth(), getHeight(),Bitmap.Config.ARGB_8888);
+//        canvas.setBitmap(clipBitmap);
+//        mPath.setFillType(Path.FillType.INVERSE_WINDING);
+//        mPath.addCircle(getWidth() / 2f,getHeight() / 2f,400, Path.Direction.CW);
+//        canvas.clipPath(mPath);
+//        canvas.drawBitmap(originalBitmap,0,0,null);
+//        canvas.restore();
+
+        clipBitmap = Bitmap.createBitmap(originalBitmap.getWidth(), originalBitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        //clipBitmap = Bitmap.createBitmap(originalBitmap,0,0,getWidth(),getHeight());
+
+        Canvas canvas1 = new Canvas(clipBitmap);
+        Log.d(TAG, "clipImg: " + imgLeft + "===" + imgTop + "----" + originalBitmap.getHeight() + "------" + canvas1.getWidth()+ "----" + canvas1.getHeight());
+        mPath = new Path();
+        mPath.addCircle(clipBitmap.getWidth() / 2f,clipBitmap.getHeight() / 2f,400, Path.Direction.CW);
+        canvas1.clipPath(mPath);
+        canvas1.drawBitmap(originalBitmap,imgLeft,imgTop,null);
+    }
+
+    //获取剪辑后的图片
+    public Bitmap getClipBitmap() {
+        isClip = true;
+        invalidate();
+        return clipBitmap;
     }
 
     float downX = 0;
@@ -163,6 +195,9 @@ public class ClipImgView extends View {
     float moveY = 0;
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        if (isClip) {
+            return super.onTouchEvent(event);
+        }
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN : {
                 Log.d(TAG, "onTouchEvent: ACTION_DOWN");
