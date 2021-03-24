@@ -42,7 +42,7 @@ public class MyApplication extends Application {
         }
     }
 
-    public static User getUser() {
+    public User getUser() {
         return user;
     }
 
@@ -53,7 +53,9 @@ public class MyApplication extends Application {
     //加载用户登录成功后的信息（包括cookie）
     public void loadData() {
         if ((user = dataSP.load()) != null){
-            COOKIE = user.getCookie();
+            COOKIE = dataSP.getCookie();
+            user.setCookie(COOKIE);
+            Log.d("imageView", "loadData: " + user.toString());
         }
     }
 
@@ -80,18 +82,18 @@ public class MyApplication extends Application {
 
     //登录成功初始化user对象
     public void signIn(User user) {
-        MyApplication.user = user;
+        this.user = user;
         if (dataSP == null)
             dataSP = new DataSP(mContext);
         Log.d("imageView", "MyApplication.signIn: " + user.toString());
-        MyApplication.user.setCookie(COOKIE);
+        this.user.setCookie(COOKIE);
         dataSP.save(user);
     }
 
     //用于cookie失效重新登录
-    public void reSignIn() throws IOException {
+    public int reSignIn() throws IOException {
         deleteCookie();
-        api.reSignIn(user.getName(),user.getPassword()).execute();
+        return api.reSignIn(user.getName(),user.getPassword()).execute().body().getCode();
     }
 
     //退出登录

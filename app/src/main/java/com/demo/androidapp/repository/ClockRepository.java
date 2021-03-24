@@ -99,20 +99,20 @@ public class ClockRepository {
 
     //根据uid在本地数据库中获取任务列表
     public LiveData<List<Clock>> getAllClocksLiveDataInDB() {
-        String uid = MyApplication.getUser().getUid();
+        String uid = MyApplication.getApplication().getUser().getUid();
         return clockDao.getAllClockLiveDataByUid(uid);
     }
 
     //在本地数据库中删除多个数据
     public void deleteClocksByUidInDB(Clock... clocks) {
-        String uid = MyApplication.getUser().getUid();
+        String uid = MyApplication.getApplication().getUser().getUid();
         Log.d("imageView", "deleteClocksByUidInDB: 数据库删除数据");
         new DeleteClocks(clockDao).execute(clocks);
     }
 
     //在服务器中删除单个数据参数为数组形式的字符串"[1,2,3]"
     public LiveData<ReturnData<Object>> deleteClockByClockIdInServer(String clockIds) {
-        String uid = MyApplication.getUser().getUid();
+        String uid = MyApplication.getApplication().getUser().getUid();
         Log.d("imageView", "deleteClockByClockIdInServer: 删除数据" + clockIds);
         return api.deleteClock(clockIds);
     }
@@ -211,7 +211,7 @@ public class ClockRepository {
         @Override
         protected Void doInBackground(Clock... clocks) {
             this.clocks = clocks;
-            clockDao.deleteAllClocksByUid(MyApplication.getUser().getUid());
+            clockDao.deleteAllClocksByUid(MyApplication.getApplication().getUser().getUid());
             return null;
         }
 

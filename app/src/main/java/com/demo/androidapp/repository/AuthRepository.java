@@ -127,11 +127,12 @@ public class AuthRepository {
 
     // 用户上传头像
     public LiveData<ReturnData<String>> uploadImg(File file) {
-        String fileName = "img_" + MyApplication.getUser().getUid();
+        Log.d("imageView", "uploadImg: " + file.getName() + file.length());
+        String fileName = "img_" + MyApplication.getApplication().getUser().getUid();;
         // 为file建立RequestBody实例
         RequestBody requestFile = RequestBody.create(file,MediaType.parse("MULTIPART_FORM_DATA"));
         // MultipartBody.Part借助文件名完成最终的上传
-        MultipartBody.Part part = MultipartBody.Part.createFormData("partName", file.getName(), requestFile);
+        MultipartBody.Part part = MultipartBody.Part.createFormData("file", file.getName(), requestFile);
         return api.uploadImg(part);
     }
 }

@@ -29,7 +29,7 @@ public class Clock {
 
     //用户uid
     @ColumnInfo(name = "uid")
-    private String userId = MyApplication.getUser().getUid();
+    private String userId = MyApplication.getApplication().getUser().getUid();;
 
     //任务内容
     @ColumnInfo(name = "task")

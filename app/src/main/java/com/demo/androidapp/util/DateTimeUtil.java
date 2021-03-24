@@ -14,6 +14,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Random;
 
 public class DateTimeUtil {
 
@@ -132,5 +133,10 @@ public class DateTimeUtil {
         long m = (second - 3600 * h) / 60;
         long s = second % 60;
         return String.format("%02d:%02d:%02d",h,m,s);
+    }
+
+    public static String getRandom() {
+        Random rand = new Random();
+        return "?v=" + rand.nextInt(100) + 1;
     }
 }

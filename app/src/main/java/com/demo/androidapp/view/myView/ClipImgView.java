@@ -8,19 +8,21 @@ import android.graphics.BitmapFactory;
 import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.Region.Op;
 import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
-import android.graphics.RectF;
 import android.graphics.Xfermode;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Message;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
@@ -29,6 +31,8 @@ import com.demo.androidapp.R;
 public class ClipImgView extends View {
 
     private static final String TAG =  "clipImgView_tag";
+    private static final int REFRESH_UI =  0;
+
     private Paint mPaint1;
     private Paint mPaint2;
     private Paint mPaint3;
@@ -70,12 +74,13 @@ public class ClipImgView extends View {
         invalidate();
     }
     public void setOriginalBitmap(Bitmap originalBitmap) {
-        this.originalBitmap = originalBitmap;
+        if (originalBitmap == null)return ;
+        this.originalBitmap = resizeBitmap(originalBitmap);
         if (this.originalBitmap == null) {
             Log.d("imageView", "setOriginalBitmap: 图片为空");
         }else {
             Log.d("imageView", "setOriginalBitmap: 图片不为空");
-            maskBitmap = Bitmap.createBitmap(this.originalBitmap.getWidth(), originalBitmap.getHeight(), Bitmap.Config.ARGB_8888);
+            maskBitmap = Bitmap.createBitmap(this.originalBitmap.getWidth(), this.originalBitmap.getHeight(), Bitmap.Config.ARGB_8888);
             invalidate();
         }
     }
@@ -142,62 +147,42 @@ public class ClipImgView extends View {
         clipBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         setMeasuredDimension(width,height);
     }
-
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         if (originalBitmap != null) {
-//            if (!isClip) {
-                canvas.drawBitmap(originalBitmap, imgLeft, imgTop, mPaint2);
-                int saved = canvas.saveLayer(null, null, Canvas.ALL_SAVE_FLAG);
-                canvas.drawRect(0, 0, getWidth(), getHeight(), mPaint3);
-                mPaint1.setXfermode(xfermode);
-                canvas.drawCircle(getWidth() / 2f, getHeight() / 2f, 400, mPaint1);
-                mPaint1.setXfermode(null);
-                canvas.restoreToCount(saved);
-//            }
-            if(isClip) {
-                clipImg(canvas);
-            }
+            canvas.drawBitmap(originalBitmap, imgLeft, imgTop, null);
+            int saved = canvas.saveLayer(null, null, Canvas.ALL_SAVE_FLAG);
+            canvas.drawRect(0, 0, getWidth(), getHeight(), mPaint3);
+            mPaint1.setXfermode(xfermode);
+            canvas.drawCircle(getWidth() / 2f, getHeight() / 2f, 400, mPaint1);
+            mPaint1.setXfermode(null);
+            canvas.restoreToCount(saved);
         }
     }
-    private void clipImg(Canvas canvas) {
-        canvas.save();
-//        clipBitmap = Bitmap.createBitmap(getWidth(), getHeight(),Bitmap.Config.ARGB_8888);
-//        canvas.setBitmap(clipBitmap);
-//        mPath.setFillType(Path.FillType.INVERSE_WINDING);
-//        mPath.addCircle(getWidth() / 2f,getHeight() / 2f,400, Path.Direction.CW);
-//        canvas.clipPath(mPath);
-//        canvas.drawBitmap(originalBitmap,0,0,null);
-//        canvas.restore();
-
-        clipBitmap = Bitmap.createBitmap(originalBitmap.getWidth(), originalBitmap.getHeight(), Bitmap.Config.ARGB_8888);
-        //clipBitmap = Bitmap.createBitmap(originalBitmap,0,0,getWidth(),getHeight());
-
-        Canvas canvas1 = new Canvas(clipBitmap);
-        Log.d(TAG, "clipImg: " + imgLeft + "===" + imgTop + "----" + originalBitmap.getHeight() + "------" + canvas1.getWidth()+ "----" + canvas1.getHeight());
+    private Bitmap clipImg() {
+        clipBitmap = Bitmap.createBitmap(getWidth(),getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(clipBitmap);
         mPath = new Path();
-        mPath.addCircle(clipBitmap.getWidth() / 2f,clipBitmap.getHeight() / 2f,400, Path.Direction.CW);
-        canvas1.clipPath(mPath);
-        canvas1.drawBitmap(originalBitmap,imgLeft,imgTop,null);
+        mPath.addCircle(getWidth() / 2f,getHeight() / 2f,400, Path.Direction.CW);
+        canvas.clipPath(mPath);
+        canvas.drawBitmap(originalBitmap,imgLeft,imgTop,null);
+        return clipBitmap;
     }
 
     //获取剪辑后的图片
     public Bitmap getClipBitmap() {
-        isClip = true;
-        invalidate();
-        return clipBitmap;
+        return clipImg();
     }
 
     float downX = 0;
     float downY = 0;
     float moveX = 0;
     float moveY = 0;
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (isClip) {
-            return super.onTouchEvent(event);
-        }
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN : {
                 Log.d(TAG, "onTouchEvent: ACTION_DOWN");
@@ -211,12 +196,10 @@ public class ClipImgView extends View {
                 moveY = event.getY() - downY;
                 imgLeft += (imgLeft >= imgRightX && moveX > 0) || (imgLeft <= imgLeftX && moveX < 0) ?  0 : moveX;
                 imgTop += (imgTop >= imgBottomY && moveY > 0) || (imgTop <= imgTopY && moveY < 0) ? 0 : moveY;
+                invalidate();
                 downX = event.getX();
                 downY = event.getY();
-                Log.d(TAG, "onTouchEvent: ACTION_MOVE getX" + getX());
-                Log.d(TAG, "onTouchEvent: ACTION_MOVE getY" + getY());
-                invalidate();
-                break;
+                return true;
             }
             case MotionEvent.ACTION_UP : {
                 Log.d(TAG, "onTouchEvent: ACTION_UP");
@@ -227,4 +210,33 @@ public class ClipImgView extends View {
         }
         return super.onTouchEvent(event);
     }
+
+    //创建一个Handler用于更新View
+    private Handler handler = new Handler(new Handler.Callback() {
+        @Override
+        public boolean handleMessage(@NonNull Message msg) {
+            postInvalidate();
+            return false;
+        }
+    });
+
+    private Bitmap resizeBitmap(Bitmap bitmap) {
+        if (bitmap == null) {
+            Log.d("imageView", "resizeBitmap: 原图为空" + getWidth());
+        }
+        Log.d("imageView", "resizeBitmap: 原图不为空" + bitmap.getWidth());
+        Matrix matrix = new Matrix();
+        matrix.postScale(getWidth() / bitmap.getWidth(),getHeight() / bitmap.getHeight());
+        //Bitmap resizeBitmap = Bitmap.createBitmap(bitmap,0,0,getWidth(),(int)(getHeight() * 0.8f), matrix,true);
+        Bitmap resizeBitmap =Bitmap.createScaledBitmap(bitmap,getWidth(),getHeight(),true);
+        if (resizeBitmap == null) {
+            Log.d("imageView", "resizeBitmap: 为空");
+            return null;
+        }
+        if (!bitmap.isRecycled()) {
+            bitmap.recycle();
+        }
+        return resizeBitmap;
+    }
+
 }

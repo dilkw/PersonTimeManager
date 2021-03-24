@@ -34,6 +34,10 @@ public class User {
     private long created_at;
 
     //创建时间
+    @ColumnInfo(name = "img_url")
+    private String img_url;
+
+    //创建时间
     @Ignore
     private String password;
 
@@ -44,13 +48,14 @@ public class User {
     @Ignore
     public User() {}
 
-    public User(long id, String name, String uid, String email, String state, long created_at) {
+    public User(long id, String name, String uid, String email, String state, long created_at,String img_url) {
         this.id = id;
         this.name = name;
         this.uid = uid;
         this.email = email;
         this.state = state;
         this.created_at = created_at;
+        this.img_url = img_url;
     }
 
     public long getId() {
@@ -117,6 +122,14 @@ public class User {
         this.cookie = cookie;
     }
 
+    public String getImg_url() {
+        return img_url;
+    }
+
+    public void setImg_url(String img_url) {
+        this.img_url = img_url;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -126,6 +139,7 @@ public class User {
                 ", email='" + email + '\'' +
                 ", state='" + state + '\'' +
                 ", created_at=" + created_at +
+                ", img_url='" + img_url + '\'' +
                 ", password='" + password + '\'' +
                 ", cookie='" + cookie + '\'' +
                 '}';

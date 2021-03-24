@@ -20,8 +20,8 @@ public class InterceptorOfAddCookie implements Interceptor {
     public Response intercept(Chain chain) throws IOException {
         Log.d("imageView", "InterceptorOfAddCookie:11111111111111111");
         Request.Builder builder = chain.request().newBuilder();
-        if (MyApplication.getUser() != null){
-            String cookieStr = MyApplication.getUser().getCookie();
+        if (MyApplication.getApplication().getUser() != null){
+            String cookieStr = MyApplication.getApplication().getUser().getCookie();
             if (cookieStr != null && !cookieStr.equals("")) {
                 builder.addHeader("Cookie",cookieStr);
             }

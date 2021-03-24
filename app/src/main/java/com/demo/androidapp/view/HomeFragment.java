@@ -30,6 +30,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.demo.androidapp.MainActivity;
 import com.demo.androidapp.MyApplication;
 import com.demo.androidapp.R;
@@ -39,8 +40,10 @@ import com.demo.androidapp.model.entity.Bill;
 import com.demo.androidapp.model.entity.Task;
 import com.demo.androidapp.model.common.RCodeEnum;
 import com.demo.androidapp.model.common.ReturnData;
+import com.demo.androidapp.model.entity.User;
 import com.demo.androidapp.model.returnObject.ReturnListObject;
 import com.demo.androidapp.util.DataSP;
+import com.demo.androidapp.util.DateTimeUtil;
 import com.demo.androidapp.view.myView.adapter.TasksItemAdapter;
 import com.demo.androidapp.viewmodel.HomeViewModel;
 import com.google.android.material.navigation.NavigationView;
@@ -98,8 +101,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         DataSP dataSP = new DataSP(getContext());
         boolean isLogin = false;
         isLogin = getArguments() != null && getArguments().getBoolean("isLogin");
-        if(MyApplication.getUser() == null){
-            Log.d("imageView", "onCreateView2: ");
+        if(MyApplication.getApplication().getUser() == null){
+            Log.d("imageView", "跳转登录页面: ");
             controller.navigate(R.id.action_homeFragment_to_loginFragment);
         }else {
             initData(this,isLogin);
@@ -108,14 +111,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     }
 
     private void initData(LifecycleOwner lifecycleOwner,boolean isLogin) {
-        Log.d("imageView",MyApplication.getUser().getUid() + "++++++++++");
-        //        if (isLogin) {
-        //            homeViewModel.getAllTaskByUidInServer();
-        //            assert getArguments() != null;
-        //            getArguments().remove("isLogin");
-        //        } else {
-        //            homeViewModel.getAllTaskByUidInDB();
-        //        }
+        Log.d("imageView",MyApplication.getApplication().getUser().getUid() + "++++++++++");
+        User user = MyApplication.getApplication().getUser();
+        homeFragmentBinding.userNameTextView.setText(user.getName());
+        Glide.with(getContext()).load(user.getImg_url() + DateTimeUtil.getRandom()).into(homeFragmentBinding.drawerLayoutUserImage);
         tasksItemAdapter = new TasksItemAdapter((List<Task>)(new ArrayList<Task>()));
         StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(2, RecyclerView.VERTICAL);
         homeFragmentBinding.recyclerView.setLayoutManager(staggeredGridLayoutManager);

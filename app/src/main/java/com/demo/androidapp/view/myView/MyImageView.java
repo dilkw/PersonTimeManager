@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapShader;
@@ -22,6 +23,7 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
+import com.bumptech.glide.Glide;
 import com.demo.androidapp.R;
 
 public class MyImageView extends View {
@@ -29,8 +31,24 @@ public class MyImageView extends View {
     private Paint mPaint;
     private Bitmap bitmap;
 
+    private String myImgViewSrc;
+
+    public String getMyImgViewSrc() {
+        return myImgViewSrc;
+    }
+
+    public void setMyImgViewSrc(String myImgViewSrc) {
+        this.myImgViewSrc = myImgViewSrc;
+    }
+
     public void setBitmap(Bitmap bitmap) {
+        if (bitmap == null) {
+            Log.d("imageView", "setBitmap: 为空");
+            return ;
+        }
+        Log.d("imageView", "setBitmap: 不为空");
         this.bitmap = bitmap;
+        invalidate();
     }
 
     public Bitmap getBitmap() {
@@ -53,11 +71,13 @@ public class MyImageView extends View {
         this(context, attrs,0);
     }
 
+    @SuppressLint("CheckResult")
     public MyImageView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         Log.d("imageView","MyImageView(Context context)");
-        bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.head);
-
+        if (Glide.with(getContext()).load(getResources().getString(R.string.defaultImgUrl)).load(bitmap) == null) {
+            bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.head);
+        }
     }
 
     //四个参数的构造函数通常由我们自己主动调用.
@@ -103,19 +123,9 @@ public class MyImageView extends View {
         if(mPaint == null) {
             mPaint = new Paint();
         }
+        @SuppressLint("DrawAllocation")
         Shader shader = new BitmapShader(bitmap,Shader.TileMode.CLAMP,Shader.TileMode.CLAMP);
         mPaint.setShader(shader);
         canvas.drawCircle(cx,cx,cx,mPaint);
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                builder.setTitle("选择照片");
-
-        }
-        return super.onTouchEvent(event);
     }
 }

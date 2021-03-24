@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,13 +20,20 @@ import androidx.annotation.RequiresApi;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.demo.androidapp.R;
 import com.demo.androidapp.databinding.ClipimgFragmentBinding;
+import com.demo.androidapp.model.common.RCodeEnum;
+import com.demo.androidapp.model.common.ReturnData;
+import com.demo.androidapp.viewmodel.UserInfoViewModel;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import static android.app.Activity.RESULT_OK;
@@ -35,7 +43,11 @@ public class ClipImgFragment extends Fragment implements View.OnClickListener {
 
     private ClipimgFragmentBinding clipimgFragmentBinding;
 
-    NavController controller;
+    private NavController controller;
+
+    private UserInfoViewModel userInfoViewModel;
+
+    private String uid = "";
 
     static final int REQUEST_IMAGE_GET = 1;
 
@@ -58,6 +70,10 @@ public class ClipImgFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        if (getArguments() != null) {
+            uid = getArguments().getString("uid");
+        }
+        userInfoViewModel = new ViewModelProvider(this).get(UserInfoViewModel.class);
         selectImgFromGallery();
         setOnClickListener();
     }
@@ -72,6 +88,7 @@ public class ClipImgFragment extends Fragment implements View.OnClickListener {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode,resultCode,data);
@@ -84,7 +101,6 @@ public class ClipImgFragment extends Fragment implements View.OnClickListener {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            Log.d("imageView", "onActivityResult: " + (bitmap == null ? "null" : "notNull") + uri.getEncodedPath());
             clipimgFragmentBinding.clipImgFragmentClipImgView.setOriginalBitmap(bitmap);
         }
     }
@@ -113,6 +129,7 @@ public class ClipImgFragment extends Fragment implements View.OnClickListener {
                     break;
                 }
                 clipimgFragmentBinding.clipImageView.setImageBitmap(bitmap);
+                uploadImg(bitmap);
                 Log.d("imageView", "onClick: bitmap不为空");
                 break;
             }
@@ -132,5 +149,28 @@ public class ClipImgFragment extends Fragment implements View.OnClickListener {
                 break;
             }
         }
+    }
+
+    private void uploadImg(Bitmap bitmap) {
+        File file = new File(getContext().getFilesDir().getPath() + "/" + uid + ".jpg");//将要保存图片的路径
+        try {
+            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos);
+            bos.flush();
+            bos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        userInfoViewModel.uploadImg(file).observe(getViewLifecycleOwner(), new Observer<ReturnData<String>>() {
+            @Override
+            public void onChanged(ReturnData<String> stringReturnData) {
+                if (stringReturnData.getCode() == RCodeEnum.OK.getCode()) {
+                    Toast.makeText(getContext(),"上传头像成功",Toast.LENGTH_SHORT).show();
+                    controller.navigateUp();
+                }else {
+                    Toast.makeText(getContext(),"上传头像失败",Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 }

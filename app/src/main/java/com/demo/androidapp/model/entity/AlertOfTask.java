@@ -20,7 +20,7 @@ public class AlertOfTask {
     private String alertTime;
 
     @ColumnInfo(name = "uid")
-    private String uid = MyApplication.getUser().getUid();
+    private String uid = MyApplication.getApplication().getUser().getUid();
 
     @Ignore
     public AlertOfTask(){}

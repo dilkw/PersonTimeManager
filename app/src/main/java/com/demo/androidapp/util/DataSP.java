@@ -51,6 +51,7 @@ public class DataSP {
         editor.putString(context.getResources().getString(R.string.shUid_key),user.getUid());
         editor.putString(context.getResources().getString(R.string.shEmail_key),user.getEmail());
         editor.putString(context.getResources().getString(R.string.shState_key),user.getState());
+        editor.putString(context.getResources().getString(R.string.shImgUrl_key),user.getImg_url());
         editor.apply();
     }
 
@@ -64,8 +65,9 @@ public class DataSP {
         String cookieStr = this.sharedPreferences.getString(context.getResources().getString(R.string.shCookie_key),"");
         String email = this.sharedPreferences.getString(context.getResources().getString(R.string.shEmail_key),"");
         String state = this.sharedPreferences.getString(context.getResources().getString(R.string.shState_key),"");
+        String imgUrl = this.sharedPreferences.getString(context.getResources().getString(R.string.shImgUrl_key),"");
         if (id != 0) {
-            User user = new User(id, userName, uid, email, state, createTime);
+            User user = new User(id, userName, uid, email, state, createTime,imgUrl);
             user.setPassword(password);
             user.setCookie(cookieStr);
             return user;
@@ -85,6 +87,7 @@ public class DataSP {
         editor.remove(context.getResources().getString(R.string.shState_key));
         editor.remove(context.getResources().getString(R.string.shCreateTime_key));
         editor.remove(context.getResources().getString(R.string.shCookie_key));
+        editor.remove(context.getResources().getString(R.string.shImgUrl_key));
         editor.apply();
     }
 

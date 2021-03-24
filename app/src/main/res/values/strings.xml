@@ -11,6 +11,9 @@
     <string name="shUid_key">uid</string>
     <string name="shState_key">state</string>
     <string name="shCookie_key">Set-Cookie</string>
+    <string name="shImgUrl_key">imgUrl</string>
+
+    <string name="defaultImgUrl">http://dikw.susecl.cool/head.png</string>
 
 
     <string name="userNameHint">用户名</string>

@@ -100,14 +100,14 @@ public class FriendRepository {
 
     //根据uid在本地数据库中获取好友列表
     public LiveData<List<Friend>> getAllFriendsByUidInDB() {
-        String uid = MyApplication.getUser().getUid();
+        String uid = MyApplication.getApplication().getUser().getUid();;
         Log.d("imageView", "getAllFriendsByUidInDB: 数据库获取数据");
         return friendDao.getAllFriendLiveDataByUid(uid);
     }
 
     //根据uid和FName在本地数据库中获取好友列表
     public LiveData<List<Friend>> getAllFriendsInDBByUidAndFName(String fName) {
-        String uid = MyApplication.getUser().getUid();
+        String uid = MyApplication.getApplication().getUser().getUid();;
         Log.d("imageView", "getAllFriendsInDBByUidAndFName: 数据库获取数据");
         return friendDao.getAllFriendsInDBByUidAndFName(uid,"%" + fName + "%");
     }
@@ -210,8 +210,8 @@ public class FriendRepository {
     }
 
     public void reLogin(){
-        String userName = MyApplication.getUser().getUid();
-        String password = MyApplication.getUser().getUid();
+        String userName = MyApplication.getApplication().getUser().getUid();
+        String password = MyApplication.getApplication().getUser().getPassword();
 //        api.signIn()
     }
 
@@ -237,7 +237,7 @@ public class FriendRepository {
         @Override
         protected Void doInBackground(Friend... friends) {
             this.friends = friends;
-            friendDao.deleteAllFriendsByUid(MyApplication.getUser().getUid());
+            friendDao.deleteAllFriendsByUid(MyApplication.getApplication().getUser().getUid());
             return null;
         }
 

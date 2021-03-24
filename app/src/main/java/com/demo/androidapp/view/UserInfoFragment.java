@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -34,11 +35,17 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.GlideBuilder;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.demo.androidapp.MyApplication;
 import com.demo.androidapp.R;
 import com.demo.androidapp.databinding.UserinfoFragmentBinding;
 import com.demo.androidapp.model.common.RCodeEnum;
 import com.demo.androidapp.model.common.ReturnData;
+import com.demo.androidapp.model.entity.User;
+import com.demo.androidapp.util.DateTimeUtil;
 import com.demo.androidapp.view.myView.ResetEmailDialog;
 import com.demo.androidapp.viewmodel.UserInfoViewModel;
 import com.google.android.material.button.MaterialButton;
@@ -46,6 +53,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -87,9 +95,25 @@ public class UserInfoFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        init();
+        setListener();
+    }
+
+    @SuppressLint("CheckResult")
+    private void init() {
         userInfoViewModel = new ViewModelProvider(this).get(UserInfoViewModel.class);
         userinfoFragmentBinding.setUserInfoViewModel(userInfoViewModel);
-        setListener();
+        userInfoViewModel.userReturnLiveData.observe(getViewLifecycleOwner(), new Observer<ReturnData<User>>() {
+            @Override
+            public void onChanged(ReturnData<User> userReturnData) {
+                if (userReturnData.getCode() == RCodeEnum.OK.getCode()) {
+                    Log.d("imageView", "onChanged: " + userReturnData.getData().getImg_url());
+                    String imgUrl = userReturnData.getData().getImg_url() + DateTimeUtil.getRandom();
+                    Glide.with(getContext()).load(imgUrl).into(userinfoFragmentBinding.userInfoImageView);
+                }
+            }
+        });
+
     }
 
     public void setListener() {
@@ -345,7 +369,9 @@ public class UserInfoFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onClick(View v) {
                 if (v.getId() == R.id.imgClickDialogSelectImgBtn) {
-                    controller.navigate(R.id.action_userInfoFragment_to_clipImgFragment);
+                    Bundle bundle = new Bundle();
+                    bundle.putString("uid",userInfoViewModel.userReturnLiveData.getValue().getData().getUid());
+                    controller.navigate(R.id.action_userInfoFragment_to_clipImgFragment,bundle);
                 }
                 alertDialog.dismiss();
             }

@@ -27,6 +27,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.bumptech.glide.Glide;
 import com.demo.androidapp.R;
 import com.demo.androidapp.databinding.FriendFragmentBinding;
 import com.demo.androidapp.databinding.FriendinfoFragmentBinding;
@@ -36,6 +37,7 @@ import com.demo.androidapp.model.common.RCodeEnum;
 import com.demo.androidapp.model.common.ReturnData;
 import com.demo.androidapp.model.entity.Friend;
 import com.demo.androidapp.model.entity.User;
+import com.demo.androidapp.util.DateTimeUtil;
 import com.demo.androidapp.view.myView.ResetEmailDialog;
 import com.demo.androidapp.viewmodel.FriendInfoViewModel;
 import com.demo.androidapp.viewmodel.FriendViewModel;
@@ -97,6 +99,9 @@ public class FriendInfoFragment extends Fragment implements View.OnClickListener
         friendInfoViewModel.getFriendInfoByUid(fuid).observe(getViewLifecycleOwner(), new Observer<ReturnData<FriendListItem>>() {
             @Override
             public void onChanged(ReturnData<FriendListItem> friendListItemReturnData) {
+                if (friendListItemReturnData.getCode() == RCodeEnum.OK.getCode()) {
+                    Glide.with(getContext()).load(friendListItemReturnData.getData().getUser().getImg_url() + DateTimeUtil.getRandom()).into(friendinfoFragmentBinding.friendInfoImageView);
+                }
                 Log.d("imageView", "onChanged: " + friendListItemReturnData.getData().getUser().toString());
             }
         });

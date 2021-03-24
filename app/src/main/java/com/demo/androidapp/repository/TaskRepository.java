@@ -75,14 +75,14 @@ public class TaskRepository {
 
     //根据uid在本地数据库中获取任务列表
     public void getAllTaskByUidInDB() {
-        String uid = MyApplication.getUser().getUid();
+        String uid = MyApplication.getApplication().getUser().getUid();
         Log.d("imageView", "getAllTaskByUidInDB: 数据库获取数据");
         new GetAllTaskByUid(taskDao,returnDataLiveData).execute(uid);
     }
 
     //在本地数据库中删除数据
     public void deleteAllTaskByUidInDB(Task... tasks) {
-        String uid = MyApplication.getUser().getUid();
+        String uid = MyApplication.getApplication().getUser().getUid();
         Log.d("imageView", "getAllTaskByUidInDB: 数据库删除数据");
         new DeleteAllTasks(taskDao).execute(tasks);
     }
@@ -188,8 +188,8 @@ public class TaskRepository {
     }
 
     public void reLogin(){
-        String userName = MyApplication.getUser().getUid();
-        String password = MyApplication.getUser().getUid();
+        String userName = MyApplication.getApplication().getUser().getUid();
+        String password = MyApplication.getApplication().getUser().getPassword();
 //        api.signIn()
     }
 
@@ -214,7 +214,7 @@ public class TaskRepository {
         @Override
         protected Void doInBackground(Task... tasks) {
             this.tasks = tasks;
-            taskDao.deleteAllTasksByUid(MyApplication.getUser().getUid());
+            taskDao.deleteAllTasksByUid(MyApplication.getApplication().getUser().getUid());
             return null;
         }
 
