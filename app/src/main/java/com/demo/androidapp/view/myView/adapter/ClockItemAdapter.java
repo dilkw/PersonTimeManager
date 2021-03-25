@@ -77,7 +77,6 @@ public class ClockItemAdapter extends RecyclerView.Adapter<ClockItemAdapter.MyVi
     public void setClocks(List<Clock> clocks) {
         this.clocks.clear();
         this.clocks = clocks;
-        notifyDataSetChanged();
     }
 
     public void addClock(Clock clock) {
@@ -144,7 +143,7 @@ public class ClockItemAdapter extends RecyclerView.Adapter<ClockItemAdapter.MyVi
             @Override
             public void onClick(View v) {
                 if (itemOnClickListener == null) return;
-                itemOnClickListener.itemOnClick(position);
+                itemOnClickListener.itemOnClick(clock,position);
             }
         });
 
@@ -188,7 +187,7 @@ public class ClockItemAdapter extends RecyclerView.Adapter<ClockItemAdapter.MyVi
     }
 
     public interface ItemOnClickListener {
-        void itemOnClick(int position);
+        void itemOnClick(Clock clock,int position);
     }
 
     public interface ItemStartOnClickListener {

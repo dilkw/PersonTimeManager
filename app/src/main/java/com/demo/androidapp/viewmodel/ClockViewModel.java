@@ -11,6 +11,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.demo.androidapp.model.common.RCodeEnum;
 import com.demo.androidapp.model.common.ReturnData;
 import com.demo.androidapp.model.entity.Clock;
+import com.demo.androidapp.model.entity.Task;
 import com.demo.androidapp.repository.ClockRepository;
 
 import java.util.Arrays;
@@ -41,9 +42,9 @@ public class ClockViewModel extends AndroidViewModel {
         clockRepository.getAllClocksInServer();
     }
 
-    //获取clockRepository中的returnLiveData
-    public LiveData<List<Clock>> getClocksLiveDataByPattern(String s) {
-        return clockRepository.getClocksLiveDataByPatternInDB(s);
+    //通过模糊查询出与关键子相似的时钟
+    public LiveData<List<Clock>> getClocksLiveDataByPatternInDB(String pattern) {
+        return clockRepository.getClocksLiveDataByPatternInDB(pattern);
     }
 
     //根据用户id从本地数据库清空该用户的时钟列表
@@ -57,8 +58,15 @@ public class ClockViewModel extends AndroidViewModel {
         clockRepository.deleteClocksByUidInDB(clockArray);
     }
 
-    public void deleteALLClocksAndAdd() {
-        clockRepository.deleteALLClocksAndAdd();
+    //清空数据库中的时钟数据，并对添加新数据
+    public void deleteALLClocksAndAdd(List<Clock> clocks) {
+        Log.d("imageView", "deleteAllTaskAndAddInDB: ");
+        if (clocks == null || clocks.size() == 0) {
+            return;
+        }
+        Clock[] clockArray = new Clock[clocks.size()];
+        clocks.toArray(clockArray);
+        clockRepository.deleteALLClocksAndAdd(clockArray);
     }
 
     //在数据库中添加时钟

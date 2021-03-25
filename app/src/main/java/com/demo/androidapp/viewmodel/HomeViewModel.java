@@ -21,6 +21,8 @@ public class HomeViewModel extends AndroidViewModel {
 
     private TaskRepository taskRepository;
 
+    public LiveData<ReturnData<ReturnListObject<Task>>> returnDataLiveData;
+
     public HomeViewModel(@NonNull Application application) {
         super(application);
         Log.d("imageView", "HomeViewModel:-=-=-=-=-= " + application.getClass().getName());
@@ -34,16 +36,28 @@ public class HomeViewModel extends AndroidViewModel {
 
     //根据用户id从服务器中中加载该用户的任务列表
     public LiveData<ReturnData<ReturnListObject<Task>>> getAllTaskByUidInServer() {
-        //在数据库中没有数据时尝试从无服务器中获取
         Log.d("imageView", "getAllTaskByUidInServer: 从服务器中获取数据");
         return taskRepository.getAllTaskByUidInServer();
     }
-
     //根据用户id从本地数据库加载该用户的任务列表
     public void getAllTaskByUidInDB() {
         //在数据库中没有数据时尝试从无服务器中获取
         Log.d("imageView", "getAllTaskByUidInServer: 从数据库中获取数据");
         taskRepository.getAllTaskByUidInDB();
+    }
+
+    //根据用户id从本地数据库加载该用户的任务列表
+    public LiveData<List<Task>> getAllTaskLiveDataByUidInDB() {
+        //在数据库中没有数据时尝试从无服务器中获取
+        Log.d("imageView", "getAllTaskByUidInServer: 从数据库中获取数据");
+        return taskRepository.getAllTaskLiveDataByUidInDB();
+    }
+
+    //根据用户id和任务详情从本地数据库加载该用户的任务列表
+    public LiveData<List<Task>> getTasksLiveDataByPatternInDB(String pattern) {
+        //在数据库中没有数据时尝试从无服务器中获取
+        Log.d("imageView", "getAllTaskByUidInServer: 从数据库中获取数据");
+        return taskRepository.getTasksLiveDataByPatternInDB(pattern);
     }
 
     //根据用户id从本地数据库清空该用户的任务列表
@@ -75,5 +89,16 @@ public class HomeViewModel extends AndroidViewModel {
             taskIds[i] = tasks.get(i).getId();
         }
         return taskRepository.deleteTaskByIdsInServer(Arrays.toString(taskIds));
+    }
+
+    //根据用户id从本地数据库清空并添加任务列表
+    public void deleteAllTaskAndAddInDB(List<Task> tasks) {
+        Log.d("imageView", "deleteAllTaskAndAddInDB: ");
+        if (tasks == null || tasks.size() ==0) {
+            return;
+        }
+        Task[] arrayTasks = new Task[tasks.size()];
+        tasks.toArray(arrayTasks);
+        taskRepository.deleteALLTasksAndAdd(arrayTasks);
     }
 }

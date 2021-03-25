@@ -4,12 +4,10 @@
 
     <item
         android:id="@+id/billSearch"
-        android:icon="@drawable/ic_home_toolbar_search"
-        android:title="@string/homeFragmentToolBarSearchMenuTitle"
+        android:icon="@drawable/ic_search_black_24dp"
+        android:title="BillSearch"
         app:actionViewClass="android.widget.SearchView"
-        android:contentDescription="@string/addTask_DeleteImgContentDescription"
-        app:showAsAction="always" />
-
+        app:showAsAction="always"/>
     <item
         android:id="@+id/billAdd"
         android:icon="@drawable/ic_addclock_btnic_24"

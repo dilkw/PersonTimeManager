@@ -38,6 +38,7 @@ import com.demo.androidapp.model.common.RCodeEnum;
 import com.demo.androidapp.model.common.ReturnData;
 import com.demo.androidapp.model.entity.Bill;
 import com.demo.androidapp.model.entity.Clock;
+import com.demo.androidapp.model.entity.Task;
 import com.demo.androidapp.view.myView.AddClockDialog;
 import com.demo.androidapp.view.myView.adapter.ClockItemAdapter;
 import com.demo.androidapp.viewmodel.ClockViewModel;
@@ -68,19 +69,23 @@ public class ClockFragment extends Fragment implements View.OnClickListener {
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         clockFragmentBinding = DataBindingUtil.inflate(inflater,R.layout.clock_fragment,container,false);
         clockViewModel = new ViewModelProvider(this).get(ClockViewModel.class);
-        View view = clockFragmentBinding.getRoot();
-        Log.d("imageView", "onCreateView: " + view.getClass().getSimpleName());
         fragmentManager = requireActivity().getSupportFragmentManager();
         navHostFragment = (NavHostFragment)fragmentManager.findFragmentById(R.id.fragment);
         assert navHostFragment != null;
         controller = navHostFragment.getNavController();
         appBarConfiguration = new AppBarConfiguration.Builder(controller.getGraph()).build();
         NavigationUI.setupWithNavController(clockFragmentBinding.clockFragmentToolBar,controller,appBarConfiguration);
-        return view;
+        return clockFragmentBinding.getRoot();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -96,59 +101,12 @@ public class ClockFragment extends Fragment implements View.OnClickListener {
             public void onChanged(ReturnData<List<Clock>> listReturnData) {
                 if (listReturnData.getCode() == RCodeEnum.OK.getCode()) {
                     clockItemAdapter.setClocks(listReturnData.getData());
+                    clockItemAdapter.notifyDataSetChanged();
+                    clockViewModel.deleteALLClocksAndAdd(listReturnData.getData());
                 }
             }
         });
-        //getAllClocksLiveDataInDB();
         setListener();
-    }
-
-    private void getAllClocksLiveDataInDB() {
-        clocksLiveData = clockViewModel.getAllClocksLiveDataInDB();
-        clocksLiveData.observe(getViewLifecycleOwner(), new Observer<List<Clock>>() {
-            @Override
-            public void onChanged(List<Clock> clocks) {
-                if (clocks == null) {
-                    return;
-                }
-                clockItemAdapter.setClocks(clocks);
-            }
-        });
-    }
-
-    @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.clockfragment_bar,menu);
-        SearchView searchView = (SearchView) menu.findItem(R.id.clockSearch).getActionView();
-        searchView.setMaxWidth(500);
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                Log.d("imageView", "onQueryTextChange:");
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                Log.d("imageView", "onQueryTextChange:");
-                clocksLiveData.removeObservers(getViewLifecycleOwner());
-                clocksLiveData = clockViewModel.getClocksLiveDataByPattern(newText.trim());
-                clocksLiveData.observe(getViewLifecycleOwner(), new Observer<List<Clock>>() {
-                    @Override
-                    public void onChanged(List<Clock> clocks) {
-                        Log.d("imageView", "onChanged: 查找返回" + clocks.size());
-                        clockItemAdapter.setClocks(clocks);
-                    }
-                });
-                return true;
-            }
-        });
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        return super.onOptionsItemSelected(item);
     }
 
     public void setListener() {
@@ -167,9 +125,9 @@ public class ClockFragment extends Fragment implements View.OnClickListener {
         });
         clockItemAdapter.setItemOnClickListener(new ClockItemAdapter.ItemOnClickListener() {
             @Override
-            public void itemOnClick(int position) {
-                Log.d("imageView", "setListener: " + clockViewModel.getReturnLiveData().getValue().getData().get(position).toString());
-                AddClockDialog addClockDialog = new AddClockDialog(clockViewModel.getReturnLiveData().getValue().getData().get(position));
+            public void itemOnClick(Clock clock, int position) {
+                Log.d("imageView", "setListener: " + clock.toString());
+                AddClockDialog addClockDialog = new AddClockDialog(clock);
                 addClockDialog.setEnterClicked(new AddClockDialog.EnterListener() {
                     @RequiresApi(api = Build.VERSION_CODES.O)
                     @Override
@@ -190,6 +148,50 @@ public class ClockFragment extends Fragment implements View.OnClickListener {
             }
         });
         //导航栏Menu菜单监听事件
+
+        //导航栏Menu菜单，搜索框监听事件
+        SearchView searchView = (SearchView) (clockFragmentBinding.clockFragmentToolBar.getMenu().findItem(R.id.clockSearch).getActionView());
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                Log.d("imageView", "onQueryTextChange:");
+                clocksLiveData.removeObservers(getViewLifecycleOwner());
+                clocksLiveData = clockViewModel.getClocksLiveDataByPatternInDB(newText);
+                clocksLiveData.observe(getViewLifecycleOwner(), new Observer<List<Clock>>() {
+                    @Override
+                    public void onChanged(List<Clock> clocks) {
+                        if (clocks == null || clocks.size() == 0) {
+                            return;
+                        }
+                        Log.d("imageView", clocks.get(0).toString());
+                        clockItemAdapter.setClocks(clocks);
+                        clockItemAdapter.notifyDataSetChanged();
+                    }
+                });
+                return true;
+            }
+        });
+        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                clocksLiveData.removeObservers(getViewLifecycleOwner());
+                clocksLiveData = clockViewModel.getAllClocksLiveDataInDB();
+                clocksLiveData.observe(getViewLifecycleOwner(), new Observer<List<Clock>>() {
+                    @Override
+                    public void onChanged(List<Clock> clocks) {
+                        clockItemAdapter.setClocks(clocks);
+                        clockItemAdapter.notifyDataSetChanged();
+                    }
+                });
+                return false;
+            }
+        });
+
         clockFragmentBinding.clockFragmentToolBar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @SuppressLint("NonConstantResourceId")
@@ -197,9 +199,11 @@ public class ClockFragment extends Fragment implements View.OnClickListener {
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.clockSearch : {
+                        Log.d("imageView", "clockSearch: 搜索");
                         break;
                     }
                     case R.id.clockAdd:{
+                        Log.d("imageView", "clockAdd: 添加");
                         AddClockDialog addClockDialog = new AddClockDialog();
                         addClockDialog.setEnterClicked(new AddClockDialog.EnterListener() {
                             @RequiresApi(api = Build.VERSION_CODES.O)

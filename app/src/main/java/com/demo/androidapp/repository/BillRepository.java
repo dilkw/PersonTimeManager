@@ -50,27 +50,12 @@ public class BillRepository {
     }
 
     //从服务器中获取数据
-    public void getBillLiveDataInServer() {
-        api.getAllBills().enqueue(new Callback<ReturnData<ReturnListObject<Bill>>>() {
-            @Override
-            public void onResponse(Call<ReturnData<ReturnListObject<Bill>>> call, Response<ReturnData<ReturnListObject<Bill>>> response) {
-                returnDataLiveData.postValue(new ReturnData<List<Bill>>(response.body().getCode(),response.body().getMsg(),response.body().getData().getItems()));
-                if (response.body().getData().getTotal() > 0) {
-                    Bill[] bills = new Bill[response.body().getData().getTotal()];
-                    response.body().getData().getItems().toArray(bills);
-                    deleteALLBillsAndAdd(bills);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ReturnData<ReturnListObject<Bill>>> call, Throwable t) {
-                returnDataLiveData.postValue(new ReturnData<List<Bill>>(RCodeEnum.ERROR.getCode(),RCodeEnum.ERROR.getMessage(),null));
-            }
-        });
+    public LiveData<ReturnData<ReturnListObject<Bill>>> getBillLiveDataInServer() {
+        return api.getAllBills();
     }
 
     //从服务器中获取数据
-    public LiveData<List<Bill>> getBillLiveDataInDB() {
+    public LiveData<List<Bill>> getAllBillLiveDataInDB() {
         return billDao.getAllBillLiveDataByUid(MyApplication.getApplication().getUser().getUid());
     }
 
@@ -82,8 +67,9 @@ public class BillRepository {
     }
 
     //根据账单内容查询
-    public LiveData<List<Bill>> getBillsLiveDataByContent(String s) {
-        return billDao.getAllBillByContentByPattern("%" + s + "%");
+    public LiveData<List<Bill>> getBillsLiveDataByContent(String content) {
+        String uid = MyApplication.getApplication().getUser().getUid();
+        return billDao.getAllBillByContentByPattern("%" + content + "%",uid);
     }
 
     //根据账单内容查询
@@ -99,7 +85,6 @@ public class BillRepository {
 
     //在本地数据库中删除所有数据并更新数据
     public void deleteALLBillsAndAdd(Bill... bills) {
-        String uid = MyApplication.getApplication().getUser().getUid();;
         Log.d("imageView", "getAllTaskByUidInDB: 数据库删除数据");
         new DeleteALLBillsAndAdd(billDao,this).execute(bills);
     }

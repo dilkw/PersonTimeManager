@@ -79,8 +79,9 @@ public class ClockRepository {
     }
 
     //通过模糊查询出相关时钟
-    public LiveData<List<Clock>> getClocksLiveDataByPatternInDB(String s) {
-        return clockDao.getAllClockByByPattern("%" + s + "%");
+    public LiveData<List<Clock>> getClocksLiveDataByPatternInDB(String pattern) {
+        String uid = MyApplication.getApplication().getUser().getUid();
+        return clockDao.getAllClockByByPattern("%" + pattern + "%",uid);
     }
 
     //根据某个时钟id获取时钟信息（网络数据库）

@@ -2,9 +2,9 @@ package com.demo.androidapp.view;
 
 import androidx.annotation.RequiresApi;
 import androidx.databinding.DataBindingUtil;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -23,11 +23,16 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -35,24 +40,20 @@ import com.demo.androidapp.MainActivity;
 import com.demo.androidapp.MyApplication;
 import com.demo.androidapp.R;
 import com.demo.androidapp.databinding.HomeFragmentBinding;
-import com.demo.androidapp.model.common.StateEnum;
-import com.demo.androidapp.model.entity.Bill;
 import com.demo.androidapp.model.entity.Task;
 import com.demo.androidapp.model.common.RCodeEnum;
 import com.demo.androidapp.model.common.ReturnData;
 import com.demo.androidapp.model.entity.User;
 import com.demo.androidapp.model.returnObject.ReturnListObject;
-import com.demo.androidapp.util.DataSP;
 import com.demo.androidapp.util.DateTimeUtil;
 import com.demo.androidapp.view.myView.adapter.TasksItemAdapter;
 import com.demo.androidapp.viewmodel.HomeViewModel;
-import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.appbar.MaterialToolbar;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
-public class HomeFragment extends Fragment implements View.OnClickListener {
+public class HomeFragment extends Fragment implements View.OnClickListener , SwipeRefreshLayout.OnRefreshListener {
 
     private HomeViewModel homeViewModel;
 
@@ -70,8 +71,16 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     private FragmentManager fragmentManager;
 
+    private LiveData<List<Task>> taskLiveData;
+
     public static HomeFragment newInstance() {
         return new HomeFragment();
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -80,17 +89,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         Log.d("imageView", "onCreateView0: ");
         homeFragmentBinding = DataBindingUtil.inflate(inflater,R.layout.home_fragment,container,false);
         homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
-        View view = homeFragmentBinding.getRoot();
-        Log.d("imageView", "onCreateView: " + view.getClass().getSimpleName());
-        DrawerLayout drawerLayout = view.findViewById(R.id.drawer_layout);
-        NavigationView navView = view.findViewById(R.id.nav_view);
         fragmentManager = requireActivity().getSupportFragmentManager();
         navHostFragment = (NavHostFragment)fragmentManager.findFragmentById(R.id.fragment);
         assert navHostFragment != null;
         controller = navHostFragment.getNavController();
-        appBarConfiguration = new AppBarConfiguration.Builder(controller.getGraph()).setDrawerLayout(drawerLayout).build();
+        appBarConfiguration = new AppBarConfiguration.Builder(controller.getGraph()).setDrawerLayout(homeFragmentBinding.drawerLayout).build();
         NavigationUI.setupWithNavController(homeFragmentBinding.homeFragmentToolBar,controller,appBarConfiguration);
-        return view;
+        return homeFragmentBinding.getRoot();
 
     }
 
@@ -98,11 +103,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        DataSP dataSP = new DataSP(getContext());
         boolean isLogin = false;
         isLogin = getArguments() != null && getArguments().getBoolean("isLogin");
         if(MyApplication.getApplication().getUser() == null){
-            Log.d("imageView", "跳转登录页面: ");
             controller.navigate(R.id.action_homeFragment_to_loginFragment);
         }else {
             initData(this,isLogin);
@@ -110,11 +113,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         }
     }
 
+    @SuppressLint("ResourceType")
     private void initData(LifecycleOwner lifecycleOwner,boolean isLogin) {
         Log.d("imageView",MyApplication.getApplication().getUser().getUid() + "++++++++++");
         User user = MyApplication.getApplication().getUser();
         homeFragmentBinding.userNameTextView.setText(user.getName());
-        Glide.with(getContext()).load(user.getImg_url() + DateTimeUtil.getRandom()).into(homeFragmentBinding.drawerLayoutUserImage);
+        Glide.with(requireContext()).load(user.getImg_url() + DateTimeUtil.getRandom()).into(homeFragmentBinding.drawerLayoutUserImage);
+
         tasksItemAdapter = new TasksItemAdapter((List<Task>)(new ArrayList<Task>()));
         StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(2, RecyclerView.VERTICAL);
         homeFragmentBinding.recyclerView.setLayoutManager(staggeredGridLayoutManager);
@@ -129,6 +134,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                         taskList = returnListObjectReturnData.getData().getItems();
                         tasksItemAdapter.setTasks(taskList);
                         tasksItemAdapter.notifyDataSetChanged();
+                        homeViewModel.deleteAllTaskAndAddInDB(taskList);
                         break;
                     }
                     case ERROR_AUTH:{
@@ -171,6 +177,65 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 ((MainActivity)requireActivity()).putDataInToMap("task", taskList.get(position));
                 NavController navController = Navigation.findNavController(requireView());
                 navController.navigate(R.id.action_homeFragment_to_addTaskFragment);
+            }
+        });
+        homeFragmentBinding.homeFragmentSwipeRefreshLayout.setOnRefreshListener(this);
+
+        SearchView searchView = (SearchView) (homeFragmentBinding.homeFragmentToolBar.getMenu().findItem(R.id.taskSearch).getActionView());
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                Log.d("imageView", "onQueryTextChange:");
+                taskLiveData.removeObservers(getViewLifecycleOwner());
+                taskLiveData = homeViewModel.getTasksLiveDataByPatternInDB(newText);
+                taskLiveData.observe(getViewLifecycleOwner(), new Observer<List<Task>>() {
+                    @Override
+                    public void onChanged(List<Task> tasks) {
+                        if (tasks == null || tasks.size() == 0) {
+                            return;
+                        }
+                        Log.d("imageView", tasks.get(0).toString());
+                        tasksItemAdapter.setTasks(tasks);
+                        tasksItemAdapter.notifyDataSetChanged();
+                    }
+                });
+                return true;
+            }
+        });
+        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                taskLiveData.removeObservers(getViewLifecycleOwner());
+                taskLiveData = homeViewModel.getAllTaskLiveDataByUidInDB();
+                taskLiveData.observe(getViewLifecycleOwner(), new Observer<List<Task>>() {
+                    @Override
+                    public void onChanged(List<Task> tasks) {
+                        tasksItemAdapter.setTasks(tasks);
+                        tasksItemAdapter.notifyDataSetChanged();
+                    }
+                });
+                return false;
+            }
+        });
+        homeFragmentBinding.homeFragmentToolBar.setOnMenuItemClickListener(new MaterialToolbar.OnMenuItemClickListener() {
+            @SuppressLint("NonConstantResourceId")
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.more: {
+                        Log.d("imageView", "onMenuItemClick: more");
+                        break;
+                    }
+                    default:{
+                        break;
+                    }
+                }
+                return false;
             }
         });
     }
@@ -244,5 +309,24 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 break;
             }
         }
+    }
+
+    //下拉刷新
+    @Override
+    public void onRefresh() {
+        homeFragmentBinding.homeFragmentSwipeRefreshLayout.setRefreshing(true);
+        homeViewModel.getAllTaskByUidInServer().observe(getViewLifecycleOwner(), new Observer<ReturnData<ReturnListObject<Task>>>() {
+            @Override
+            public void onChanged(ReturnData<ReturnListObject<Task>> returnListObjectReturnData) {
+                if (returnListObjectReturnData.getCode() == RCodeEnum.OK.getCode()) {
+                    if (tasksItemAdapter.getItemCount() != returnListObjectReturnData.getData().getTotal()) {
+                        tasksItemAdapter.setTasks(returnListObjectReturnData.getData().getItems());
+                        tasksItemAdapter.notifyDataSetChanged();
+                    }
+                    Toast.makeText(getContext(),"刷新成功",Toast.LENGTH_SHORT).show();
+                }
+                homeFragmentBinding.homeFragmentSwipeRefreshLayout.setRefreshing(false);
+            }
+        });
     }
 }

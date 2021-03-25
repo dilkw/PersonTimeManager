@@ -31,8 +31,8 @@ public interface BillDao {
     public Long[] addBills(Bill... bills);
 
     //根据任务内容进行模糊查询出所有相关任务
-    @Query("SELECT * FROM bill WHERE content like :pattern")
-    public LiveData<List<Bill>> getAllBillByContentByPattern(String pattern);
+    @Query("SELECT * FROM bill WHERE uid = :uid and content like :pattern")
+    public LiveData<List<Bill>> getAllBillByContentByPattern(String pattern,String uid);
 
     //根据任务内容进行模糊查询出所有相关任务
     @Query("SELECT * FROM bill WHERE category = :category")

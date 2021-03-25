@@ -36,6 +36,7 @@ import com.demo.androidapp.model.common.RCodeEnum;
 import com.demo.androidapp.model.common.ReturnData;
 import com.demo.androidapp.model.entity.Bill;
 import com.demo.androidapp.model.entity.Clock;
+import com.demo.androidapp.model.returnObject.ReturnListObject;
 import com.demo.androidapp.view.myView.AddBillDialog;
 import com.demo.androidapp.view.myView.AddClockDialog;
 import com.demo.androidapp.view.myView.adapter.BillItemAdapter;
@@ -58,7 +59,7 @@ public class BillFragment extends Fragment implements View.OnClickListener {
 
     private BillItemAdapter billItemAdapter;
 
-    private MutableLiveData<ReturnData<List<Bill>>> billsLiveData;
+    private LiveData<List<Bill>> billsLiveData;
 
     private AppBarConfiguration appBarConfiguration;
 
@@ -71,15 +72,13 @@ public class BillFragment extends Fragment implements View.OnClickListener {
                              @Nullable Bundle savedInstanceState) {
         billFragmentBinding = DataBindingUtil.inflate(inflater,R.layout.bill_fragment,container,false);
         billViewModel = new ViewModelProvider(this).get(BillViewModel.class);
-        View view = billFragmentBinding.getRoot();
-        Log.d("imageView", "onCreateView: " + view.getClass().getSimpleName());
         fragmentManager = requireActivity().getSupportFragmentManager();
         navHostFragment = (NavHostFragment)fragmentManager.findFragmentById(R.id.fragment);
         assert navHostFragment != null;
         controller = navHostFragment.getNavController();
         appBarConfiguration = new AppBarConfiguration.Builder(controller.getGraph()).build();
         NavigationUI.setupWithNavController(billFragmentBinding.billFragmentToolBar,controller,appBarConfiguration);
-        return view;
+        return billFragmentBinding.getRoot();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -89,15 +88,14 @@ public class BillFragment extends Fragment implements View.OnClickListener {
         billItemAdapter = new BillItemAdapter((List<Bill>)(new ArrayList<Bill>()));
         billFragmentBinding.billRecyclerView.setLayoutManager(new LinearLayoutManager(requireActivity()));
         billFragmentBinding.billRecyclerView.setAdapter(billItemAdapter);
-        billsLiveData = billViewModel.getReturnLiveData();
-        billViewModel.getAllBillsInServer();
-        billsLiveData.observe(getViewLifecycleOwner(), new Observer<ReturnData<List<Bill>>>() {
+        billViewModel.getAllBillsInServer().observe(getViewLifecycleOwner(), new Observer<ReturnData<ReturnListObject<Bill>>>() {
             @SuppressLint("ShowToast")
             @Override
-            public void onChanged(ReturnData<List<Bill>> listReturnData) {
+            public void onChanged(ReturnData<ReturnListObject<Bill>> listReturnData) {
                 RCodeEnum rCodeEnum = RCodeEnum.returnRCodeEnumByCode(listReturnData.getCode());
                 if (rCodeEnum == RCodeEnum.OK) {
-                    billItemAdapter.setBills(listReturnData.getData());
+                    billItemAdapter.setBills(listReturnData.getData().getItems());
+                    billViewModel.deleteALLBillsAndAdd(listReturnData.getData().getItems());
                 }else {
                     Toast.makeText(getContext(),rCodeEnum.getMessage(),Toast.LENGTH_SHORT);
                 }
@@ -105,40 +103,6 @@ public class BillFragment extends Fragment implements View.OnClickListener {
             }
         });
         setListener();
-    }
-
-    @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.billfragment_bar,menu);
-        SearchView searchView = (SearchView) menu.findItem(R.id.billSearch).getActionView();
-        searchView.setMaxWidth(500);
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                Log.d("imageView", "onQueryTextChange:");
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                Log.d("imageView", "onQueryTextChange:");
-                billsLiveData.removeObservers(getViewLifecycleOwner());
-                billViewModel.getBillsLiveDataByContent(newText.trim()).observe(getViewLifecycleOwner(), new Observer<List<Bill>>() {
-                    @Override
-                    public void onChanged(List<Bill> bills) {
-                        Log.d("imageView", "onChanged: 查找返回" + bills.size());
-                        billItemAdapter.setBills(bills);
-                    }
-                });
-                return true;
-            }
-        });
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        return super.onOptionsItemSelected(item);
     }
 
     public void setListener() {
@@ -157,9 +121,8 @@ public class BillFragment extends Fragment implements View.OnClickListener {
         });
         billItemAdapter.setItemOnClickListener(new BillItemAdapter.ItemOnClickListener() {
             @Override
-            public void itemOnClick(int position) {
-                Log.d("imageView", "setListener: " + billsLiveData.getValue().getData().get(position).toString());
-                AddBillDialog addBillDialog = new AddBillDialog(billsLiveData.getValue().getData().get(position));
+            public void itemOnClick(Bill bill,int position) {
+                AddBillDialog addBillDialog = new AddBillDialog(bill);
                 addBillDialog.setEnterClicked(new AddBillDialog.EnterListener() {
                     @RequiresApi(api = Build.VERSION_CODES.O)
                     @Override
@@ -173,6 +136,48 @@ public class BillFragment extends Fragment implements View.OnClickListener {
         });
 
         //导航栏Menu菜单监听事件
+        //导航栏Menu菜单，搜索框监听事件
+        SearchView searchView = (SearchView) (billFragmentBinding.billFragmentToolBar.getMenu().findItem(R.id.billSearch).getActionView());
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                Log.d("imageView", "onQueryTextChange:");
+                billsLiveData.removeObservers(getViewLifecycleOwner());
+                billsLiveData = billViewModel.getBillsLiveDataByContentInDB(newText);
+                billsLiveData.observe(getViewLifecycleOwner(), new Observer<List<Bill>>() {
+                    @Override
+                    public void onChanged(List<Bill> bills) {
+                        if (bills == null || bills.size() == 0) {
+                            return;
+                        }
+                        Log.d("imageView", bills.get(0).toString());
+                        billItemAdapter.setBills(bills);
+                        billItemAdapter.notifyDataSetChanged();
+                    }
+                });
+                return true;
+            }
+        });
+        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                billsLiveData.removeObservers(getViewLifecycleOwner());
+                billsLiveData = billViewModel.getAllBillLiveDataInDB();
+                billsLiveData.observe(getViewLifecycleOwner(), new Observer<List<Bill>>() {
+                    @Override
+                    public void onChanged(List<Bill> bills) {
+                        billItemAdapter.setBills(bills);
+                        billItemAdapter.notifyDataSetChanged();
+                    }
+                });
+                return false;
+            }
+        });
         billFragmentBinding.billFragmentToolBar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @SuppressLint("NonConstantResourceId")
@@ -189,6 +194,9 @@ public class BillFragment extends Fragment implements View.OnClickListener {
                             }
                         });
                         addBillDialog.show(fragmentManager,"addBillDialogByMenu");
+                        break;
+                    }
+                    default:{
                         break;
                     }
                 }

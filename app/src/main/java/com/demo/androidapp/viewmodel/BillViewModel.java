@@ -12,6 +12,7 @@ import com.demo.androidapp.model.common.RCodeEnum;
 import com.demo.androidapp.model.common.ReturnData;
 import com.demo.androidapp.model.entity.Bill;
 import com.demo.androidapp.model.entity.Clock;
+import com.demo.androidapp.model.returnObject.ReturnListObject;
 import com.demo.androidapp.repository.BillRepository;
 import com.demo.androidapp.repository.ClockRepository;
 
@@ -34,18 +35,18 @@ public class BillViewModel extends AndroidViewModel {
     }
 
     //云端获取bill
-    public void getAllBillsInServer() {
-        billRepository.getBillLiveDataInServer();
+    public LiveData<ReturnData<ReturnListObject<Bill>>> getAllBillsInServer() {
+        return billRepository.getBillLiveDataInServer();
     }
 
     //本地数据库获取bill
-    public LiveData<List<Bill>> getBillLiveDataInDB() {
-        return billRepository.getBillLiveDataInDB();
+    public LiveData<List<Bill>> getAllBillLiveDataInDB() {
+        return billRepository.getAllBillLiveDataInDB();
     }
 
     //根据账单内容获取clockRepository中的returnLiveData
-    public LiveData<List<Bill>> getBillsLiveDataByContent(String s) {
-        return billRepository.getBillsLiveDataByContent(s);
+    public LiveData<List<Bill>> getBillsLiveDataByContentInDB(String content) {
+        return billRepository.getBillsLiveDataByContent(content);
     }
 
     //根据用户id从本地数据库清空该用户的时钟列表
@@ -100,6 +101,17 @@ public class BillViewModel extends AndroidViewModel {
         Log.d("imageView", "upDateBillInServer: " + bill.toString());
         if (bill == null) return new MutableLiveData<>(new ReturnData<>(RCodeEnum.DATA_ERROR));
         return billRepository.upDateBillInServer(bill);
+    }
+
+    //清空数据库中的时钟数据，并对添加新数据
+    public void deleteALLBillsAndAdd(List<Bill> bills) {
+        Log.d("imageView", "deleteAllTaskAndAddInDB: ");
+        if (bills == null || bills.size() == 0) {
+            return;
+        }
+        Bill[] clockArray = new Bill[bills.size()];
+        bills.toArray(clockArray);
+        billRepository.deleteALLBillsAndAdd(clockArray);
     }
 
 }

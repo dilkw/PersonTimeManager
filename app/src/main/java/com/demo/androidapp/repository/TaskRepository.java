@@ -80,6 +80,18 @@ public class TaskRepository {
         new GetAllTaskByUid(taskDao,returnDataLiveData).execute(uid);
     }
 
+    //根据uid在本地数据库中获取任务列表
+    public LiveData<List<Task>> getAllTaskLiveDataByUidInDB() {
+        String uid = MyApplication.getApplication().getUser().getUid();
+        return taskDao.getAllTaskLiveDataByUid(uid);
+    }
+
+    //根据uid在本地数据库中获取任务列表
+    public LiveData<List<Task>> getTasksLiveDataByPatternInDB(String pattern) {
+        String uid = MyApplication.getApplication().getUser().getUid();
+        return taskDao.getTasksByTaskByPattern("%" + pattern + "%",uid);
+    }
+
     //在本地数据库中删除数据
     public void deleteAllTaskByUidInDB(Task... tasks) {
         String uid = MyApplication.getApplication().getUser().getUid();
@@ -194,8 +206,9 @@ public class TaskRepository {
     }
 
 
-    private void deleteALLTasksAndAdd(Task ... tasks) {
-        new DeleteALLTasksAndAdd(taskDao,this).equals(tasks);
+    public void deleteALLTasksAndAdd(Task ... tasks) {
+        Log.d("imageView", "deleteAllTaskAndAddInDB: ");
+        new DeleteALLTasksAndAdd(taskDao,this).execute(tasks);
     }
     //删除并更新数据
     public static class DeleteALLTasksAndAdd extends AsyncTask<Task,Void,Void> {
@@ -205,6 +218,7 @@ public class TaskRepository {
         TaskRepository taskRepository;
 
         DeleteALLTasksAndAdd(TaskDao taskDao,TaskRepository taskRepository) {
+            Log.d("imageView", "deleteAllTaskAndAddInDB: ");
             this.taskDao = taskDao;
             this.taskRepository = taskRepository;
         }
@@ -213,6 +227,7 @@ public class TaskRepository {
 
         @Override
         protected Void doInBackground(Task... tasks) {
+            Log.d("imageView", "deleteAllTaskAndAddInDB:2 ");
             this.tasks = tasks;
             taskDao.deleteAllTasksByUid(MyApplication.getApplication().getUser().getUid());
             return null;
@@ -221,6 +236,7 @@ public class TaskRepository {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
+            Log.d("imageView", "deleteAllTaskAndAddInDB:3 ");
             taskRepository.addTasksToDB(tasks);
         }
     }

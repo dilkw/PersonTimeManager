@@ -36,8 +36,8 @@ public interface ClockDao {
     public Long[] addClocks(Clock... clocks);
 
     //根据时钟内容进行模糊查询出所有相关时钟
-    @Query("SELECT * FROM clock WHERE task like :pattern")
-    public LiveData<List<Clock>> getAllClockByByPattern(String pattern);
+    @Query("SELECT * FROM clock WHERE uid = :uid and task like :pattern")
+    public LiveData<List<Clock>> getAllClockByByPattern(String pattern,String uid);
 
     @Update
     void updateAllClockFromServers(Clock... clocks);

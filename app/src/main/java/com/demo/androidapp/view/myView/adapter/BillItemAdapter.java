@@ -124,7 +124,7 @@ public class BillItemAdapter extends RecyclerView.Adapter<BillItemAdapter.MyView
             @Override
             public void onClick(View v) {
                 if (itemOnClickListener == null) return;
-                itemOnClickListener.itemOnClick(position);
+                itemOnClickListener.itemOnClick(bill,position);
             }
         });
 
@@ -168,6 +168,6 @@ public class BillItemAdapter extends RecyclerView.Adapter<BillItemAdapter.MyView
 
     //item点击接口
     public interface ItemOnClickListener {
-        void itemOnClick(int position);
+        void itemOnClick(Bill bill,int position);
     }
 }

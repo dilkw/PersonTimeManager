@@ -19,8 +19,8 @@ import retrofit2.http.DELETE;
 public interface TaskDao {
 
     //根据uid查询出所有任务
-    @Query("SELECT * FROM task")
-    public LiveData<List<Task>> getAllTaskLiveDataByUid();
+    @Query("SELECT * FROM task WHERE uid = :uid")
+    public LiveData<List<Task>> getAllTaskLiveDataByUid(String uid);
 
     //根据uid查询出所有任务
     @Query("SELECT * FROM task")
@@ -35,8 +35,8 @@ public interface TaskDao {
     public Long[] addTasks(Task... tasks);
 
     //根据任务内容进行模糊查询出所有相关任务
-    @Query("SELECT * FROM task WHERE task like :pattern")
-    public List<Task> getAllTaskByTaskByPattern(String pattern);
+    @Query("SELECT * FROM task WHERE uid = :uid and task like :pattern")
+    public LiveData<List<Task>> getTasksByTaskByPattern(String pattern,String uid);
 
     @Update
     void updateAllTaskFromServers(Task...tasks);

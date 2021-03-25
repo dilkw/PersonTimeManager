@@ -162,7 +162,7 @@ public interface Api {
 
     //获取账单
     @GET("bill/list")
-    Call<ReturnData<ReturnListObject<Bill>>> getAllBills();
+    LiveData<ReturnData<ReturnListObject<Bill>>> getAllBills();
 
     //添加账单
     @POST("bill/add")
