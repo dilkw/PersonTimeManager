@@ -5,8 +5,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +19,6 @@ import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -35,10 +32,8 @@ import com.demo.androidapp.databinding.BillFragmentBinding;
 import com.demo.androidapp.model.common.RCodeEnum;
 import com.demo.androidapp.model.common.ReturnData;
 import com.demo.androidapp.model.entity.Bill;
-import com.demo.androidapp.model.entity.Clock;
 import com.demo.androidapp.model.returnObject.ReturnListObject;
 import com.demo.androidapp.view.myView.AddBillDialog;
-import com.demo.androidapp.view.myView.AddClockDialog;
 import com.demo.androidapp.view.myView.adapter.BillItemAdapter;
 import com.demo.androidapp.viewmodel.BillViewModel;
 
@@ -95,7 +90,7 @@ public class BillFragment extends Fragment implements View.OnClickListener {
                 RCodeEnum rCodeEnum = RCodeEnum.returnRCodeEnumByCode(listReturnData.getCode());
                 if (rCodeEnum == RCodeEnum.OK) {
                     billItemAdapter.setBills(listReturnData.getData().getItems());
-                    billViewModel.deleteALLBillsAndAdd(listReturnData.getData().getItems());
+                    billViewModel.deleteAllBillsAndAdd(listReturnData.getData().getItems());
                 }else {
                     Toast.makeText(getContext(),rCodeEnum.getMessage(),Toast.LENGTH_SHORT);
                 }

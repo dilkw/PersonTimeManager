@@ -12,20 +12,13 @@ import com.demo.androidapp.MyApplication;
 import com.demo.androidapp.api.Api;
 import com.demo.androidapp.db.AppDatabase;
 import com.demo.androidapp.db.BillDao;
-import com.demo.androidapp.db.ClockDao;
 import com.demo.androidapp.model.common.RCodeEnum;
 import com.demo.androidapp.model.common.ReturnData;
 import com.demo.androidapp.model.entity.Bill;
-import com.demo.androidapp.model.entity.Clock;
-import com.demo.androidapp.model.entity.Task;
 import com.demo.androidapp.model.returnObject.ReturnListObject;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class BillRepository {
 
@@ -84,9 +77,9 @@ public class BillRepository {
     }
 
     //在本地数据库中删除所有数据并更新数据
-    public void deleteALLBillsAndAdd(Bill... bills) {
+    public void deleteAllBillsAndAdd(Bill... bills) {
         Log.d("imageView", "getAllTaskByUidInDB: 数据库删除数据");
-        new DeleteALLBillsAndAdd(billDao,this).execute(bills);
+        new DeleteAllBillsAndAdd(billDao,this).execute(bills);
     }
 
     //在本地数据库中删除所有数据并更新数据
@@ -180,13 +173,13 @@ public class BillRepository {
     }
 
     //删除并更新数据
-    public static class DeleteALLBillsAndAdd extends AsyncTask<Bill,Void,Void> {
+    public static class DeleteAllBillsAndAdd extends AsyncTask<Bill,Void,Void> {
 
         BillDao billDao;
 
         BillRepository billRepository;
 
-        DeleteALLBillsAndAdd(BillDao billDao,BillRepository billRepository) {
+        DeleteAllBillsAndAdd(BillDao billDao, BillRepository billRepository) {
             this.billDao = billDao;
             this.billRepository = billRepository;
         }

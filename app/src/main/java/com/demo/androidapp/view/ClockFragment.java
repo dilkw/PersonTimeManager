@@ -16,7 +16,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
@@ -24,8 +23,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,9 +33,7 @@ import com.demo.androidapp.R;
 import com.demo.androidapp.databinding.ClockFragmentBinding;
 import com.demo.androidapp.model.common.RCodeEnum;
 import com.demo.androidapp.model.common.ReturnData;
-import com.demo.androidapp.model.entity.Bill;
 import com.demo.androidapp.model.entity.Clock;
-import com.demo.androidapp.model.entity.Task;
 import com.demo.androidapp.view.myView.AddClockDialog;
 import com.demo.androidapp.view.myView.adapter.ClockItemAdapter;
 import com.demo.androidapp.viewmodel.ClockViewModel;
@@ -102,7 +97,7 @@ public class ClockFragment extends Fragment implements View.OnClickListener {
                 if (listReturnData.getCode() == RCodeEnum.OK.getCode()) {
                     clockItemAdapter.setClocks(listReturnData.getData());
                     clockItemAdapter.notifyDataSetChanged();
-                    clockViewModel.deleteALLClocksAndAdd(listReturnData.getData());
+                    clockViewModel.deleteAllClocksAndAddInDB(listReturnData.getData());
                 }
             }
         });
@@ -115,6 +110,7 @@ public class ClockFragment extends Fragment implements View.OnClickListener {
         clockFragmentBinding.clockDeleteImageButton.setOnClickListener(this);
         clockFragmentBinding.clockAllSelectImageButton.setOnClickListener(this);
         clockFragmentBinding.clockMyFloatingActionButton.setOnClickListener(this);
+        //item长按时间
         clockItemAdapter.setItemLongOnClickListener(new ClockItemAdapter.ItemLongOnClickListener() {
             @Override
             public void itemLongOnClick() {
@@ -123,6 +119,7 @@ public class ClockFragment extends Fragment implements View.OnClickListener {
                 clockFragmentBinding.clockItemLongClickEditWindow.setVisibility(View.VISIBLE);
             }
         });
+        //item点击时间
         clockItemAdapter.setItemOnClickListener(new ClockItemAdapter.ItemOnClickListener() {
             @Override
             public void itemOnClick(Clock clock, int position) {
@@ -139,6 +136,7 @@ public class ClockFragment extends Fragment implements View.OnClickListener {
                 addClockDialog.show(fragmentManager,"editClockDialog");
             }
         });
+        //item中开始按钮点击事件
         clockItemAdapter.setItemStartOnClickListener(new ClockItemAdapter.ItemStartOnClickListener() {
             @Override
             public void itemStartOnClick(int position, long clockId) {
@@ -151,6 +149,7 @@ public class ClockFragment extends Fragment implements View.OnClickListener {
 
         //导航栏Menu菜单，搜索框监听事件
         SearchView searchView = (SearchView) (clockFragmentBinding.clockFragmentToolBar.getMenu().findItem(R.id.clockSearch).getActionView());
+        //导航栏查询监听
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -192,6 +191,7 @@ public class ClockFragment extends Fragment implements View.OnClickListener {
             }
         });
 
+        //对menu菜单设置监听
         clockFragmentBinding.clockFragmentToolBar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @SuppressLint("NonConstantResourceId")
@@ -276,6 +276,7 @@ public class ClockFragment extends Fragment implements View.OnClickListener {
         }
     }
 
+    //添加时钟
     private void addClock(Clock clock) {
         clockViewModel.addClockToServer(clock).observe(getViewLifecycleOwner(), new Observer<ReturnData<Clock>>() {
             @Override
@@ -293,6 +294,7 @@ public class ClockFragment extends Fragment implements View.OnClickListener {
         });
     }
 
+    //更新时钟
     private void upDateClock(Clock clock,int position) {
         clockViewModel.upDateClocksInServer(clock).observe(getViewLifecycleOwner(), new Observer<ReturnData<Object>>() {
             @Override

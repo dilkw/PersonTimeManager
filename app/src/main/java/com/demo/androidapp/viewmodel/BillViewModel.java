@@ -11,10 +11,8 @@ import androidx.lifecycle.MutableLiveData;
 import com.demo.androidapp.model.common.RCodeEnum;
 import com.demo.androidapp.model.common.ReturnData;
 import com.demo.androidapp.model.entity.Bill;
-import com.demo.androidapp.model.entity.Clock;
 import com.demo.androidapp.model.returnObject.ReturnListObject;
 import com.demo.androidapp.repository.BillRepository;
-import com.demo.androidapp.repository.ClockRepository;
 
 import java.util.Arrays;
 import java.util.List;
@@ -104,14 +102,14 @@ public class BillViewModel extends AndroidViewModel {
     }
 
     //清空数据库中的时钟数据，并对添加新数据
-    public void deleteALLBillsAndAdd(List<Bill> bills) {
+    public void deleteAllBillsAndAdd(List<Bill> bills) {
         Log.d("imageView", "deleteAllTaskAndAddInDB: ");
         if (bills == null || bills.size() == 0) {
             return;
         }
         Bill[] clockArray = new Bill[bills.size()];
         bills.toArray(clockArray);
-        billRepository.deleteALLBillsAndAdd(clockArray);
+        billRepository.deleteAllBillsAndAdd(clockArray);
     }
 
 }

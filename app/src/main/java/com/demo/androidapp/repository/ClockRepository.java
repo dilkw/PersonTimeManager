@@ -12,15 +12,11 @@ import com.demo.androidapp.MyApplication;
 import com.demo.androidapp.api.Api;
 import com.demo.androidapp.db.AppDatabase;
 import com.demo.androidapp.db.ClockDao;
-import com.demo.androidapp.db.TaskDao;
 import com.demo.androidapp.model.common.RCodeEnum;
 import com.demo.androidapp.model.common.ReturnData;
-import com.demo.androidapp.model.entity.Bill;
 import com.demo.androidapp.model.entity.Clock;
-import com.demo.androidapp.model.entity.Task;
 import com.demo.androidapp.model.returnObject.ReturnListObject;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -60,7 +56,7 @@ public class ClockRepository {
                 if (response.body().getData().getTotal() > 0) {
                     Clock[] clocks = new Clock[response.body().getData().getTotal()];
                     response.body().getData().getItems().toArray(clocks);
-                    deleteALLClocksAndAdd(clocks);
+                    deleteAllClocksAndAdd(clocks);
                 }
             }
 
@@ -192,17 +188,17 @@ public class ClockRepository {
     }
 
     //删除并更新数据
-    public void deleteALLClocksAndAdd(Clock... clocks) {
-        new DeleteALLClocksAndAdd(clockDao,this).equals(clocks);
+    public void deleteAllClocksAndAdd(Clock... clocks) {
+        new DeleteAllClocksAndAdd(clockDao,this).equals(clocks);
     }
     //删除并更新数据
-    public static class DeleteALLClocksAndAdd extends AsyncTask<Clock,Void,Void> {
+    public static class DeleteAllClocksAndAdd extends AsyncTask<Clock,Void,Void> {
 
         ClockDao clockDao;
 
         ClockRepository clockRepository;
 
-        DeleteALLClocksAndAdd(ClockDao clockDao,ClockRepository clockRepository) {
+        DeleteAllClocksAndAdd(ClockDao clockDao, ClockRepository clockRepository) {
             this.clockDao = clockDao;
             this.clockRepository = clockRepository;
         }
