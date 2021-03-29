@@ -78,12 +78,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Swi
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-    }
-
-    @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         Log.d("imageView", "onCreateView0: ");
@@ -191,7 +185,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Swi
             @Override
             public boolean onQueryTextChange(String newText) {
                 Log.d("imageView", "onQueryTextChange:");
-                taskLiveData.removeObservers(getViewLifecycleOwner());
+                if (taskLiveData != null && taskLiveData.hasObservers()) {
+                    taskLiveData.removeObservers(getViewLifecycleOwner());
+                }
                 taskLiveData = homeViewModel.getTasksLiveDataByPatternInDB(newText);
                 taskLiveData.observe(getViewLifecycleOwner(), new Observer<List<Task>>() {
                     @Override
@@ -210,7 +206,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Swi
         searchView.setOnCloseListener(new SearchView.OnCloseListener() {
             @Override
             public boolean onClose() {
-                taskLiveData.removeObservers(getViewLifecycleOwner());
+                if (taskLiveData != null && taskLiveData.hasObservers()) {
+                    taskLiveData.removeObservers(getViewLifecycleOwner());
+                }
                 taskLiveData = homeViewModel.getAllTaskLiveDataByUidInDB();
                 taskLiveData.observe(getViewLifecycleOwner(), new Observer<List<Task>>() {
                     @Override

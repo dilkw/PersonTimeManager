@@ -20,6 +20,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -35,6 +36,8 @@ import com.demo.androidapp.model.common.RCodeEnum;
 import com.demo.androidapp.model.common.ReturnData;
 import com.demo.androidapp.model.entity.Bill;
 import com.demo.androidapp.model.entity.Friend;
+import com.demo.androidapp.model.entity.Task;
+import com.demo.androidapp.model.returnObject.ReturnListObject;
 import com.demo.androidapp.view.myView.AddBillDialog;
 import com.demo.androidapp.view.myView.AddFriendDialog;
 import com.demo.androidapp.view.myView.adapter.BillItemAdapter;
@@ -58,7 +61,7 @@ public class FriendFragment extends Fragment implements View.OnClickListener {
 
     private FriendItemAdapter friendItemAdapter;
 
-    private MutableLiveData<ReturnData<List<Friend>>> friendsLiveData;
+    private LiveData<List<Friend>> friendsLiveData;
 
     private AppBarConfiguration appBarConfiguration;
 
@@ -71,15 +74,13 @@ public class FriendFragment extends Fragment implements View.OnClickListener {
                              @Nullable Bundle savedInstanceState) {
         friendFragmentBinding = DataBindingUtil.inflate(inflater,R.layout.friend_fragment,container,false);
         friendViewModel = new ViewModelProvider(this).get(FriendViewModel.class);
-        View view = friendFragmentBinding.getRoot();
-        Log.d("imageView", "onCreateView: " + view.getClass().getSimpleName());
         fragmentManager = requireActivity().getSupportFragmentManager();
         navHostFragment = (NavHostFragment)fragmentManager.findFragmentById(R.id.fragment);
         assert navHostFragment != null;
         controller = navHostFragment.getNavController();
         appBarConfiguration = new AppBarConfiguration.Builder(controller.getGraph()).build();
         NavigationUI.setupWithNavController(friendFragmentBinding.friendFragmentToolBar,controller,appBarConfiguration);
-        return view;
+        return friendFragmentBinding.getRoot();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -89,15 +90,14 @@ public class FriendFragment extends Fragment implements View.OnClickListener {
         friendItemAdapter = new FriendItemAdapter((List<Friend>)(new ArrayList<Friend>()));
         friendFragmentBinding.friendRecyclerView.setLayoutManager(new LinearLayoutManager(requireActivity()));
         friendFragmentBinding.friendRecyclerView.setAdapter(friendItemAdapter);
-        friendsLiveData = friendViewModel.getReturnLiveData();
         friendViewModel.getAllFriendsInServer();
-        friendsLiveData.observe(getViewLifecycleOwner(), new Observer<ReturnData<List<Friend>>>() {
+        friendViewModel.getAllFriendsLiveDataInServer().observe(getViewLifecycleOwner(), new Observer<ReturnData<ReturnListObject<Friend>>>() {
             @SuppressLint("ShowToast")
             @Override
-            public void onChanged(ReturnData<List<Friend>> listReturnData) {
+            public void onChanged(ReturnData<ReturnListObject<Friend>> listReturnData) {
                 RCodeEnum rCodeEnum = RCodeEnum.returnRCodeEnumByCode(listReturnData.getCode());
                 if (rCodeEnum == RCodeEnum.OK) {
-                    friendItemAdapter.setFriends(listReturnData.getData());
+                    friendItemAdapter.setFriends(listReturnData.getData().getItems());
                 }else {
                     Toast.makeText(getContext(),rCodeEnum.getMessage(),Toast.LENGTH_SHORT);
                 }
@@ -106,41 +106,6 @@ public class FriendFragment extends Fragment implements View.OnClickListener {
         });
         setListener();
     }
-
-    @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.billfragment_bar,menu);
-        SearchView searchView = (SearchView) menu.findItem(R.id.billSearch).getActionView();
-        searchView.setMaxWidth(500);
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                Log.d("imageView", "onQueryTextChange:");
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                Log.d("imageView", "onQueryTextChange:");
-                friendsLiveData.removeObservers(getViewLifecycleOwner());
-                friendViewModel.getAllFriendsInDBByFName(newText.trim()).observe(getViewLifecycleOwner(), new Observer<List<Friend>>() {
-                    @Override
-                    public void onChanged(List<Friend> friends) {
-                        Log.d("imageView", "onChanged: 查找返回" + friends.size());
-                        friendItemAdapter.setFriends(friends);
-                    }
-                });
-                return true;
-            }
-        });
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        return super.onOptionsItemSelected(item);
-    }
-
     public void setListener() {
         Log.d("imageView", "setListener: ");
         friendFragmentBinding.friendCancelImageButton.setOnClickListener(this);
@@ -162,6 +127,53 @@ public class FriendFragment extends Fragment implements View.OnClickListener {
                 bundle.putLong("fid",id);
                 bundle.putString("fuid",fuid);
                 controller.navigate(R.id.action_friendFragment_to_friendInfoFragment,bundle);
+            }
+        });
+
+        SearchView searchView = (SearchView) (friendFragmentBinding.friendFragmentToolBar.getMenu().findItem(R.id.friendSearch).getActionView());
+        searchView.setMaxWidth(500);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                Log.d("imageView", "onQueryTextChange:");
+                if (friendsLiveData != null && friendsLiveData.hasObservers()) {
+                    friendsLiveData.removeObservers(getViewLifecycleOwner());
+                }
+                friendsLiveData = friendViewModel.getAllFriendsInDBByFName(newText);
+                friendsLiveData.observe(getViewLifecycleOwner(), new Observer<List<Friend>>() {
+                    @Override
+                    public void onChanged(List<Friend> friends) {
+                        if (friends == null || friends.size() == 0) {
+                            return;
+                        }
+                        Log.d("imageView", friends.get(0).toString());
+                        friendItemAdapter.setFriends(friends);
+                        friendItemAdapter.notifyDataSetChanged();
+                    }
+                });
+                return true;
+            }
+        });
+        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                if (friendsLiveData != null && friendsLiveData.hasObservers()) {
+                    friendsLiveData.removeObservers(getViewLifecycleOwner());
+                }
+                friendsLiveData = friendViewModel.getAllFriendsInDB();
+                friendsLiveData.observe(getViewLifecycleOwner(), new Observer<List<Friend>>() {
+                    @Override
+                    public void onChanged(List<Friend> friends) {
+                        friendItemAdapter.setFriends(friends);
+                        friendItemAdapter.notifyDataSetChanged();
+                    }
+                });
+                return false;
             }
         });
 

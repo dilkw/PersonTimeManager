@@ -4,16 +4,16 @@
 
     <!--task-->
     <item
+        android:id="@+id/friendSearch"
+        android:icon="@drawable/ic_search_black_24dp"
+        android:title="friendSearch"
+        app:actionViewClass="android.widget.SearchView"
+        app:showAsAction="always"/>
+    <item
         android:id="@+id/friendAdd"
         android:icon="@drawable/ic_addclock_btnic_24"
         android:title="添加好友"
         android:contentDescription="@string/addTask_DeleteImgContentDescription"
         app:showAsAction="ifRoom" />
-
-<!--    <item-->
-<!--        android:id="@+id/more"-->
-<!--        android:title="454f5d6s"-->
-<!--        android:contentDescription="@string/addTask_DeleteImgContentDescription"-->
-<!--        app:showAsAction="never" />-->
 
 </menu>

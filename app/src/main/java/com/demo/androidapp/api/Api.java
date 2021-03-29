@@ -181,6 +181,10 @@ public interface Api {
     @GET("friend/list")
     Call<ReturnData<ReturnListObject<Friend>>> getAllFriends();
 
+    //获取好友
+    @GET("friend/list")
+    LiveData<ReturnData<ReturnListObject<Friend>>> getAllFriendsLiveData();
+
     //获取好友信息
     @GET("friend/info/{id}")
     LiveData<ReturnData<FriendListItem>> getFriendInfoByUid(@Path("id")String fuid);

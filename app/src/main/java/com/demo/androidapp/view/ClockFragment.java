@@ -159,7 +159,9 @@ public class ClockFragment extends Fragment implements View.OnClickListener {
             @Override
             public boolean onQueryTextChange(String newText) {
                 Log.d("imageView", "onQueryTextChange:");
-                clocksLiveData.removeObservers(getViewLifecycleOwner());
+                if (clocksLiveData != null && clocksLiveData.hasObservers()) {
+                    clocksLiveData.removeObservers(getViewLifecycleOwner());
+                }
                 clocksLiveData = clockViewModel.getClocksLiveDataByPatternInDB(newText);
                 clocksLiveData.observe(getViewLifecycleOwner(), new Observer<List<Clock>>() {
                     @Override
@@ -178,7 +180,9 @@ public class ClockFragment extends Fragment implements View.OnClickListener {
         searchView.setOnCloseListener(new SearchView.OnCloseListener() {
             @Override
             public boolean onClose() {
-                clocksLiveData.removeObservers(getViewLifecycleOwner());
+                if (clocksLiveData != null && clocksLiveData.hasObservers()) {
+                    clocksLiveData.removeObservers(getViewLifecycleOwner());
+                }
                 clocksLiveData = clockViewModel.getAllClocksLiveDataInDB();
                 clocksLiveData.observe(getViewLifecycleOwner(), new Observer<List<Clock>>() {
                     @Override

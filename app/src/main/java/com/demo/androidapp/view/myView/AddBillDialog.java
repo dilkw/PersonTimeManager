@@ -64,8 +64,10 @@ public class AddBillDialog extends DialogFragment implements View.OnClickListene
         addBillDialogBinding = DataBindingUtil.inflate(LayoutInflater.from(requireContext()),R.layout.addbill_dialog,null,false);
         View contentView = addBillDialogBinding.getRoot();
         String dialogTitle = "添加账单";
+        //判断是编辑账单还是添加账单
         if (!isAdd) {
             dialogTitle = "编辑账单";
+            addBillDialogBinding.addBillEnterBtn.setText("保存");
             addBillDialogBinding.addBillDialogContentTextInputEditText.setText(bill.getContent());
             addBillDialogBinding.addBillDialogMoneyTextInputEditText.setText(bill.getAmount() + "");
             addBillDialogBinding.inComeToggleButton.setChecked(bill.isCategory());
@@ -101,7 +103,7 @@ public class AddBillDialog extends DialogFragment implements View.OnClickListene
                 break;
             }
             case R.id.addBillDialogAddConsumeTimeImgBtn: {
-                DateTimePickerDialog dateTimePickerDialog = new DateTimePickerDialog();
+                DateTimePickerDialog dateTimePickerDialog = new DateTimePickerDialog(false);
                 dateTimePickerDialog.show(requireActivity().getSupportFragmentManager(),"addConsumeTimeDialog");
                 dateTimePickerDialog.setEnterClicked(new DateTimePickerDialog.EnterListener() {
                     @Override

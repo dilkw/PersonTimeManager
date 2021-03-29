@@ -24,6 +24,7 @@ import com.demo.androidapp.util.DateTimeUtil;
 import java.sql.Date;
 import java.time.LocalDateTime;
 import java.util.Calendar;
+import java.util.Objects;
 
 public class DateTimePickerDialog extends DialogFragment {
 
@@ -31,11 +32,18 @@ public class DateTimePickerDialog extends DialogFragment {
 
     private EnterListener enterListener;
 
-    private Date selectedDate;
-
     private boolean btnIsEnable = false;
 
-    private int createYear, createMonthOfYear, createDayOfMonth,createHour, createMinute;
+    private boolean hasMinDate = true;
+
+    private LocalDateTime localDateTime;
+
+    public DateTimePickerDialog() {
+    }
+
+    public DateTimePickerDialog(boolean hasMinDate) {
+        this.hasMinDate = hasMinDate;
+    }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -52,54 +60,67 @@ public class DateTimePickerDialog extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        LocalDateTime localDateTime = LocalDateTime.now();
-        createYear = localDateTime.getYear();;
-        createMonthOfYear = localDateTime.getMonthValue();
-        createDayOfMonth = localDateTime.getDayOfMonth();
-        createHour = localDateTime.getHour();
-        createMinute = localDateTime.getMinute();
-        Log.d("imageView", "onDateChanged: 创建" + createMonthOfYear + "-" + createDayOfMonth );
+        initView();
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        datetimepickerBinding = DataBindingUtil.inflate(LayoutInflater.from(requireContext()),R.layout.datetimepicker,null,false);
-        setListener();
-        datetimepickerBinding.timePicker.setIs24HourView(true);
-        datetimepickerBinding.datePicker.setMinDate(DateTimeUtil.localDateTimeToLong(localDateTime));
-        datetimepickerBinding.timePicker.setHour(createHour);
-        datetimepickerBinding.timePicker.setMinute(createMinute);
-        datetimepickerBinding.timePickerEnterBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                enterListener.enterBtnOnClicked(getSelectTimeString());
-                getDialog().dismiss();
-            }
-        });
         builder.setView(datetimepickerBinding.getRoot());
         return builder.create();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
+    private void initView() {
+        localDateTime = LocalDateTime.now();
+        datetimepickerBinding = DataBindingUtil.inflate(LayoutInflater.from(requireContext()),R.layout.datetimepicker,null,false);
+        datetimepickerBinding.timePicker.setIs24HourView(true);
+        datetimepickerBinding.timePicker.setHour(localDateTime.getHour());
+        //判断是否有最小时间限制
+        if (hasMinDate) {
+            datetimepickerBinding.timePicker.setMinute(localDateTime.getMinute());
+        }else {
+            datetimepickerBinding.timePickerEnterBtn.setEnabled(true);
+        }
+        setListener();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void setListener() {
-        datetimepickerBinding.datePicker.setOnDateChangedListener(new DatePicker.OnDateChangedListener() {
-            @Override
-            public void onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                Log.d("imageView", "onDateChanged: " + monthOfYear + "-" + dayOfMonth );
-                btnIsEnable = (year > createYear || monthOfYear + 1 > createDayOfMonth || dayOfMonth > createDayOfMonth);
-                datetimepickerBinding.timePickerEnterBtn.setEnabled(btnIsEnable);
-            }
-        });
 
-        datetimepickerBinding.timePicker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
-            @Override
-            public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
-                Log.d("imageView", "onDateChanged: " + hourOfDay + "-" + minute );
-                datetimepickerBinding.timePickerEnterBtn.setEnabled(btnIsEnable || (hourOfDay > createHour || (hourOfDay == createHour && (minute >= createMinute))));
-            }
-        });
+        //判断是否有最小时间限制
+        if (hasMinDate) {
 
+            //datePicker选择监听
+            datetimepickerBinding.datePicker.setOnDateChangedListener(new DatePicker.OnDateChangedListener() {
+                @Override
+                public void onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                    Log.d("imageView", "onDateChanged: " + year + "-" + monthOfYear + "-" + dayOfMonth);
+                    datetimepickerBinding.timePickerEnterBtn.setEnabled(compareDate());
+                }
+            });
+
+            //timePicker选择监听
+            datetimepickerBinding.timePicker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
+                @Override
+                public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
+                    Log.d("imageView", "onDateChanged: " + hourOfDay + "-" + minute);
+                    datetimepickerBinding.timePickerEnterBtn.setEnabled(compareDate());
+                }
+            });
+
+        }
+
+        //弹窗关闭监听事件
         datetimepickerBinding.dateTimePickerCloseImgBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getDialog().dismiss();
+                Objects.requireNonNull(getDialog()).dismiss();
+            }
+        });
+
+        //确定选择时间监听事件
+        datetimepickerBinding.timePickerEnterBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                enterListener.enterBtnOnClicked(getSelectTimeString());
+                Objects.requireNonNull(getDialog()).dismiss();
             }
         });
     }
@@ -112,6 +133,7 @@ public class DateTimePickerDialog extends DialogFragment {
         enterListener = enterClicked;
     }
 
+    //将选择的时间转成String类型
     @RequiresApi(api = Build.VERSION_CODES.O)
     public String getSelectTimeString() {
         int year,moth,day,hour,minute;
@@ -123,6 +145,7 @@ public class DateTimePickerDialog extends DialogFragment {
         return DateTimeUtil.intToStrDateTime(year,moth,day,hour,minute);
     }
 
+    //将选择的时间转成LocalDateTime类型
     @RequiresApi(api = Build.VERSION_CODES.O)
     public LocalDateTime getSelectedDate() {
         int year,moth,day,hour,minute;
@@ -134,6 +157,7 @@ public class DateTimePickerDialog extends DialogFragment {
         return DateTimeUtil.intToLocalDateTime(year,moth,day,hour,minute);
     }
 
+    //将选择的时间转成时间戳long类型
     @RequiresApi(api = Build.VERSION_CODES.O)
     public long getSelectedDateToLong() {
         int year,moth,day,hour,minute;
@@ -143,6 +167,17 @@ public class DateTimePickerDialog extends DialogFragment {
         hour = datetimepickerBinding.timePicker.getHour();
         minute = datetimepickerBinding.timePicker.getMinute();
         return DateTimeUtil.intToLong(year,moth,day,hour,minute);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private boolean compareDate() {
+        int year,moth,day,hour,minute;
+        year = datetimepickerBinding.datePicker.getYear();
+        moth = datetimepickerBinding.datePicker.getMonth() + 1;
+        day = datetimepickerBinding.datePicker.getDayOfMonth();
+        hour = datetimepickerBinding.timePicker.getHour();
+        minute = datetimepickerBinding.timePicker.getMinute();
+        return localDateTime.compareTo(DateTimeUtil.intToLocalDateTime(year,moth,day,hour,minute)) <= 0;
     }
 
 }

@@ -63,8 +63,10 @@ public class AddClockDialog extends DialogFragment implements View.OnClickListen
         addclockDialogBinding = DataBindingUtil.inflate(LayoutInflater.from(requireContext()),R.layout.addclock_dialog,null,false);
         View contentView = addclockDialogBinding.getRoot();
         String dialogTitle = "添加时钟";
+        //判断是编辑时钟还是添加时钟
         if (!isAdd) {
             dialogTitle = "编辑时钟";
+            addclockDialogBinding.addClockEnterBtn.setText("保存");
             addclockDialogBinding.addClockDialogTaskTextInputEditText.setText(clock.getTask());
             addclockDialogBinding.addClockDialogMinuteTextInputEditText.setText("" + clock.getClock_minute());
 

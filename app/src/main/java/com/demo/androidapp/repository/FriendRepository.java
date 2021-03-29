@@ -98,6 +98,11 @@ public class FriendRepository {
         });
     }
 
+    //根据cookie在服务器中获取好友列表,cookie在发送请求的时候自动添加到header中
+    public LiveData<ReturnData<ReturnListObject<Friend>>> getAllFriendsLiveDataByUidInServer() {
+        return api.getAllFriendsLiveData();
+    }
+
     //根据uid在本地数据库中获取好友列表
     public LiveData<List<Friend>> getAllFriendsByUidInDB() {
         String uid = MyApplication.getApplication().getUser().getUid();;

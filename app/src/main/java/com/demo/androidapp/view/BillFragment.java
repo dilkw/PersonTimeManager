@@ -133,6 +133,7 @@ public class BillFragment extends Fragment implements View.OnClickListener {
         //导航栏Menu菜单监听事件
         //导航栏Menu菜单，搜索框监听事件
         SearchView searchView = (SearchView) (billFragmentBinding.billFragmentToolBar.getMenu().findItem(R.id.billSearch).getActionView());
+        searchView.setMaxWidth(500);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -142,7 +143,9 @@ public class BillFragment extends Fragment implements View.OnClickListener {
             @Override
             public boolean onQueryTextChange(String newText) {
                 Log.d("imageView", "onQueryTextChange:");
-                billsLiveData.removeObservers(getViewLifecycleOwner());
+                if (billsLiveData != null && billsLiveData.hasObservers()) {
+                    billsLiveData.removeObservers(getViewLifecycleOwner());
+                }
                 billsLiveData = billViewModel.getBillsLiveDataByContentInDB(newText);
                 billsLiveData.observe(getViewLifecycleOwner(), new Observer<List<Bill>>() {
                     @Override
@@ -161,7 +164,9 @@ public class BillFragment extends Fragment implements View.OnClickListener {
         searchView.setOnCloseListener(new SearchView.OnCloseListener() {
             @Override
             public boolean onClose() {
-                billsLiveData.removeObservers(getViewLifecycleOwner());
+                if (billsLiveData != null && billsLiveData.hasObservers()) {
+                    billsLiveData.removeObservers(getViewLifecycleOwner());
+                }
                 billsLiveData = billViewModel.getAllBillLiveDataInDB();
                 billsLiveData.observe(getViewLifecycleOwner(), new Observer<List<Bill>>() {
                     @Override

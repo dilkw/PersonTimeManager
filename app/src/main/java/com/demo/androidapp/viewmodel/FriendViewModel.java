@@ -12,6 +12,7 @@ import com.demo.androidapp.model.common.RCodeEnum;
 import com.demo.androidapp.model.common.ReturnData;
 import com.demo.androidapp.model.entity.Bill;
 import com.demo.androidapp.model.entity.Friend;
+import com.demo.androidapp.model.returnObject.ReturnListObject;
 import com.demo.androidapp.repository.FriendRepository;
 
 import java.util.Arrays;
@@ -35,6 +36,11 @@ public class FriendViewModel extends AndroidViewModel {
     //云端获取Friends
     public void getAllFriendsInServer() {
         friendRepository.getAllFriendsByUidInServer();
+    }
+
+    //云端获取Friends
+    public LiveData<ReturnData<ReturnListObject<Friend>>> getAllFriendsLiveDataInServer() {
+        return friendRepository.getAllFriendsLiveDataByUidInServer();
     }
 
     //数据库获取Friends
