@@ -1,28 +1,19 @@
 package com.demo.androidapp.api.impl;
 
-import android.util.Log;
-
 import com.demo.androidapp.api.Api;
 import com.demo.androidapp.api.LiveDataCallAdapterFactory;
 import com.demo.androidapp.util.InterceptorOfAddCookie;
 import com.demo.androidapp.util.InterceptorOfReceivedCookie;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
 import java.lang.reflect.Type;
 import java.sql.Date;
-import java.util.List;
 
-import okhttp3.Cookie;
-import okhttp3.CookieJar;
-import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -31,6 +22,7 @@ public class RetrofitClient {
 
     //private static final String BASE_URL = "https://sodacoco.com/api/v1/";
     private static final String BASE_URL = "http://192.168.1.11:8000/api/v1/";
+    //private static final String BASE_URL = "http://10.0.2.2:8000/api/v1/";
     private static RetrofitClient retrofitClient;
     private Retrofit retrofit;
     private OkHttpClient okHttpClient;

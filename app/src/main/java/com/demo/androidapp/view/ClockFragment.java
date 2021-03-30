@@ -9,6 +9,10 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.annotation.SuppressLint;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -29,6 +33,7 @@ import android.view.ViewGroup;
 import android.widget.SearchView;
 import android.widget.Toast;
 
+import com.demo.androidapp.MainActivity;
 import com.demo.androidapp.R;
 import com.demo.androidapp.databinding.ClockFragmentBinding;
 import com.demo.androidapp.model.common.RCodeEnum;
@@ -87,6 +92,7 @@ public class ClockFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
         clockItemAdapter = new ClockItemAdapter((List<Clock>)(new ArrayList<Clock>()));
         clockFragmentBinding.clockRecyclerView.setLayoutManager(new LinearLayoutManager(requireActivity()));
         clockFragmentBinding.clockRecyclerView.setAdapter(clockItemAdapter);
@@ -286,6 +292,9 @@ public class ClockFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onChanged(ReturnData<Clock> clockReturnData) {
                 if (clockReturnData.getCode() == RCodeEnum.OK.getCode()) {
+                    if (clock.isAlert()) {
+                        setAlertClockInOS(clock.getAlert_time(),clock.getId(),clock.getTask());
+                    }
                     Toast.makeText(getContext(),"添加时钟成功",Toast.LENGTH_SHORT).show();
                     Log.d("imageView", "onChanged: " + clockReturnData.getData().toString());
                     clockItemAdapter.addClock(clockReturnData.getData());
@@ -304,6 +313,9 @@ public class ClockFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onChanged(ReturnData<Object> clockReturnData) {
                 if (clockReturnData.getCode() == RCodeEnum.OK.getCode()) {
+                    if (clock.isAlert()) {
+                        setAlertClockInOS(clock.getAlert_time(),clock.getId(),clock.getTask());
+                    }
                     Toast.makeText(getContext(),"更新时钟成功",Toast.LENGTH_SHORT).show();
                     clockItemAdapter.notifyItemChanged(position,clock);
                     clockViewModel.upDateClocksInDB(clock);
@@ -313,5 +325,21 @@ public class ClockFragment extends Fragment implements View.OnClickListener {
                 }
             }
         });
+    }
+
+    private void setAlertClockInOS(long alertTime,long clockId,String clockText) {
+        Log.d("imageView", "setAlertClockInOS: " + alertTime);
+        //获得AlarmManager实例对象
+        AlarmManager alarmManager = (AlarmManager) requireActivity().getSystemService(Context.ALARM_SERVICE);
+        //自定义广播
+        Intent intent = new Intent("AlarmClock");
+        intent.putExtra("name","clock");
+        intent.putExtra("id",clockId);
+        intent.putExtra("text",clockText);
+        intent.setPackage("com.demo.androidapp");
+        //PendingIntent发送广播意图
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(requireActivity(), (int)clockId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        //一次性定时器
+        alarmManager.set(AlarmManager.RTC_WAKEUP,alertTime * 1000,pendingIntent);
     }
 }

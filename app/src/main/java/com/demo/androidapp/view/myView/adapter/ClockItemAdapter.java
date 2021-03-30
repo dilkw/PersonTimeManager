@@ -114,6 +114,10 @@ public class ClockItemAdapter extends RecyclerView.Adapter<ClockItemAdapter.MyVi
         holder.checkBox.setVisibility(isShow ? View.VISIBLE : View.GONE);
         holder.clockAlertTimeTextView.setText(clock.isAlert() ? DateTimeUtil.longToStrYMDHM(clock.getAlert_time()) : "");
         holder.clockItemAlertImg.setVisibility(clock.isAlert() ? View.VISIBLE : View.GONE);
+        if (clock.isState()) {
+            holder.clockItemStateImageView.setVisibility(View.VISIBLE);
+            holder.clockStartButton.setEnabled(false);
+        }
         holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -169,6 +173,7 @@ public class ClockItemAdapter extends RecyclerView.Adapter<ClockItemAdapter.MyVi
         public CheckBox checkBox;
         public TextView clockAlertTimeTextView;
         public ImageView clockItemAlertImg;
+        public ImageView clockItemStateImageView;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -179,6 +184,7 @@ public class ClockItemAdapter extends RecyclerView.Adapter<ClockItemAdapter.MyVi
             this.checkBox = itemView.findViewById(R.id.clockItemCheckBox);
             this.clockAlertTimeTextView = itemView.findViewById(R.id.clockAlertTimeTextView);
             this.clockItemAlertImg = itemView.findViewById(R.id.clockItemAlertImg);
+            this.clockItemStateImageView = itemView.findViewById(R.id.clockItemStateImageView);
         }
     }
 

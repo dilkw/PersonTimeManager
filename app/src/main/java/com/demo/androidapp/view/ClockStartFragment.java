@@ -1,5 +1,6 @@
 package com.demo.androidapp.view;
 
+import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
@@ -115,34 +116,32 @@ public class ClockStartFragment extends Fragment implements View.OnClickListener
         objectAnimator.start();
     }
 
-    @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.clockfragment_bar,menu);
-        SearchView searchView = (SearchView) menu.findItem(R.id.clockSearch).getActionView();
-        searchView.setMaxWidth(500);
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                return true;
-            }
-        });
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        return super.onOptionsItemSelected(item);
-    }
-
     public void setListener() {
         Log.d("imageView", "setListener: ");
         clockstartFragmentBinding.clockStartFragmentStartBtn.setOnClickListener(this);
         clockstartFragmentBinding.clockStartFragmentStopBtn.setOnClickListener(this);
+
+        objectAnimator.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                updateClockIsComplete();
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
     }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -164,5 +163,20 @@ public class ClockStartFragment extends Fragment implements View.OnClickListener
                 break;
             }
         }
+    }
+
+    //完成时更新时钟状态（改为完成状态）
+    private void updateClockIsComplete() {
+        Clock clock = clockStartViewModel.clockLiveData.getValue();
+        clock.setState(true);
+        clockStartViewModel.upDateClockInfoInServer(clock).observe(getViewLifecycleOwner(), new Observer<ReturnData<Object>>() {
+            @Override
+            public void onChanged(ReturnData<Object> objectReturnData) {
+                if (objectReturnData.getCode() == RCodeEnum.OK.getCode()) {
+
+                }
+            }
+        });
+        controller.navigateUp();
     }
 }

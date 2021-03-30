@@ -97,4 +97,7 @@ dependencies {
 
     //添加下拉刷新组件
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
+
+    //通知依赖
+    implementation "com.android.support:support-compat:28.0.0"
 }

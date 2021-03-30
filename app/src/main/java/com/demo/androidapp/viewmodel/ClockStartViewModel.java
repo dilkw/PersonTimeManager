@@ -40,8 +40,8 @@ public class ClockStartViewModel extends AndroidViewModel {
     }
 
     //更新时钟信息（网络数据库）
-    public LiveData<ReturnData<Clock>> upDateClockInfoInServer(long clockId) {
-        return clockRepository.getClockInfoInServer(clockId);
+    public LiveData<ReturnData<Object>> upDateClockInfoInServer(Clock clock) {
+        return clockRepository.updateClocksInServer(clock);
     }
 
 }
