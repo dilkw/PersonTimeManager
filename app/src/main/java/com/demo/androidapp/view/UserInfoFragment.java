@@ -39,6 +39,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.GlideBuilder;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.demo.androidapp.MainActivity;
 import com.demo.androidapp.MyApplication;
 import com.demo.androidapp.R;
 import com.demo.androidapp.databinding.UserinfoFragmentBinding;
@@ -341,7 +342,12 @@ public class UserInfoFragment extends Fragment implements View.OnClickListener {
                             public void onChanged(ReturnData<Object> objectReturnData) {
                                 if (objectReturnData.getCode() == RCodeEnum.OK.getCode()) {
                                     Toast.makeText(getContext(),"帐号注销成功成功",Toast.LENGTH_SHORT).show();
+                                    MyApplication.getApi().signOut();
                                     MyApplication.getApplication().signOut();
+                                    requireActivity().finish();
+                                    Intent intent = new Intent(); //生成Intent对象
+                                    intent.setClass(getActivity(), MainActivity.class);
+                                    startActivity(intent);
                                 }else {
                                     Toast.makeText(getContext(),"验证码获取失败" + objectReturnData.getMsg(),Toast.LENGTH_SHORT).show();
                                 }

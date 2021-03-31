@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModelProvider;
 import android.annotation.SuppressLint;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -44,6 +45,8 @@ import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.hyphenate.chat.EMClient;
+import com.hyphenate.exceptions.HyphenateException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -233,11 +236,59 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
         registerBinding.registerButton.setOnClickListener(this);
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.registerButton: {
                 Log.d("imageView", "onClick: 注册按钮点击");
+                String userName = registerViewModel.registerCommitLiveData.getValue().getName();
+                String password = registerViewModel.registerCommitLiveData.getValue().getPassword();
+                registerEMA(userName,password);
+                break;
+            }
+            default:{
+                break;
+            }
+        }
+    }
+
+    private void registerEMA(String userName ,String password){
+        Log.d("imageView", "doInBackground: 注册");
+        new RegisterEMAsyncTask(userName,password).execute();
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    public class RegisterEMAsyncTask extends AsyncTask<Void,Void,Void> {
+
+        private String userName;
+        private String password;
+
+        private boolean isSuccess = false;
+
+        public RegisterEMAsyncTask(String userName,String password) {
+            Log.d("imageView", "doInBackground: 注册");
+            this.userName = userName;
+            this.password = password;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            try {
+                EMClient.getInstance().createAccount(userName,password);
+                isSuccess = true;
+                Log.d("imageView", "doInBackground: 注册成功");
+            } catch (HyphenateException e) {
+                e.printStackTrace();
+                Log.d("imageView", "doInBackground: 注册失败");
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            if (isSuccess) {
                 registerViewModel.register().observe(getViewLifecycleOwner(), new Observer<ReturnData<User>>() {
                     @Override
                     public void onChanged(ReturnData<User> userReturnReturnData) {
@@ -252,10 +303,8 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
                         }
                     }
                 });
-                break;
-            }
-            default:{
-                break;
+            }else {
+                Toast.makeText(getContext(),"注册失败",Toast.LENGTH_SHORT).show();
             }
         }
     }

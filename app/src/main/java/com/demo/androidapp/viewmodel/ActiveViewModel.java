@@ -53,12 +53,12 @@ public class ActiveViewModel extends AndroidViewModel {
      * email:注册页面填写的邮箱
      * codes:接收到的帐号激活码
      */
-    public LiveData<ReturnData<Object>> active() {
-        Log.d("imageView", "active: 邮箱" + email + "验证码" + codesLiveData.getValue());
-        if (email == null || email.equals("") || codesLiveData.getValue().equals("")) {
+    public LiveData<ReturnData<Object>> active(String code) {
+        Log.d("imageView", "active: 邮箱" + email + "验证码" + code);
+        if (email == null || email.equals("") || code.equals("")) {
             return new MutableLiveData<>(new ReturnData<>(RCodeEnum.DATA_ERROR));
         }
-        return authRepository.active(email,codesLiveData.getValue());
+        return authRepository.active(email,code);
     }
 
     /**

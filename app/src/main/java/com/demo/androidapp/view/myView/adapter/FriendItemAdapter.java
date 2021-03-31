@@ -14,8 +14,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.demo.androidapp.MyApplication;
 import com.demo.androidapp.R;
 import com.demo.androidapp.model.entity.Friend;
+import com.demo.androidapp.util.DateTimeUtil;
 import com.google.android.material.imageview.ShapeableImageView;
 
 import java.util.ArrayList;
@@ -35,6 +38,8 @@ public class FriendItemAdapter extends RecyclerView.Adapter<FriendItemAdapter.My
     private ItemLongOnClickListener itemLongOnClickListener;
 
     private ItemOnClickListener itemOnClickListener;
+
+    private FInfoOnClickListener fInfoOnClickListener;
 
     public List<Friend> getEditModelSelectedBills() {
         return editModelSelectedFriends;
@@ -72,6 +77,10 @@ public class FriendItemAdapter extends RecyclerView.Adapter<FriendItemAdapter.My
         this.itemOnClickListener = itemOnClickListener;
     }
 
+    public void setFInfoOnClickListener(FInfoOnClickListener fInfoOnClickListener) {
+        this.fInfoOnClickListener = fInfoOnClickListener;
+    }
+
     public void setFriends(List<Friend> friends) {
         this.friends.clear();
         if (friends == null || friends.size() == 0)return ;
@@ -104,8 +113,9 @@ public class FriendItemAdapter extends RecyclerView.Adapter<FriendItemAdapter.My
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         Friend friend = friends.get(position);
         Log.d("imageView", "onBindViewHolder: " + friend.toString());
-        holder.friendItemFNameTextView.setText(friend.getFriend_name());
-        holder.friendItemImageView.setImageResource(R.drawable.background);
+        holder.friendItemFNameTextView.setText(friend.getFname());
+        Glide.with(MyApplication.getMyApplicationContext()).load(friend.getFimgurl() + DateTimeUtil.getRandom()).into(holder.friendItemImageView);
+        //holder.friendItemImageView.setImageResource(R.drawable.background);
         holder.itemFriendCheckBox.setVisibility(isShow ? View.VISIBLE : View.GONE);
         holder.itemFriendCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -121,11 +131,19 @@ public class FriendItemAdapter extends RecyclerView.Adapter<FriendItemAdapter.My
             holder.itemFriendCheckBox.setChecked(allChecked);
         }
 
+        holder.friendItemImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (fInfoOnClickListener == null) return;
+                fInfoOnClickListener.fInfoOnClick(position,friend.getId(),friend.getFuid());
+            }
+        });
+
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (itemOnClickListener == null) return;
-                itemOnClickListener.itemOnClick(position,friend.getId(),friend.getFuid());
+                itemOnClickListener.itemOnClick(position,friend.getFuid(),friend.getFname(),friend.getFimgurl());
             }
         });
 
@@ -167,6 +185,11 @@ public class FriendItemAdapter extends RecyclerView.Adapter<FriendItemAdapter.My
 
     //item点击接口
     public interface ItemOnClickListener {
-        void itemOnClick(int position,long id,String fuid);
+        void itemOnClick(int position,String fUid,String fName,String fImgUrl);
+    }
+
+    //item点击接口
+    public interface FInfoOnClickListener {
+        void fInfoOnClick(int position,long id,String fUid);
     }
 }

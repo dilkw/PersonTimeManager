@@ -120,9 +120,23 @@ public class FriendFragment extends Fragment implements View.OnClickListener {
                 friendFragmentBinding.friendItemLongClickEditWindow.setVisibility(View.VISIBLE);
             }
         });
+
+        //item点击跳转聊天页面
         friendItemAdapter.setItemOnClickListener(new FriendItemAdapter.ItemOnClickListener() {
             @Override
-            public void itemOnClick(int position,long id,String fuid) {
+            public void itemOnClick(int position,String fUid,String fName,String fImgUrl) {
+                Bundle bundle = new Bundle();
+                bundle.putString("fName",fName);
+                bundle.putString("fImgUrl",fImgUrl);
+                bundle.putString("fUid",fUid);
+                controller.navigate(R.id.action_friendFragment_to_chatFragment,bundle);
+            }
+        });
+
+        //头像点击跳转好友信息页面
+        friendItemAdapter.setFInfoOnClickListener(new FriendItemAdapter.FInfoOnClickListener() {
+            @Override
+            public void fInfoOnClick (int position,long id,String fuid) {
                 Bundle bundle = new Bundle();
                 bundle.putLong("fid",id);
                 bundle.putString("fuid",fuid);
@@ -266,7 +280,7 @@ public class FriendFragment extends Fragment implements View.OnClickListener {
                     friendItemAdapter.addFriend(friendReturnData.getData());
                     friendViewModel.addFriendsInDB(friendReturnData.getData());
                 }else {
-                    Toast.makeText(getContext(),"添加好友失败",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(),friendReturnData.getMsg(),Toast.LENGTH_SHORT).show();
                     Log.d("imageView",friendReturnData.getCode() + friendReturnData.getMsg());
                 }
             }

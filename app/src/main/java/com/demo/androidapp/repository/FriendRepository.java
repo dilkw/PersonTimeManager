@@ -130,7 +130,9 @@ public class FriendRepository {
 
     //添加到服务器好友列表
     public LiveData<ReturnData<Friend>> addFriendToServer(String friendEmail) {
-        return api.addFriend(friendEmail);
+        String userName = MyApplication.getApplication().getUser().getName();
+        String imgUrl = MyApplication.getApplication().getUser().getImg_url();
+        return api.addFriend(friendEmail,userName,imgUrl);
     }
 
     public void updateFriendsInDB(Friend...friends) {

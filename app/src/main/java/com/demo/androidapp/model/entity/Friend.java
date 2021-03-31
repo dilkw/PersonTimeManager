@@ -6,8 +6,6 @@ import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
-import com.demo.androidapp.MyApplication;
-
 
 /**
  * 任务信息实体类
@@ -24,22 +22,27 @@ public class Friend {
     private String fuid;
 
     //friendName
-    @ColumnInfo(name = "friend_name")
-    private String friend_name;
+    @ColumnInfo(name = "fname")
+    private String fname;
 
     //myUid
     @ColumnInfo(name = "uid")
     private String uid;
 
+    //好友头像
+    @ColumnInfo(name = "fimgurl")
+    private String fimgurl;
+
     @Ignore
     public Friend() {
     }
 
-    public Friend(long id, String fuid, String friend_name, String uid) {
+    public Friend(long id, String fuid, String fname, String uid,String fimgurl) {
         this.id = id;
         this.fuid = fuid;
-        this.friend_name = friend_name;
+        this.fname = fname;
         this.uid = uid;
+        this.fimgurl = fimgurl;
     }
 
     public long getId() {
@@ -66,19 +69,30 @@ public class Friend {
         this.uid = uid;
     }
 
-    public String getFriend_name() {
-        return friend_name;
+    public String getFname() {
+        return fname;
     }
 
-    public void setFriend_name(String friend_name) {
-        this.friend_name = friend_name;
+    public void setFname(String fname) {
+        this.fname = fname;
+    }
+
+    public String getFimgurl() {
+        return fimgurl;
+    }
+
+    public void setFimgurl(String fimgurl) {
+        this.fimgurl = fimgurl;
     }
 
     @Override
     public String toString() {
         return "Friend{" +
                 "id=" + id +
-                ", uid='" + fuid + '\'' +
+                ", fuid='" + fuid + '\'' +
+                ", fname='" + fname + '\'' +
+                ", uid='" + uid + '\'' +
+                ", fimgurl='" + fimgurl + '\'' +
                 '}';
     }
 }

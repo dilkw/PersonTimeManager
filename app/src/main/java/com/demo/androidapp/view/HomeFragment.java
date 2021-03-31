@@ -49,6 +49,8 @@ import com.demo.androidapp.util.DateTimeUtil;
 import com.demo.androidapp.view.myView.adapter.TasksItemAdapter;
 import com.demo.androidapp.viewmodel.HomeViewModel;
 import com.google.android.material.appbar.MaterialToolbar;
+import com.hyphenate.EMCallBack;
+import com.hyphenate.chat.EMClient;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -121,6 +123,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Swi
         homeViewModel.getAllTaskByUidInServer().observe(getViewLifecycleOwner(), new Observer<ReturnData<ReturnListObject<Task>>>() {
             @Override
             public void onChanged(ReturnData<ReturnListObject<Task>> returnListObjectReturnData) {
+                if (returnListObjectReturnData == null)return;
                 RCodeEnum rCodeEnum = RCodeEnum.returnRCodeEnumByCode(returnListObjectReturnData.getCode());
                 switch (rCodeEnum) {
                     case OK: {
@@ -296,11 +299,36 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Swi
             }
             case R.id.loginOutBtn: {
                 Log.d("imageView", "onClick: 退出登录按钮");
-                MyApplication.getApplication().signOut();
-                requireActivity().finish();
-                Intent intent = new Intent(); //生成Intent对象
-                intent.setClass(getActivity(), MainActivity.class);
-                startActivity(intent);
+                MyApplication.getApi().signOut().observe(getViewLifecycleOwner(), new Observer<ReturnData<Object>>() {
+                    @Override
+                    public void onChanged(ReturnData<Object> objectReturnData) {
+                        if (objectReturnData == null)return;
+                        if (objectReturnData.getCode() == RCodeEnum.OK.getCode()) {
+                            EMClient.getInstance().logout(true, new EMCallBack() {
+                                @Override
+                                public void onSuccess() {
+                                    // TODO Auto-generated method stub
+
+                                }
+                                @Override
+                                public void onProgress(int progress, String status) {
+                                    // TODO Auto-generated method stub
+                                }
+                                @Override
+                                public void onError(int code, String message) {
+                                    // TODO Auto-generated method stub
+                                }
+                            });
+                            MyApplication.getApplication().signOut();
+                            requireActivity().finish();
+                            Intent intent = new Intent(); //生成Intent对象
+                            intent.setClass(getActivity(), MainActivity.class);
+                            startActivity(intent);
+                        }else {
+                            Toast.makeText(getContext(),"退出登录失败",Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
                 break;
             }
             default:{

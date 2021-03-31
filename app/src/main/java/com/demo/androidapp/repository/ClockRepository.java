@@ -189,7 +189,7 @@ public class ClockRepository {
 
     //删除并更新数据
     public void deleteAllClocksAndAdd(Clock... clocks) {
-        new DeleteAllClocksAndAdd(clockDao,this).equals(clocks);
+        new DeleteAllClocksAndAdd(clockDao,this).execute(clocks);
     }
     //删除并更新数据
     public static class DeleteAllClocksAndAdd extends AsyncTask<Clock,Void,Void> {

@@ -168,7 +168,7 @@ public class ActiveFragment extends Fragment implements IdentifyCodeView.CodesCh
     }
 
 
-    //从注册页面跳转过来激活帐号（带有email）
+    //不是从注册页面跳转过来激活帐号（没带有email）
     private void NotFromRegisterFragment() {
         Log.d("imageView", "非注册页跳转");
         activeFragmentBinding.activeGetCodeBtn.setVisibility(View.VISIBLE);
@@ -227,6 +227,7 @@ public class ActiveFragment extends Fragment implements IdentifyCodeView.CodesCh
                 }
             }
         });
+//        countDownTimer2.start();
     }
 
     @Override
@@ -250,6 +251,7 @@ public class ActiveFragment extends Fragment implements IdentifyCodeView.CodesCh
             case R.id.activeGetCodeBtn: {
                 activeViewModel.setEmail(Objects.requireNonNull(activeFragmentBinding.activeTextInputEditEmail.getText()).toString());
                 getActiveCode();
+                countDownTimer2.start();
                 Log.d("imageView", "getActiveCodes: 获取验证码");
                 break;
             }
@@ -259,7 +261,8 @@ public class ActiveFragment extends Fragment implements IdentifyCodeView.CodesCh
                 break;
             }
             case R.id.activeButton: {
-                activeViewModel.active().observe(getViewLifecycleOwner(), new Observer<ReturnData<Object>>() {
+                String code = activeFragmentBinding.identifyCodeView.getCodes();
+                activeViewModel.active(code).observe(getViewLifecycleOwner(), new Observer<ReturnData<Object>>() {
                     @Override
                     public void onChanged(ReturnData<Object> objectReturnData) {
                         if (objectReturnData.getCode() == RCodeEnum.OK.getCode()) {
@@ -285,5 +288,16 @@ public class ActiveFragment extends Fragment implements IdentifyCodeView.CodesCh
                 }
             }
         });
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (countDownTimer != null) {
+            countDownTimer.onFinish();
+        }
+        if (countDownTimer2 != null) {
+            countDownTimer2.onFinish();
+        }
     }
 }

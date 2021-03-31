@@ -192,7 +192,9 @@ public interface Api {
     //添加好友
     @FormUrlEncoded
     @POST("friend/add")
-    LiveData<ReturnData<Friend>> addFriend(@Field("email") String friendEmail);
+    LiveData<ReturnData<Friend>> addFriend(@Field("email") String friendEmail,
+                                           @Field("user_name") String userName,
+                                           @Field("img_url") String imgUrl);
 
     //删除好友
     @HTTP(method = "DELETE", path = "friend/{ids}", hasBody = false)

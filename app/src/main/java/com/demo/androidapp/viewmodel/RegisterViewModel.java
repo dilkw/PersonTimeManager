@@ -22,7 +22,7 @@ import com.demo.androidapp.repository.AuthRepository;
 
 public class RegisterViewModel extends AndroidViewModel {
 
-    private MutableLiveData<RegisterCommit> registerCommitLiveData;
+    public MutableLiveData<RegisterCommit> registerCommitLiveData;
 
     private AuthRepository authRepository;
 
@@ -35,11 +35,12 @@ public class RegisterViewModel extends AndroidViewModel {
         registerCommitLiveData = new MutableLiveData<>();
         registerCommitLiveData.setValue(new RegisterCommit());
         authRepository = new AuthRepository(application);
+        String imgUrl = application.getResources().getString(R.string.defaultImgUrl);
+        registerCommitLiveData.getValue().setImg_url(imgUrl);
     }
 
     //注册方法
     public LiveData<ReturnData<User>> register() {
-
         if (registerCommitLiveData.getValue() == null) {
             Log.d("imageView","RegisterViewModel层，ViewModel为空！！！！！！");
             return new MutableLiveData<>(new ReturnData<>(RCodeEnum.DATA_ERROR));

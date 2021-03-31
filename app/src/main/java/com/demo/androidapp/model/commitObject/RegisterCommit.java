@@ -10,14 +10,17 @@ public class RegisterCommit {
 
     private String email;
 
+    private String img_url;
+
     public RegisterCommit() {
     }
 
-    public RegisterCommit(String name, String password, String password_confirm, String email) {
+    public RegisterCommit(String name, String password, String password_confirm, String email,String img_url) {
         this.name = name;
         this.password = password;
         this.password_confirm = password_confirm;
         this.email = email;
+        this.img_url = img_url;
     }
 
     public String getName() {
@@ -50,6 +53,14 @@ public class RegisterCommit {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getImg_url() {
+        return img_url;
+    }
+
+    public void setImg_url(String img_url) {
+        this.img_url = img_url;
     }
 
     @Override

@@ -29,6 +29,8 @@ import com.demo.androidapp.model.common.RCodeEnum;
 import com.demo.androidapp.model.common.ReturnData;
 import com.demo.androidapp.model.entity.User;
 import com.demo.androidapp.viewmodel.LoginViewModel;
+import com.hyphenate.EMCallBack;
+import com.hyphenate.chat.EMClient;
 
 import java.util.Objects;
 
@@ -151,33 +153,12 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
             Log.d("imageView","重新创建");
             loginViewModel = new ViewModelProvider(this).get(LoginViewModel.class);
         }
-
-//        loginViewModel.getReturnLiveData().observe(this,new Observer<ReturnData<LoginAndRegisterReturn>>() {
-//            @Override
-//            public void onChanged(ReturnData returnData) {
-//                if (returnData.getCode() == RCodeEnum.OK.getCode()) {
-//                    Toast.makeText(getActivity(), "登录成功", Toast.LENGTH_SHORT).show();
-//                    //上传数据，更新MyApplication中的数据
-//                    LoginAndRegisterReturn loginAndRegisterReturn = (LoginAndRegisterReturn)loginViewModel.getReturnLiveData().getValue().getData();
-//                    MyApplication.getApplication().signIn(loginAndRegisterReturn.getName(),
-//                                                            loginViewModel.getAuthLiveData().getValue().getPassword(),
-//                                                            loginAndRegisterReturn.getUid());
-//                    //跳转主页
-//                    loginViewModel.jumpToHomeFragment(getView());
-//                } else {
-//                    Toast.makeText(getActivity(), returnData.getMsg(), Toast.LENGTH_SHORT).show();
-//                    Log.d("imageView", "用户名或密码错误");
-//                }
-//            }
-//        });
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d("imageView","onCreate");
-//        loginViewModel = new ViewModelProvider(this).getClass()
-//        returnDataLiveData = loginViewModel.getReturnLiveData();
     }
 
     @Override
