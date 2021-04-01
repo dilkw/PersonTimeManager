@@ -42,6 +42,9 @@ public class MyApplication extends Application {
         super.onCreate();
         MultiDex.install(this);
         mContext = getApplicationContext();
+        if (mContext == null) {
+            Log.d("imageView", "onCreate: context为空");
+        }
         myApplication = getApplication();
         dataSP = new DataSP(mContext);
         loadData();
@@ -138,7 +141,7 @@ public class MyApplication extends Application {
         // 是否自动下载附件类消息的缩略图等，默认为 true 这里和上边这个参数相关联
         options.setAutoDownloadThumbnail(true);
         //自动登录
-        options.setAutoLogin(false);
+        //options.setAutoLogin(false);
 
         int pid = android.os.Process.myPid();
         String processAppName = getAppName(pid);
@@ -154,8 +157,12 @@ public class MyApplication extends Application {
         }
 
         //初始化
-        EMClient.getInstance().init(mContext, options);
+        EMClient.getInstance().init(this, options);
         //在做打包混淆时，关闭debug模式，避免消耗不必要的资源
+        if (EMClient.getInstance() == null) {
+            Log.d("imageView", "initEaseMob: EMClient.getInstance() null ");
+        }
+        Log.d("imageView", "initEaseMob: EMClient.getInstance() not null");
         EMClient.getInstance().setDebugMode(true);
     }
 

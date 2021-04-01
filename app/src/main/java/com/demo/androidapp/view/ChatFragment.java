@@ -56,6 +56,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.hyphenate.EMCallBack;
 import com.hyphenate.EMClientListener;
 import com.hyphenate.EMMessageListener;
+import com.hyphenate.chat.EMChatManager;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMCmdMessageBody;
 import com.hyphenate.chat.EMConversation;
@@ -105,7 +106,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener, EMMe
         return chatFragmentBinding.getRoot();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -113,6 +114,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener, EMMe
         setListener();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void init() {
         chatViewModel = new ViewModelProvider(this).get(ChatViewModel.class);
         String userName = MyApplication.getApplication().getUser().getName();
@@ -136,8 +138,21 @@ public class ChatFragment extends Fragment implements View.OnClickListener, EMMe
             }
         });
         EMConversation conversation = EMClient.getInstance().chatManager().getConversation(fName);
+        if (conversation == null) {
+            Log.d("imageView", "init: 空对象");
+            return ;
+        }
         //获取此会话的所有消息
         List<EMMessage> messages = conversation.getAllMessages();
+        for (EMMessage message : messages) {
+            Log.d("imageView","msgId" + message.getUserName());
+            String context = ((EMTextMessageBody)message.getBody()).getMessage();
+            Log.d("imageView", "onMessageReceived: " + context);
+            long createTime = DateTimeUtil.localDateTimeToLong(LocalDateTime.now());
+            String uid = MyApplication.getApplication().getUser().getUid();
+            ChatRecord chatRecord = new ChatRecord(createTime,uid,fUid,context,"接收");
+            chatItemAdapter.addChatRecords(chatRecord);
+        }
         //SDK初始化加载的聊天记录为20条，到顶时需要去DB里获取更多
         //获取startMsgId之前的pagesize条消息，此方法获取的messages SDK会自动存入到此会话中，APP中无需再次把获取到的messages添加到会话中
         //List<EMMessage> messages = conversation.loadMoreMsgFromDB(0, 10);
@@ -189,7 +204,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener, EMMe
                         String uid = MyApplication.getApplication().getUser().getUid();
                         ChatRecord chatRecord = new ChatRecord(createTime,uid,fUid,context,"发送");
                         chatItemAdapter.addChatRecords(chatRecord);
-                        Log.d("imageView", "onError: 发送成功" + fName);
+                        Log.d("imageView", "onSuccess: 发送成功" + fName);
                     }
 
                     @Override
