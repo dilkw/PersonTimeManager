@@ -16,7 +16,7 @@ import com.demo.androidapp.MyApplication;
 public class Clock {
 
     //id
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey(autoGenerate = false)
     private long id;
 
     //创建时间

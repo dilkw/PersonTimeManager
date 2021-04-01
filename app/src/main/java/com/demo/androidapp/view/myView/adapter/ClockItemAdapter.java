@@ -75,11 +75,15 @@ public class ClockItemAdapter extends RecyclerView.Adapter<ClockItemAdapter.MyVi
     }
 
     public void setClocks(List<Clock> clocks) {
+        if (clocks == null)return;
         this.clocks.clear();
         this.clocks = clocks;
     }
 
     public void addClock(Clock clock) {
+        if (clock == null) {
+            Log.d("imageView", "addClock: clock为空");
+        }
         this.clocks.add(clock);
         notifyDataSetChanged();
     }

@@ -1,6 +1,7 @@
 package com.demo.androidapp.view.myView.adapter;
 
 import android.annotation.SuppressLint;
+import android.graphics.Bitmap;
 import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -39,6 +40,9 @@ public class ChatItemAdapter extends RecyclerView.Adapter<ChatItemAdapter.MyView
     private ItemOnClickListener itemOnClickListener;
 
     private String fImgUrl;
+
+    private Bitmap fBitmap;
+    private Bitmap uBitmap;
 
     public void setChatRecords(List<ChatRecord> chatRecords) {
         this.chatRecords.clear();

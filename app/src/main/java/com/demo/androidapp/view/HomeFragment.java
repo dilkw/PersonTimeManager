@@ -9,7 +9,9 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -25,6 +27,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.os.PowerManager;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -94,8 +98,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Swi
         return homeFragmentBinding.getRoot();
 
     }
-
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -106,6 +109,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Swi
         }else {
             initData(this,isLogin);
             setListener();
+            if (!isIgnoringBatteryOptimizations()) {
+                requestIgnoreBatteryOptimizations();
+            }
         }
     }
 
@@ -115,7 +121,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Swi
         User user = MyApplication.getApplication().getUser();
         homeFragmentBinding.userNameTextView.setText(user.getName());
         Glide.with(requireContext()).load(user.getImg_url() + DateTimeUtil.getRandom()).into(homeFragmentBinding.drawerLayoutUserImage);
-
         tasksItemAdapter = new TasksItemAdapter((List<Task>)(new ArrayList<Task>()));
         StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(2, RecyclerView.VERTICAL);
         homeFragmentBinding.recyclerView.setLayoutManager(staggeredGridLayoutManager);
@@ -354,5 +359,26 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Swi
                 homeFragmentBinding.homeFragmentSwipeRefreshLayout.setRefreshing(false);
             }
         });
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private boolean isIgnoringBatteryOptimizations() {
+        boolean isIgnoring = false;
+        PowerManager powerManager = (PowerManager) requireActivity().getSystemService(Context.POWER_SERVICE);
+        if (powerManager != null) {
+            isIgnoring = powerManager.isIgnoringBatteryOptimizations(requireActivity().getPackageName());
+        }
+        return isIgnoring;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public void requestIgnoreBatteryOptimizations() {
+        try {
+            @SuppressLint("BatteryLife") Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+            intent.setData(Uri.parse("package:" + requireActivity().getPackageName()));
+            startActivity(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

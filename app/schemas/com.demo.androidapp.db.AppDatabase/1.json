@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "4a88d0210eb145484df02250f5b10bd1",
+    "identityHash": "8eb88953f7851c61627dbe539f451c14",
     "entities": [
       {
         "tableName": "User",
@@ -200,7 +200,7 @@
       },
       {
         "tableName": "clock",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `created_at` INTEGER NOT NULL, `clock_minute` INTEGER NOT NULL, `uid` TEXT, `task` TEXT, `state` INTEGER NOT NULL, `alert` INTEGER NOT NULL, `alert_time` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `created_at` INTEGER NOT NULL, `clock_minute` INTEGER NOT NULL, `uid` TEXT, `task` TEXT, `state` INTEGER NOT NULL, `alert` INTEGER NOT NULL, `alert_time` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -255,7 +255,7 @@
           "columnNames": [
             "id"
           ],
-          "autoGenerate": true
+          "autoGenerate": false
         },
         "indices": [],
         "foreignKeys": []
@@ -383,7 +383,7 @@
             "notNull": false
           },
           {
-            "fieldPath": "fUid",
+            "fieldPath": "friendUid",
             "columnName": "fuid",
             "affinity": "TEXT",
             "notNull": false
@@ -414,7 +414,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4a88d0210eb145484df02250f5b10bd1')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '8eb88953f7851c61627dbe539f451c14')"
     ]
   }
 }

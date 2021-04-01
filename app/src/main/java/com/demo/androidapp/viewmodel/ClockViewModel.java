@@ -116,7 +116,7 @@ public class ClockViewModel extends AndroidViewModel {
     //根据用户id从本地数据库清空并添加任务列表
     public void deleteAllClocksAndAddInDB(List<Clock> clocks) {
         Log.d("imageView", "deleteAllClockAndAddInDB: ");
-        if (clocks == null || clocks.size() ==0) {
+        if (clocks == null || clocks.size() == 0) {
             return;
         }
         Clock[] arrayClocks = new Clock[clocks.size()];

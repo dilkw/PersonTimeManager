@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.AsyncNotedAppOp;
 import android.app.WallpaperColors;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -14,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -189,6 +191,13 @@ public class ChatFragment extends Fragment implements View.OnClickListener, EMMe
         switch (v.getId()) {
             case R.id.msgSendBtn: {
                 Log.d("imageView", "onClick: 发送点击");
+
+                //隐藏键盘
+                InputMethodManager inputMethodManager = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (inputMethodManager.isActive()) {
+                    Log.d("imageView", "hideSoftInputOutOfVonClick: 键盘收起");
+                }
+                inputMethodManager.hideSoftInputFromWindow(chatFragmentBinding.msgEditText.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
                 String context = chatFragmentBinding.msgEditText.getText().toString().trim();
                 //创建一条文本消息，content为消息文字内容，toChatUsername为对方用户或者群聊的id，后文皆是如此
 
@@ -204,6 +213,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener, EMMe
                         String uid = MyApplication.getApplication().getUser().getUid();
                         ChatRecord chatRecord = new ChatRecord(createTime,uid,fUid,context,"发送");
                         chatItemAdapter.addChatRecords(chatRecord);
+                        chatFragmentBinding.msgEditText.setText("");
                         Log.d("imageView", "onSuccess: 发送成功" + fName);
                     }
 
@@ -214,7 +224,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener, EMMe
 
                     @Override
                     public void onProgress(int i, String s) {
-
+                        Log.d("imageView", "onProgress: 发送失败" + fName);
                     }
                 });
                 break;
@@ -235,6 +245,8 @@ public class ChatFragment extends Fragment implements View.OnClickListener, EMMe
         EMClient.getInstance().login(name, password, new EMCallBack() {
             @Override
             public void onSuccess() {
+                EMClient.getInstance().groupManager().loadAllGroups();
+                EMClient.getInstance().chatManager().loadAllConversations();
             }
 
             @Override

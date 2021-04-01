@@ -219,8 +219,7 @@ public class ClockFragment extends Fragment implements View.OnClickListener {
                             @RequiresApi(api = Build.VERSION_CODES.O)
                             @Override
                             public void enterBtnOnClicked() {
-                                clockViewModel.addClocksInDB(addClockDialog.getClock());
-                                clocksLiveData = clockViewModel.getAllClocksLiveDataInDB();
+                                addClock(addClockDialog.getClock());
                             }
                         });
                         addClockDialog.show(fragmentManager,"addClockDialogByMenu");
@@ -293,7 +292,7 @@ public class ClockFragment extends Fragment implements View.OnClickListener {
             public void onChanged(ReturnData<Clock> clockReturnData) {
                 if (clockReturnData.getCode() == RCodeEnum.OK.getCode()) {
                     if (clock.isAlert()) {
-                        setAlertClockInOS(clock.getAlert_time(),clock.getId(),clock.getTask());
+                        setAlertClockInOS(clock.getAlert_time(),clockReturnData.getData().getId(),clock.getTask());
                     }
                     Toast.makeText(getContext(),"添加时钟成功",Toast.LENGTH_SHORT).show();
                     Log.d("imageView", "onChanged: " + clockReturnData.getData().toString());

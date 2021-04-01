@@ -53,11 +53,11 @@ public class ClockRepository {
             @Override
             public void onResponse(Call<ReturnData<ReturnListObject<Clock>>> call, Response<ReturnData<ReturnListObject<Clock>>> response) {
                 returnDataLiveData.postValue(new ReturnData<List<Clock>>(response.body().getCode(),response.body().getMsg(),response.body().getData().getItems()));
-                if (response.body().getData().getTotal() > 0) {
-                    Clock[] clocks = new Clock[response.body().getData().getTotal()];
-                    response.body().getData().getItems().toArray(clocks);
-                    deleteAllClocksAndAdd(clocks);
-                }
+//                if (response.body().getData().getTotal() > 0) {
+//                    Clock[] clocks = new Clock[response.body().getData().getTotal()];
+//                    response.body().getData().getItems().toArray(clocks);
+//                    deleteAllClocksAndAdd(clocks);
+//                }
             }
 
             @Override

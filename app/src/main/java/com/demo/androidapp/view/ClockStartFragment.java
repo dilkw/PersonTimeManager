@@ -84,25 +84,31 @@ public class ClockStartFragment extends Fragment implements View.OnClickListener
         clockStartViewModel.getClockInfoInServer(clockId).observe(getViewLifecycleOwner(), new Observer<ReturnData<Clock>>() {
             @Override
             public void onChanged(ReturnData<Clock> clockReturnData) {
+                Log.d("imageView", "onChanged: " + finalClockId +  clockReturnData.getData().toString());
                 if (clockReturnData.getCode() == RCodeEnum.OK.getCode()) {
                     clockStartViewModel.clockLiveData.setValue(clockReturnData.getData());
                     initView();
+                    setListener();
                 }else {
                     clockStartViewModel.getClockInfoInDB(finalClockId).observe(getViewLifecycleOwner(), new Observer<Clock>() {
                         @Override
                         public void onChanged(Clock clock) {
                             if (clock != null) {
                                 clockStartViewModel.clockLiveData.setValue(clock);
+                                initView();
+                                setListener();
                             }
                         }
                     });
                 }
             }
         });
-        setListener();
     }
 
     private void initView() {
+        if (clockStartViewModel.clockLiveData.getValue() == null) {
+            Log.d("imageView", "initView:null");
+        }
         long progress = clockStartViewModel.clockLiveData.getValue().getClock_minute() * 60;
         clockstartFragmentBinding.clockCountDown.setMultiple(360 / (float)progress);
         objectAnimator = ObjectAnimator
