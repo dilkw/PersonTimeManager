@@ -40,7 +40,7 @@ public class ClockItemAdapter extends RecyclerView.Adapter<ClockItemAdapter.MyVi
 
     private ItemStartOnClickListener itemStartOnClickListener;
 
-    public List<Clock> getEditModelSelectedTasks() {
+    public List<Clock> getEditModelSelectedClocks() {
         return editModelSelectedClocks;
     }
 
@@ -158,6 +158,7 @@ public class ClockItemAdapter extends RecyclerView.Adapter<ClockItemAdapter.MyVi
         holder.clockStartButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (itemOnClickListener == null)return;
                 itemStartOnClickListener.itemStartOnClick(position,clock.getId());
             }
         });

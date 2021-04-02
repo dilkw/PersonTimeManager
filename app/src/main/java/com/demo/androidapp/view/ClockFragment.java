@@ -33,7 +33,6 @@ import android.view.ViewGroup;
 import android.widget.SearchView;
 import android.widget.Toast;
 
-import com.demo.androidapp.MainActivity;
 import com.demo.androidapp.R;
 import com.demo.androidapp.databinding.ClockFragmentBinding;
 import com.demo.androidapp.model.common.RCodeEnum;
@@ -244,7 +243,7 @@ public class ClockFragment extends Fragment implements View.OnClickListener {
             }
             case R.id.clockDeleteImageButton: {
                 Log.d("imageView", "onClick: 删除按钮");
-                clockViewModel.deleteClocksByClockIdsInServer(clockItemAdapter.getEditModelSelectedTasks()).observe(getViewLifecycleOwner(), new Observer<ReturnData<Object>>() {
+                clockViewModel.deleteClocksByClockIdsInServer(clockItemAdapter.getEditModelSelectedClocks()).observe(getViewLifecycleOwner(), new Observer<ReturnData<Object>>() {
                     @Override
                     public void onChanged(ReturnData<Object> objectReturnData) {
                         if (objectReturnData.getCode() == RCodeEnum.OK.getCode()) {

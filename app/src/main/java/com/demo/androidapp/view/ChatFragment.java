@@ -2,11 +2,8 @@ package com.demo.androidapp.view;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.app.AsyncNotedAppOp;
-import android.app.WallpaperColors;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
@@ -16,9 +13,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,7 +20,6 @@ import androidx.annotation.RequiresApi;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -35,40 +28,28 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.bumptech.glide.Glide;
+import com.demo.androidapp.MainActivity;
 import com.demo.androidapp.MyApplication;
 import com.demo.androidapp.R;
 import com.demo.androidapp.databinding.ChatFragmentBinding;
-import com.demo.androidapp.databinding.UserinfoFragmentBinding;
-import com.demo.androidapp.model.common.RCodeEnum;
-import com.demo.androidapp.model.common.ReturnData;
 import com.demo.androidapp.model.entity.ChatRecord;
 import com.demo.androidapp.model.entity.Clock;
-import com.demo.androidapp.model.entity.Friend;
-import com.demo.androidapp.model.entity.User;
+import com.demo.androidapp.model.entity.Task;
 import com.demo.androidapp.util.DateTimeUtil;
-import com.demo.androidapp.view.myView.ResetEmailDialog;
 import com.demo.androidapp.view.myView.adapter.ChatItemAdapter;
 import com.demo.androidapp.viewmodel.ChatViewModel;
-import com.demo.androidapp.viewmodel.FriendViewModel;
-import com.demo.androidapp.viewmodel.UserInfoViewModel;
-import com.google.android.material.button.MaterialButton;
-import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
 import com.hyphenate.EMCallBack;
-import com.hyphenate.EMClientListener;
 import com.hyphenate.EMMessageListener;
-import com.hyphenate.chat.EMChatManager;
 import com.hyphenate.chat.EMClient;
-import com.hyphenate.chat.EMCmdMessageBody;
 import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMTextMessageBody;
 
+import org.json.JSONException;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class ChatFragment extends Fragment implements View.OnClickListener, EMMessageListener {
 
@@ -97,6 +78,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener, EMMe
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        Log.d("imageView", "onCreateView: ");
         chatFragmentBinding = DataBindingUtil.inflate(inflater,R.layout.chat_fragment,container,false);
         chatFragmentBinding.setLifecycleOwner(this);
         fragmentManager = requireActivity().getSupportFragmentManager();
@@ -111,6 +93,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener, EMMe
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        Log.d("imageView", "onActivityCreated: ");
         super.onActivityCreated(savedInstanceState);
         init();
         setListener();
@@ -201,36 +184,28 @@ public class ChatFragment extends Fragment implements View.OnClickListener, EMMe
                 String context = chatFragmentBinding.msgEditText.getText().toString().trim();
                 //创建一条文本消息，content为消息文字内容，toChatUsername为对方用户或者群聊的id，后文皆是如此
 
-                EMMessage message = EMMessage.createTxtSendMessage(context,fName);
-                //message.setChatType(EMMessage.ChatType.GroupChat);
-                //发送消息
-                EMClient.getInstance().chatManager().sendMessage(message);
-                message.setMessageStatusCallback(new EMCallBack() {
-                    @RequiresApi(api = Build.VERSION_CODES.O)
-                    @Override
-                    public void onSuccess() {
-                        long createTime = DateTimeUtil.localDateTimeToLong(LocalDateTime.now());
-                        String uid = MyApplication.getApplication().getUser().getUid();
-                        ChatRecord chatRecord = new ChatRecord(createTime,uid,fUid,context,"发送");
-                        chatItemAdapter.addChatRecords(chatRecord);
-                        chatFragmentBinding.msgEditText.setText("");
-                        Log.d("imageView", "onSuccess: 发送成功" + fName);
-                    }
-
-                    @Override
-                    public void onError(int i, String s) {
-                        Log.d("imageView", "onError: 发送失败" + fName);
-                    }
-
-                    @Override
-                    public void onProgress(int i, String s) {
-                        Log.d("imageView", "onProgress: 发送失败" + fName);
-                    }
-                });
                 break;
             }
             case R.id.addOtherMsgBtn: {
                 Log.d("imageView", "onClick: 添加其他点击");
+                AlertDialog alertDialog = new AlertDialog.Builder(getContext())
+                        .setTitle("分享")
+                        .setItems(new String[]{"时钟", "任务"}, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Log.d("imageView", "onClick: which" + which);
+                                Bundle bundle = new Bundle();
+                                if (which == 1) {
+                                    bundle.putString("type","clock");
+                                }else {
+                                    bundle.putString("type","task");
+                                }
+                                controller.navigate(R.id.action_chatFragment_to_shareFragment,bundle);
+                            }
+                        })
+                        .setCancelable(true)
+                        .create();
+                alertDialog.show();
                 break;
             }
             default:{
@@ -305,12 +280,23 @@ public class ChatFragment extends Fragment implements View.OnClickListener, EMMe
 
     @Override
     public void onResume() {
+        Log.d("imageView", "onResume: ");
         super.onResume();
         EMClient.getInstance().chatManager().addMessageListener(this);
+        String shareType = (String)((MainActivity)requireActivity()).getDataFromMapByKey("shareType");
+        if (shareType == null)return;
+        if (shareType.equals("clock")) {
+            List<Clock> clocks = (List<Clock>)(((MainActivity)requireActivity()).getDataFromMapByKey("clocks"));
+            Log.d("imageView", "onResume: " + clocks.size());
+        }else {
+            List<Task> tasks = (List<Task>)(((MainActivity)requireActivity()).getDataFromMapByKey("tasks"));
+            Log.d("imageView", "onResume: " + tasks.size());
+        }
     }
 
     @Override
     public void onStop() {
+        Log.d("imageView", "onStop: ");
         super.onStop();
         EMClient.getInstance().chatManager().removeMessageListener(this);
     }
@@ -334,9 +320,31 @@ public class ChatFragment extends Fragment implements View.OnClickListener, EMMe
         }
     }
 
+    private void sendTextMsg(String content) {
+        //发送消息
+        EMMessage message = EMMessage.createTxtSendMessage(content,fName);
+        EMClient.getInstance().chatManager().sendMessage(message);
+        message.setMessageStatusCallback(new EMCallBack() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void onSuccess() {
+                Log.d("imageView", "onSuccess: 发送成功" + fName);
+            }
+
+            @Override
+            public void onError(int i, String s) {
+                Log.d("imageView", "onError: 发送失败" + fName);
+            }
+
+            @Override
+            public void onProgress(int i, String s) {
+                Log.d("imageView", "onProgress: 发送失败" + fName);
+            }
+        });
+    }
+
     @Override
     public void onCmdMessageReceived(List<EMMessage> list) {
-
     }
 
     @Override
@@ -358,6 +366,23 @@ public class ChatFragment extends Fragment implements View.OnClickListener, EMMe
     public void onMessageChanged(EMMessage emMessage, Object o) {
 
     }
+
+    private void sendClockMsg(String fName,Clock clock) throws JSONException {
+        //发送消息
+        EMMessage emMessage = EMMessage.createTxtSendMessage("clock",fName);
+        emMessage.setAttribute("clock",clock.getClockJsonObject(clock));
+        emMessage.setTo(fName);
+        EMClient.getInstance().chatManager().sendMessage(emMessage);
+    }
+
+    private void sendTaskMsg(String fName, Task task) throws JSONException {
+        //发送消息
+        EMMessage emMessage = EMMessage.createTxtSendMessage("task",fName);
+        emMessage.setAttribute("task",task.getTaskJsonObject(task));
+        emMessage.setTo(fName);
+        EMClient.getInstance().chatManager().sendMessage(emMessage);
+    }
+
 
 
 }

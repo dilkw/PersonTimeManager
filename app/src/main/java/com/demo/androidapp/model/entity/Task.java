@@ -7,6 +7,11 @@ import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import com.demo.androidapp.MyApplication;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 
 /**
@@ -152,5 +157,11 @@ public class Task {
                 ", alert=" + alert +
                 ", alert_time=" + alert_time +
                 '}';
+    }
+
+    public JSONObject getTaskJsonObject(Task task) throws JSONException {
+        Gson gson = new GsonBuilder().create();
+        String event = "task";
+        return new JSONObject(gson.toJson(task));
     }
 }
