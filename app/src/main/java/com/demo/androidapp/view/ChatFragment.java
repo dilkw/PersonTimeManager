@@ -38,14 +38,18 @@ import com.demo.androidapp.model.entity.Task;
 import com.demo.androidapp.util.DateTimeUtil;
 import com.demo.androidapp.view.myView.adapter.ChatItemAdapter;
 import com.demo.androidapp.viewmodel.ChatViewModel;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.hyphenate.EMCallBack;
 import com.hyphenate.EMMessageListener;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMTextMessageBody;
+import com.hyphenate.exceptions.HyphenateException;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -66,6 +70,10 @@ public class ChatFragment extends Fragment implements View.OnClickListener, EMMe
     private ChatItemAdapter chatItemAdapter;
 
     private ChatViewModel chatViewModel;
+
+    private List<Clock> clockList;
+
+    private List<Task> taskList;
 
     private String fName = "";
     private String fImgUrl = "";
@@ -288,9 +296,19 @@ public class ChatFragment extends Fragment implements View.OnClickListener, EMMe
         if (shareType.equals("clock")) {
             List<Clock> clocks = (List<Clock>)(((MainActivity)requireActivity()).getDataFromMapByKey("clocks"));
             Log.d("imageView", "onResume: " + clocks.size());
+            try {
+                sendClockMsg(fName,clocks);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }else {
             List<Task> tasks = (List<Task>)(((MainActivity)requireActivity()).getDataFromMapByKey("tasks"));
             Log.d("imageView", "onResume: " + tasks.size());
+            try {
+                sendTaskMsg(fName,tasks);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -311,12 +329,29 @@ public class ChatFragment extends Fragment implements View.OnClickListener, EMMe
     @Override
     public void onMessageReceived(List<EMMessage> list) {
         for (EMMessage emMessage : list) {
-            String context = ((EMTextMessageBody)emMessage.getBody()).getMessage();
-            Log.d("imageView", "onMessageReceived: " + context);
-            long createTime = DateTimeUtil.localDateTimeToLong(LocalDateTime.now());
-            String uid = MyApplication.getApplication().getUser().getUid();
-            ChatRecord chatRecord = new ChatRecord(createTime,uid,fUid,context,"接收");
-            chatItemAdapter.addChatRecords(chatRecord);
+            try {
+                if (emMessage.getBooleanAttribute("isCustomMsg")){
+                    String type = ((EMTextMessageBody)emMessage.getBody()).getMessage();
+                    if (type.equals("clock")){
+                        JSONObject jsonObject = emMessage.getJSONObjectAttribute("clocks");
+                        List<Clock> clocks = (List<Clock>) jsonObject.get("clocks");
+                        clockList.addAll(clocks);
+
+                    }else if(type.equals("task")) {
+                        JSONObject jsonObject = emMessage.getJSONObjectAttribute("clocks");
+                        List<Task> tasks = (List<Task>) jsonObject.get("tasks");
+                        taskList.addAll(tasks);
+                    }
+                }
+            } catch (HyphenateException | JSONException e) {
+                String context = ((EMTextMessageBody)emMessage.getBody()).getMessage();
+                Log.d("imageView", "onMessageReceived: " + context);
+                long createTime = DateTimeUtil.localDateTimeToLong(LocalDateTime.now());
+                String uid = MyApplication.getApplication().getUser().getUid();
+                ChatRecord chatRecord = new ChatRecord(createTime,uid,fUid,context,"接收");
+                chatItemAdapter.addChatRecords(chatRecord);
+                //e.printStackTrace();
+            }
         }
     }
 
@@ -367,18 +402,22 @@ public class ChatFragment extends Fragment implements View.OnClickListener, EMMe
 
     }
 
-    private void sendClockMsg(String fName,Clock clock) throws JSONException {
+    private void sendClockMsg(String fName,List<Clock> clocks) throws JSONException {
         //发送消息
         EMMessage emMessage = EMMessage.createTxtSendMessage("clock",fName);
-        emMessage.setAttribute("clock",clock.getClockJsonObject(clock));
+        emMessage.setAttribute("isCustomMsg",true);
+        JSONObject jsonObject = new JSONObject();
+        emMessage.setAttribute("clocks",jsonObject.putOpt("clocks",clocks));
         emMessage.setTo(fName);
         EMClient.getInstance().chatManager().sendMessage(emMessage);
     }
 
-    private void sendTaskMsg(String fName, Task task) throws JSONException {
+    private void sendTaskMsg(String fName, List<Task> tasks) throws JSONException {
         //发送消息
         EMMessage emMessage = EMMessage.createTxtSendMessage("task",fName);
-        emMessage.setAttribute("task",task.getTaskJsonObject(task));
+        emMessage.setAttribute("isCustomMsg",true);
+        JSONObject jsonObject = new JSONObject();
+        emMessage.setAttribute("tasks",jsonObject.putOpt("tasks",tasks));
         emMessage.setTo(fName);
         EMClient.getInstance().chatManager().sendMessage(emMessage);
     }
