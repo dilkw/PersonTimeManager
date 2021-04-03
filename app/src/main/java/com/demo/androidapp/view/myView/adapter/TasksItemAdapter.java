@@ -66,9 +66,8 @@ public class TasksItemAdapter extends RecyclerView.Adapter<TasksItemAdapter.MyVi
     }
 
     public void setTasks(List<Task> tasks) {
-        if (tasks == null) {
-            return ;
-        }
+        if (tasks == null)return;
+        this.tasks.clear();
         this.tasks = tasks;
     }
 
@@ -132,7 +131,7 @@ public class TasksItemAdapter extends RecyclerView.Adapter<TasksItemAdapter.MyVi
             @Override
             public void onClick(View v) {
                 if (itemOnClickListener == null)return;
-                itemOnClickListener.itemOnClick(position);
+                itemOnClickListener.itemOnClick(position,task);
             }
         });
     }
@@ -167,6 +166,6 @@ public class TasksItemAdapter extends RecyclerView.Adapter<TasksItemAdapter.MyVi
     }
 
     public interface ItemOnClickListener {
-        void itemOnClick(int position);
+        void itemOnClick(int position,Task task);
     }
 }

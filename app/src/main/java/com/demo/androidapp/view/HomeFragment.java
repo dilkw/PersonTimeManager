@@ -175,10 +175,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Swi
         });
         tasksItemAdapter.setItemOnClickListener(new TasksItemAdapter.ItemOnClickListener() {
             @Override
-            public void itemOnClick(int position) {
+            public void itemOnClick(int position,Task task) {
                 //将点击的task对象放到MainActivity中的map中
                 Log.d("imageView", "itemOnClick: " + position);
-                ((MainActivity)requireActivity()).putDataInToMap("task", taskList.get(position));
+                ((MainActivity)requireActivity()).putDataInToMap("task", task);
                 NavController navController = Navigation.findNavController(requireView());
                 navController.navigate(R.id.action_homeFragment_to_addTaskFragment);
             }

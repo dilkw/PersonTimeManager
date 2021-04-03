@@ -107,6 +107,7 @@ public class ShareFragment extends Fragment implements View.OnClickListener {
                 }
             });
             clockItemAdapter.setCheckBoxIsShow();
+            shareFragmentBinding.shareRecyclerView.setAdapter(clockItemAdapter);
         }else {
             Log.d("imageView", "onActivityCreated: 分享任务");
             tasksItemAdapter = new TasksItemAdapter((List<Task>) (new ArrayList<Task>()));
@@ -115,13 +116,14 @@ public class ShareFragment extends Fragment implements View.OnClickListener {
             shareViewModel.getAllTaskLiveDataByUidInDB().observe(getViewLifecycleOwner(), new Observer<List<Task>>() {
                 @Override
                 public void onChanged(List<Task> tasks) {
+                    Log.d("imageView", "onChanged: " + tasks.size());
                     tasksItemAdapter.setTasks(tasks);
                     tasksItemAdapter.notifyDataSetChanged();
                 }
             });
             tasksItemAdapter.setCheckBoxIsShow();
+            shareFragmentBinding.shareRecyclerView.setAdapter(tasksItemAdapter);
         }
-        shareFragmentBinding.shareRecyclerView.setAdapter(clockItemAdapter);
         setListener();
     }
 

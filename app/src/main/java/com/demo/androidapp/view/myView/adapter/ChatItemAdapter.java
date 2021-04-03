@@ -18,11 +18,13 @@ import com.demo.androidapp.MyApplication;
 import com.demo.androidapp.R;
 import com.demo.androidapp.model.common.ItemTypeEnum;
 import com.demo.androidapp.model.entity.ChatRecord;
+import com.demo.androidapp.model.entity.Clock;
 import com.demo.androidapp.model.entity.Task;
 import com.demo.androidapp.util.DateTimeUtil;
 import com.demo.androidapp.view.myView.adapter.itemModel.ChatItemModel;
 import com.google.android.material.imageview.ShapeableImageView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ChatItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -33,41 +35,50 @@ public class ChatItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     private List<ChatRecord> chatRecords;
 
-    private List<ChatItemModel> chatItemModelList;
+    private List<ChatItemModel> chatItemModels;
 
     private ItemLongOnClickListener itemLongOnClickListener;
 
-    private ItemOnClickListener itemOnClickListener;
+    private TaskItemOnClickListener taskItemOnClickListener;
+
+    private ClockItemOnClickListener clockItemOnClickListener;
 
     private String fImgUrl;
 
     private Bitmap fBitmap;
     private Bitmap uBitmap;
 
-    public void setChatRecords(List<ChatRecord> chatRecords) {
-        this.chatRecords.clear();
-        if (chatRecords == null || chatRecords.size() == 0)return ;
-        this.chatRecords.addAll(chatRecords);
+    public void setChatItemModels(List<ChatItemModel> chatItemModels) {
+        this.chatItemModels.clear();
+        if (chatItemModels == null || chatItemModels.size() == 0)return ;
+        this.chatItemModels.addAll(chatItemModels);
         notifyDataSetChanged();
     }
 
-    public void addChatRecords(ChatRecord chatRecord) {
-        Log.d("imageView", "addChatRecords: ");
-        this.chatRecords.add(chatRecord);
-        notifyItemRangeInserted(chatRecords.size()-1,1);
-        //notifyDataSetChanged();
+    public void addChatItemModel(ChatItemModel chatItemModel) {
+        Log.d("imageView", "addChatItemModel: " + chatItemModel.toString());
+        this.chatItemModels.add(chatItemModel);
+        notifyDataSetChanged();
+        //notifyItemRangeInserted(chatItemModels.size()-1,1);
     }
 
     public void setItemLongOnClickListener(ItemLongOnClickListener itemLongOnClickListener) {
         this.itemLongOnClickListener = itemLongOnClickListener;
     }
-    public void setItemOnClickListener(ItemOnClickListener itemOnClickListener) {
-        this.itemOnClickListener = itemOnClickListener;
+    public void setClockItemOnClickListener(ClockItemOnClickListener clockItemOnClickListener) {
+        this.clockItemOnClickListener = clockItemOnClickListener;
+    }
+    public void setTaskItemOnClickListener(TaskItemOnClickListener taskItemOnClickListener) {
+        this.taskItemOnClickListener = taskItemOnClickListener;
     }
 
-    public ChatItemAdapter(List<ChatRecord> chatRecords,String fImgUrl) {
-        Log.d("imageView", "ChatItemAdapter: 数据长度：" + chatRecords.size());
-        this.chatRecords = chatRecords;
+    public ChatItemAdapter(List<ChatItemModel> chatItemModels,String fImgUrl) {
+        if (chatItemModels == null){
+            this.chatItemModels = new ArrayList<>();
+        }else {
+            Log.d("imageView", "ChatItemAdapter: 数据长度：" + chatItemModels.size());
+            this.chatItemModels = chatItemModels;
+        }
         this.fImgUrl = fImgUrl;
     }
 
@@ -75,7 +86,8 @@ public class ChatItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        View view = layoutInflater.inflate(R.layout.chat_text_item_left,parent,false);
+        Log.d("imageView", "onCreateViewHolder: " + viewType);
+        View view;
         switch (viewType) {
             case 1: {
                 view = layoutInflater.inflate(R.layout.chat_text_item_left,parent,false);
@@ -105,50 +117,66 @@ public class ChatItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 break;
             }
         }
-        return new MyTextViewHolder(view);
+        return null;
     }
 
     @Override
     public int getItemViewType(int position) {
-        return chatItemModelList.get(position).getType();
+        Log.d("imageView", "getItemViewType: " + position);
+        return chatItemModels == null ? super.getItemViewType(position) : chatItemModels.get(position).getType();
     }
 
     @SuppressLint("SetTextI18n")
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        ChatRecord chatRecord = chatRecords.get(position);
-        ChatItemModel chatItemModel = chatItemModelList.get(position);
-        int type = chatItemModelList.get(position).getType();
+        ChatItemModel chatItemModel = chatItemModels.get(position);
+        int type = chatItemModel.getType();
         if (type == 1 || type == 2) {
-            Glide.with(MyApplication.getMyApplicationContext()).load(MyApplication.getApplication().getUser().getImg_url() + DateTimeUtil.getRandom()).into(((MyTextViewHolder) holder).imageView);
+            Glide.with(MyApplication.getMyApplicationContext()).load(MyApplication.getApplication().getUser().getImg_url() + DateTimeUtil.getRandom()).into(((MyTextViewHolder) holder).chatItemImageView);
             ((MyTextViewHolder)holder).msgTextView.setText((String)chatItemModel.getData());
         }
         if (type == 3 || type == 4) {
-            Glide.with(MyApplication.getMyApplicationContext()).load(MyApplication.getApplication().getUser().getImg_url() + DateTimeUtil.getRandom()).into(((MyTextViewHolder) holder).imageView);
-            ((MyTaskViewHolder)holder).chatTaskItemTaskTextView.setText(((Task)chatItemModel.getData()).getTask());
+            Task task = (Task)chatItemModel.getData();
+            Glide.with(MyApplication.getMyApplicationContext()).load(MyApplication.getApplication().getUser().getImg_url() + DateTimeUtil.getRandom()).into(((MyTaskViewHolder) holder).chatItemImageView);
+            ((MyTaskViewHolder)holder).chatTaskItemTaskTextView.setText(task.getTask());
+            ((MyTaskViewHolder)holder).itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (taskItemOnClickListener == null)return;
+                    taskItemOnClickListener.itemOnClick(position,task,type);
+                }
+            });
         }
         if (type == 5 || type == 6) {
-            Glide.with(MyApplication.getMyApplicationContext()).load(MyApplication.getApplication().getUser().getImg_url() + DateTimeUtil.getRandom()).into(((MyTextViewHolder) holder).imageView);
-            ((MyClockViewHolder)holder).chatClockItemClockTaskTextView.setText(chatRecord.getTask());
+            Clock clock = (Clock) chatItemModel.getData();
+            Glide.with(MyApplication.getMyApplicationContext()).load(MyApplication.getApplication().getUser().getImg_url() + DateTimeUtil.getRandom()).into(((MyClockViewHolder) holder).chatItemImageView);
+            ((MyClockViewHolder)holder).chatClockItemClockTaskTextView.setText(clock.getTask());
+            ((MyClockViewHolder)holder).itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (clockItemOnClickListener == null)return;
+                    clockItemOnClickListener.itemOnClick(position,clock,type);
+                }
+            });
         }
     }
     @Override
     public int getItemCount() {
-        return chatRecords == null ? 0 : chatRecords.size();
+        return chatItemModels == null ? 0 : chatItemModels.size();
     }
 
     //文本消息Item
     public static class MyTextViewHolder extends RecyclerView.ViewHolder {
 
         public View itemView;
-        public ShapeableImageView imageView;
+        public ShapeableImageView chatItemImageView;
         public TextView msgTextView;
 
         public MyTextViewHolder(@NonNull View itemView) {
             super(itemView);
             this.itemView = itemView;
-            this.imageView = itemView.findViewById(R.id.chatItemImageView);
+            this.chatItemImageView = itemView.findViewById(R.id.chatItemImageView);
             this.msgTextView = itemView.findViewById(R.id.chatItemMsgTextView);
         }
     }
@@ -157,13 +185,13 @@ public class ChatItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public static class MyTaskViewHolder extends RecyclerView.ViewHolder {
 
         public View itemView;
-        public ShapeableImageView imageView;
+        public ShapeableImageView chatItemImageView;
         public TextView chatTaskItemTaskTextView;
 
         public MyTaskViewHolder(@NonNull View itemView) {
             super(itemView);
             this.itemView = itemView;
-            this.imageView = itemView.findViewById(R.id.chatItemImageView);
+            this.chatItemImageView = itemView.findViewById(R.id.chatItemImageView);
             this.chatTaskItemTaskTextView = itemView.findViewById(R.id.chatTaskItemTaskTextView);
         }
     }
@@ -188,8 +216,13 @@ public class ChatItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         void itemLongOnClick();
     }
 
-    //item点击接口
-    public interface ItemOnClickListener {
-        void itemOnClick(int position,long id,String fuid);
+    //任务item点击接口
+    public interface TaskItemOnClickListener {
+        void itemOnClick(int position,Task task,int type);
+    }
+
+    //时钟item点击接口
+    public interface ClockItemOnClickListener {
+        void itemOnClick(int position,Clock clock,int type);
     }
 }
