@@ -377,34 +377,42 @@ public class ChatFragment extends Fragment implements View.OnClickListener, EMMe
     @Override
     public void onMessageReceived(List<EMMessage> list) {
         Log.d("imageView", "onMessageReceived:数据长度 " + list.size());
-        for (EMMessage emMessage : list) {
-            try {
-                if (emMessage.getBooleanAttribute("isCustomMsg")){
-                    String type = ((EMTextMessageBody)emMessage.getBody()).getMessage();
-                    if (type.equals("clock")){
-                        JSONObject jsonObject = emMessage.getJSONObjectAttribute("clocks");
-                        List<Clock> clocks = (List<Clock>) jsonObject.opt("clocks");
-                        clockList.addAll(clocks);
-                        for (Clock clock : clocks) {
-                            chatItemAdapter.addChatItemModel(new ChatItemModel(5,clock));
-                        }
+        requireActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                for (EMMessage emMessage : list) {
+                    try {
+                        if (emMessage.getBooleanAttribute("isCustomMsg")) {
+                            EMCustomMessageBody emCustomMessageBody = ((EMCustomMessageBody) emMessage.getBody());
+                            String type = emCustomMessageBody.event();
+                            if (type.equals("clock")) {
+                                Map<String,String> map = emCustomMessageBody.getParams();
+                                List<Clock> clocks = (List<Clock>) com.alibaba.fastjson.JSONArray.parseArray(map.get("clocks"),Clock.class);
+                                clockList.addAll(clocks);
+                                for (Clock clock : clocks) {
+                                    chatItemAdapter.addChatItemModel(new ChatItemModel(5, clock));
+                                }
 
-                    }else if(type.equals("task")) {
-                        JSONObject jsonObject = emMessage.getJSONObjectAttribute("tasks");
-                        List<Task> tasks = (List<Task>) jsonObject.opt("tasks");
-                        taskList.addAll(tasks);
-                        for (Task task : tasks) {
-                            chatItemAdapter.addChatItemModel(new ChatItemModel(3,task));
+                            } else if (type.equals("task")) {
+                                Map<String,String> map = emCustomMessageBody.getParams();
+                                List<Task> tasks = (List<Task>) com.alibaba.fastjson.JSONArray.parseArray(map.get("tasks"),Task.class);
+                                taskList.addAll(tasks);
+                                for (Task task : tasks) {
+                                    chatItemAdapter.addChatItemModel(new ChatItemModel(3, task));
+                                }
+                            }
+                        }else {
+                            Log.d("imageView", "onMessageReceived:数据长度 " + list.size());
+                            String context = ((EMTextMessageBody) emMessage.getBody()).getMessage();
+                            ChatItemModel chatItemModel = new ChatItemModel(1, context);
+                            chatItemAdapter.addChatItemModel(chatItemModel);
                         }
+                    } catch (HyphenateException e) {
+                        e.printStackTrace();
                     }
                 }
-            } catch (HyphenateException e) {
-                String context = ((EMTextMessageBody)emMessage.getBody()).getMessage();
-                ChatItemModel chatItemModel = new ChatItemModel(1,context);
-                chatItemAdapter.addChatItemModel(chatItemModel);
-                //e.printStackTrace();
             }
-        }
+        });
     }
 
     @Override
@@ -442,7 +450,12 @@ public class ChatFragment extends Fragment implements View.OnClickListener, EMMe
             @Override
             public void onSuccess() {
                 Log.d("imageView", "onSuccess: 发送成功" + fName);
-                chatItemAdapter.addChatItemModel(new ChatItemModel(2,content));
+                requireActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        chatItemAdapter.addChatItemModel(new ChatItemModel(2, content));
+                    }
+                });
             }
 
             @Override
@@ -477,10 +490,15 @@ public class ChatFragment extends Fragment implements View.OnClickListener, EMMe
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onSuccess() {
-                Log.d("imageView", "onSuccess: 发送成功" + fName);
-                for (Clock clock : clocks) {
-                    chatItemAdapter.addChatItemModel(new ChatItemModel(6,clock));
-                }
+                requireActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.d("imageView", "onSuccess: 发送成功" + fName);
+                        for (Clock clock : clocks) {
+                            chatItemAdapter.addChatItemModel(new ChatItemModel(6, clock));
+                        }
+                    }
+                });
             }
 
             @Override
@@ -516,9 +534,14 @@ public class ChatFragment extends Fragment implements View.OnClickListener, EMMe
             @Override
             public void onSuccess() {
                 Log.d("imageView", "onSuccess: 发送成功" + fName);
-                for (Task task : tasks) {
-                    chatItemAdapter.addChatItemModel(new ChatItemModel(4,task));
-                }
+                requireActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        for (Task task : tasks) {
+                            chatItemAdapter.addChatItemModel(new ChatItemModel(4, task));
+                        }
+                    }
+                });
             }
             @Override
             public void onError(int i, String s) {
