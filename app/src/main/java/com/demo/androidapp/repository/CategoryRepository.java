@@ -8,8 +8,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.room.Room;
 
-import com.demo.androidapp.db.AppDatabase;
-import com.demo.androidapp.db.CategoryOfTaskDao;
+import com.demo.androidapp.dao.AppDatabase;
+import com.demo.androidapp.dao.CategoryOfTaskDao;
 import com.demo.androidapp.model.entity.CategoryOfTask;
 
 import java.util.List;

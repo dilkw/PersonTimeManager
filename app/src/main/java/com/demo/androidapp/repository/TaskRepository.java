@@ -10,27 +10,14 @@ import androidx.room.Room;
 
 import com.demo.androidapp.MyApplication;
 import com.demo.androidapp.api.Api;
-import com.demo.androidapp.db.AppDatabase;
-import com.demo.androidapp.db.BillDao;
-import com.demo.androidapp.db.TaskDao;
-import com.demo.androidapp.model.commitObject.UpdateTaskCommit;
-import com.demo.androidapp.model.entity.Bill;
-import com.demo.androidapp.model.entity.Clock;
-import com.demo.androidapp.model.entity.Friend;
+import com.demo.androidapp.dao.AppDatabase;
+import com.demo.androidapp.dao.TaskDao;
 import com.demo.androidapp.model.entity.Task;
-import com.demo.androidapp.model.common.RCodeEnum;
 import com.demo.androidapp.model.common.ReturnData;
 import com.demo.androidapp.model.returnObject.ReturnListObject;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-
-import okhttp3.RequestBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class TaskRepository {
 

@@ -10,8 +10,8 @@ import androidx.room.Room;
 
 import com.demo.androidapp.MyApplication;
 import com.demo.androidapp.api.Api;
-import com.demo.androidapp.db.AppDatabase;
-import com.demo.androidapp.db.BillDao;
+import com.demo.androidapp.dao.AppDatabase;
+import com.demo.androidapp.dao.BillDao;
 import com.demo.androidapp.model.common.RCodeEnum;
 import com.demo.androidapp.model.common.ReturnData;
 import com.demo.androidapp.model.entity.Bill;

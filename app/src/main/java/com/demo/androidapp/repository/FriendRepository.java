@@ -10,20 +10,13 @@ import androidx.room.Room;
 
 import com.demo.androidapp.MyApplication;
 import com.demo.androidapp.api.Api;
-import com.demo.androidapp.db.AppDatabase;
-import com.demo.androidapp.db.ClockDao;
-import com.demo.androidapp.db.FriendDao;
+import com.demo.androidapp.dao.AppDatabase;
+import com.demo.androidapp.dao.FriendDao;
 import com.demo.androidapp.model.FriendListItem;
 import com.demo.androidapp.model.common.RCodeEnum;
 import com.demo.androidapp.model.common.ReturnData;
-import com.demo.androidapp.model.entity.Bill;
-import com.demo.androidapp.model.entity.Clock;
 import com.demo.androidapp.model.entity.Friend;
-import com.demo.androidapp.model.entity.User;
 import com.demo.androidapp.model.returnObject.ReturnListObject;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;

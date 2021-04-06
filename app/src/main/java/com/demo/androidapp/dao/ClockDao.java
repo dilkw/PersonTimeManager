@@ -1,4 +1,4 @@
-package com.demo.androidapp.db;
+package com.demo.androidapp.dao;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
@@ -7,7 +7,6 @@ import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
 
-import com.demo.androidapp.model.entity.Bill;
 import com.demo.androidapp.model.entity.Clock;
 
 import java.util.List;

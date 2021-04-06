@@ -1,25 +1,17 @@
 package com.demo.androidapp.repository;
 
 import android.app.Application;
-import android.os.AsyncTask;
-import android.util.Log;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.room.Room;
 
 import com.demo.androidapp.MyApplication;
 import com.demo.androidapp.api.Api;
-import com.demo.androidapp.db.AppDatabase;
-import com.demo.androidapp.db.ChatRecordDao;
-import com.demo.androidapp.db.TaskDao;
-import com.demo.androidapp.model.common.ReturnData;
+import com.demo.androidapp.dao.AppDatabase;
+import com.demo.androidapp.dao.ChatRecordDao;
 import com.demo.androidapp.model.entity.ChatRecord;
-import com.demo.androidapp.model.entity.Task;
-import com.demo.androidapp.model.returnObject.ReturnListObject;
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 public class ChatRecordRepository {
 
