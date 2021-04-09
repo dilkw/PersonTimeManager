@@ -71,12 +71,13 @@ public class ResetEmailDialog extends DialogFragment implements View.OnClickList
         Log.d("imageView", "onCreateDialog: ");
         resetemailDialogBinding = DataBindingUtil.inflate(LayoutInflater.from(requireContext()),R.layout.resetemail_dialog,null,false);
         View contentView = resetemailDialogBinding.getRoot();
-        addTextChangeWatcher();
+
         AlertDialog alertDialog = new AlertDialog
                 .Builder(requireContext())
                 .setView(contentView)
                 .setCancelable(false)
                 .create();
+        addTextChangeWatcher();
         return alertDialog;
     }
 
@@ -108,6 +109,7 @@ public class ResetEmailDialog extends DialogFragment implements View.OnClickList
                 Editable e1  = resetemailDialogBinding.resetEmailDialogNewEmailTextInputEditText.getText();
                 Editable e2  = resetemailDialogBinding.resetEmailDialogCodeInputEditText.getText();
                 resetemailDialogBinding.resetEmailEnterBtn.setEnabled(e1 != null && e2 != null && !e1.toString().equals("") && !e2.toString().equals(""));
+                resetemailDialogBinding.resetEmailGetCodeButton.setEnabled(e1 != null && !e1.toString().equals(""));
             }
 
             @Override

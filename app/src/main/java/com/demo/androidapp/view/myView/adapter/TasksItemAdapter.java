@@ -161,10 +161,12 @@ public class TasksItemAdapter extends RecyclerView.Adapter<TasksItemAdapter.MyVi
         }
     }
 
+    //长按回调接口
     public interface ItemLongOnClickListener {
         void itemLongOnClick();
     }
 
+    //点击回调接口
     public interface ItemOnClickListener {
         void itemOnClick(int position,Task task);
     }

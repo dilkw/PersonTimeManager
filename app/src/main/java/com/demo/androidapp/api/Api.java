@@ -2,7 +2,7 @@ package com.demo.androidapp.api;
 
 import androidx.lifecycle.LiveData;
 
-import com.demo.androidapp.model.FriendListItem;
+import com.demo.androidapp.model.FindFriendInfo;
 import com.demo.androidapp.model.ResetPwdModel;
 import com.demo.androidapp.model.entity.Bill;
 import com.demo.androidapp.model.entity.Clock;
@@ -31,50 +31,35 @@ public interface Api {
     //登录
     @FormUrlEncoded
     @POST("user/login")
-    LiveData<ReturnData<User>> signIn(@Field("name") String name,
-                                                    @Field("password") String password);
-
+    Call<ReturnData<User>> reSignIn(@Field("name") String name, @Field("password") String password);
     //登录
     @FormUrlEncoded
     @POST("user/login")
-    Call<ReturnData<User>> reSignIn(@Field("name") String name,
-                                      @Field("password") String password);
-
+    LiveData<ReturnData<User>> signIn(@Field("name") String name, @Field("password") String password);
     //注册
     @POST("user/signup")
     LiveData<ReturnData<User>> signUp(@Body RegisterCommit registerCommit);
-
-    //激活帐号获取验证码（返回字符串）https://sodacoco.com/api/v1/user/forget
+    //激活帐号获取验证码
     @FormUrlEncoded
     @POST("user/active/code")
     LiveData<ReturnData<Object>> getActiveCodes(@Field("email") String email);
-
     //重置密码获取验证码（返回字符串）
     @FormUrlEncoded
     @POST("user/forget")
     LiveData<ReturnData<Object>> getResetPwdCode(@Field("email") String email);
-
     //重置密码
     @POST("user/reset")
     LiveData<ReturnData<Object>> resetPwd(@Body ResetPwdModel resetPwdModel);
-
     //注册完成后激活帐号
     @FormUrlEncoded
     @POST("user/active")
     LiveData<ReturnData<Object>> active(@Field("email") String email,@Field("code") String code);
-
-    //注销
+    //退出登录
     @POST("user/logout")
     LiveData<ReturnData<Object>> signOut();
-
-    //获取某个用户的所有任务列表
-    @GET("todo/list")
-    LiveData<ReturnData<ReturnListObject<Task>>> getTaskList();
-
     // 获取用户个人信息
     @GET("user/me")
     LiveData<ReturnData<User>> getUserInfo();
-
     // 修改个人信息名字（昵称）
     @FormUrlEncoded
     @PUT("user/editName")
@@ -111,9 +96,9 @@ public interface Api {
     @POST("user/uploadImg")
     LiveData<ReturnData<String>> uploadImg(@Part MultipartBody.Part file1);
 
-    //获取任务列表
+    //获取某个用户的所有任务列表
     @GET("todo/list")
-    Call<ReturnData<ReturnListObject<Task>>> getTaskListLiveData();
+    LiveData<ReturnData<ReturnListObject<Task>>> getTaskList();
 
     //获取某个任务信息
     @GET("todo/info/{taskId}")
@@ -187,17 +172,17 @@ public interface Api {
 
     //获取好友信息
     @GET("friend/info/{id}")
-    LiveData<ReturnData<FriendListItem>> getFriendInfoByUid(@Path("id")String fuid);
+    LiveData<ReturnData<FindFriendInfo>> getFriendInfoByUid(@Path("id")String fUid);
 
     //添加好友
     @FormUrlEncoded
     @POST("friend/add")
-    LiveData<ReturnData<Friend>> addFriend(@Field("email") String friendEmail,
+    LiveData<ReturnData<Friend>> addFriend(@Field("fid") String fid,
                                            @Field("user_name") String userName,
                                            @Field("img_url") String imgUrl);
 
     //删除好友
-    @HTTP(method = "DELETE", path = "friend/{ids}", hasBody = false)
-    LiveData<ReturnData<Object>> deleteFriendsByIds(@Path("ids") String friendIds);
+    @HTTP(method = "DELETE", path = "friend/{fid}", hasBody = false)
+    LiveData<ReturnData<Object>> deleteFriendsByFUId(@Path("fid") String fid);
 
 }

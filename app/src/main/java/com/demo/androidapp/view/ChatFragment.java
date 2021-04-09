@@ -80,13 +80,8 @@ public class ChatFragment extends Fragment implements View.OnClickListener, EMMe
 
     private ChatViewModel chatViewModel;
 
-    private List<Clock> clockList;
-
-    private List<Task> taskList;
-
     private String fName = "";
     private String fImgUrl = "";
-    private String fUid = "";
 
     public static ChatFragment newInstance() {
         return new ChatFragment();
@@ -129,7 +124,6 @@ public class ChatFragment extends Fragment implements View.OnClickListener, EMMe
         if (getArguments() != null) {
             fName = getArguments().getString("fName");
             fImgUrl = getArguments().getString("fImgUrl");
-            fUid = getArguments().getString("fUid");
         }
         chatFragmentBinding.chatFragmentToolBar.setTitle(fName);
         chatItemAdapter = new ChatItemAdapter(new ArrayList<ChatItemModel>(),fImgUrl);
@@ -151,20 +145,12 @@ public class ChatFragment extends Fragment implements View.OnClickListener, EMMe
                 if (emCustomMessageBody.event().equals("clock")){
                     Map<String,String> map = emCustomMessageBody.getParams();
                     List<Clock> clocks = (List<Clock>) com.alibaba.fastjson.JSONArray.parseArray(map.get("clocks"),Clock.class);
-                    if (clockList == null) {
-                        clockList = new ArrayList<>();
-                    }
-                    clockList.addAll(clocks);
                     for (Clock clock : clocks) {
                         chatItemAdapter.addChatItemModel(new ChatItemModel(message.getFrom().equals(fName) ? 5 : 6,clock));
                     }
                 }else {
                     Map<String,String> map = emCustomMessageBody.getParams();
                     List<Task> tasks = (List<Task>) com.alibaba.fastjson.JSONArray.parseArray(map.get("tasks"),Task.class);
-                    if (taskList == null) {
-                        taskList = new ArrayList<>();
-                    }
-                    taskList.addAll(tasks);
                     for (Task task : tasks) {
                         chatItemAdapter.addChatItemModel(new ChatItemModel(message.getFrom().equals(fName) ? 3 : 4,task));
                     }
@@ -388,7 +374,6 @@ public class ChatFragment extends Fragment implements View.OnClickListener, EMMe
                             if (type.equals("clock")) {
                                 Map<String,String> map = emCustomMessageBody.getParams();
                                 List<Clock> clocks = (List<Clock>) com.alibaba.fastjson.JSONArray.parseArray(map.get("clocks"),Clock.class);
-                                clockList.addAll(clocks);
                                 for (Clock clock : clocks) {
                                     chatItemAdapter.addChatItemModel(new ChatItemModel(5, clock));
                                 }
@@ -396,7 +381,6 @@ public class ChatFragment extends Fragment implements View.OnClickListener, EMMe
                             } else if (type.equals("task")) {
                                 Map<String,String> map = emCustomMessageBody.getParams();
                                 List<Task> tasks = (List<Task>) com.alibaba.fastjson.JSONArray.parseArray(map.get("tasks"),Task.class);
-                                taskList.addAll(tasks);
                                 for (Task task : tasks) {
                                     chatItemAdapter.addChatItemModel(new ChatItemModel(3, task));
                                 }

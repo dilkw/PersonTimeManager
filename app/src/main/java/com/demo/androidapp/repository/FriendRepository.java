@@ -12,7 +12,7 @@ import com.demo.androidapp.MyApplication;
 import com.demo.androidapp.api.Api;
 import com.demo.androidapp.dao.AppDatabase;
 import com.demo.androidapp.dao.FriendDao;
-import com.demo.androidapp.model.FriendListItem;
+import com.demo.androidapp.model.FindFriendInfo;
 import com.demo.androidapp.model.common.RCodeEnum;
 import com.demo.androidapp.model.common.ReturnData;
 import com.demo.androidapp.model.entity.Friend;
@@ -53,12 +53,12 @@ public class FriendRepository {
         return returnDataLiveData;
     }
 
-    //获取好友信息
-    public LiveData<ReturnData<FriendListItem>> getFriendInfoByUid(String fuid) {
+    //查找好友信息
+    public LiveData<ReturnData<FindFriendInfo>> getFriendInfoByUid(String fUid) {
         if (returnDataLiveData == null) {
             Log.d("imageView", "getReturnDataLiveData: returnDataLiveData为空");
         }
-        return api.getFriendInfoByUid(fuid);
+        return api.getFriendInfoByUid(fUid);
     }
 
     public FriendRepository getInstance() {
@@ -110,22 +110,22 @@ public class FriendRepository {
         return friendDao.getAllFriendsInDBByUidAndFName(uid,"%" + fName + "%");
     }
 
-    //在服务器中删除数据(可以多个)
-    public LiveData<ReturnData<Object>> deleteFriendsByIdsInServer(String friendIds) {
-        Log.d("imageView", "deleteFriendsByIdsInServer: 服务器删除数据" + friendIds);
-        return api.deleteFriendsByIds(friendIds);
+    //在服务器中删除好友(单个)
+    public LiveData<ReturnData<Object>> deleteFriendByFIdInServer(String fUid) {
+        Log.d("imageView", "deleteFriendsByIdsInServer: 服务器删除数据" + fUid);
+        return api.deleteFriendsByFUId(fUid);
     }
 
-    //在数据库中删除数据(可以多个)
-    public void deleteFriendsByUidInDB(Friend... friends) {
+    //在数据库中删除数据
+    public void deleteFriendByUidInDB(Friend... friends) {
         new DeleteAllFriends(friendDao).execute(friends);
     }
 
     //添加到服务器好友列表
-    public LiveData<ReturnData<Friend>> addFriendToServer(String friendEmail) {
+    public LiveData<ReturnData<Friend>> addFriendToServer(String fid) {
         String userName = MyApplication.getApplication().getUser().getName();
         String imgUrl = MyApplication.getApplication().getUser().getImg_url();
-        return api.addFriend(friendEmail,userName,imgUrl);
+        return api.addFriend(fid,userName,imgUrl);
     }
 
     public void updateFriendsInDB(Friend...friends) {

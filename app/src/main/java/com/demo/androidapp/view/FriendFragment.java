@@ -30,13 +30,17 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.demo.androidapp.MainActivity;
+import com.demo.androidapp.MyApplication;
 import com.demo.androidapp.R;
 import com.demo.androidapp.databinding.FriendFragmentBinding;
+import com.demo.androidapp.model.FindFriendInfo;
 import com.demo.androidapp.model.common.RCodeEnum;
 import com.demo.androidapp.model.common.ReturnData;
 import com.demo.androidapp.model.entity.Bill;
 import com.demo.androidapp.model.entity.Friend;
 import com.demo.androidapp.model.entity.Task;
+import com.demo.androidapp.model.entity.User;
 import com.demo.androidapp.model.returnObject.ReturnListObject;
 import com.demo.androidapp.view.myView.AddBillDialog;
 import com.demo.androidapp.view.myView.AddFriendDialog;
@@ -108,16 +112,12 @@ public class FriendFragment extends Fragment implements View.OnClickListener {
     }
     public void setListener() {
         Log.d("imageView", "setListener: ");
-        friendFragmentBinding.friendCancelImageButton.setOnClickListener(this);
-        friendFragmentBinding.friendDeleteImageButton.setOnClickListener(this);
-        friendFragmentBinding.friendAllSelectImageButton.setOnClickListener(this);
         friendFragmentBinding.friendMyFloatingActionButton.setOnClickListener(this);
         friendItemAdapter.setItemLongOnClickListener(new FriendItemAdapter.ItemLongOnClickListener() {
             @Override
             public void itemLongOnClick() {
                 Log.d("imageView", "setListener: 长按");
-                friendItemAdapter.setCheckBoxIsShow();
-                friendFragmentBinding.friendItemLongClickEditWindow.setVisibility(View.VISIBLE);
+                //friendItemAdapter.setCheckBoxIsShow();
             }
         });
 
@@ -204,7 +204,7 @@ public class FriendFragment extends Fragment implements View.OnClickListener {
                             @RequiresApi(api = Build.VERSION_CODES.O)
                             @Override
                             public void enterBtnOnClicked() {
-                                addFriend(addFriendDialog.getFriendEmail());
+                                addFriend(addFriendDialog.getFriendEmail(),addFriendDialog);
                             }
                         });
                         addFriendDialog.show(fragmentManager,"addBillDialogByMenu");
@@ -221,33 +221,6 @@ public class FriendFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.friendCancelImageButton: {
-                Log.d("imageView", "onClick: 取消按钮");
-                friendItemAdapter.cancelFriend();
-                friendFragmentBinding.friendItemLongClickEditWindow.setVisibility(View.GONE);
-                break;
-            }
-            case R.id.friendDeleteImageButton: {
-                Log.d("imageView", "onClick: 删除按钮");
-                friendViewModel.deleteFriendsByIdsInServer(friendItemAdapter.getEditModelSelectedBills()).observe(getViewLifecycleOwner(), new Observer<ReturnData<Object>>() {
-                    @Override
-                    public void onChanged(ReturnData<Object> objectReturnData) {
-                        if (objectReturnData.getCode() == RCodeEnum.OK.getCode()) {
-                            friendItemAdapter.deleteSelectedFriends();
-                            Toast.makeText(getContext(),"删除成功",Toast.LENGTH_SHORT).show();
-                        }else {
-                            Toast.makeText(getContext(),objectReturnData.getMsg(),Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-                break;
-            }
-            case R.id.friendAllSelectImageButton: {
-                Log.d("imageView", "onClick: 全选按钮");
-                friendFragmentBinding.friendAllSelectImageButton.setBackgroundColor(R.color.colorTextTrue);
-                friendItemAdapter.selectedAllFriends();
-                break;
-            }
             case R.id.friendMyFloatingActionButton: {
                 Log.d("imageView", "onClick: 添加按钮");
                 AddFriendDialog addFriendDialog = new AddFriendDialog();
@@ -256,7 +229,7 @@ public class FriendFragment extends Fragment implements View.OnClickListener {
                     @Override
                     public void enterBtnOnClicked() {
                         String friendEmail = addFriendDialog.getFriendEmail();
-                        addFriend(friendEmail);
+                        addFriend(friendEmail,addFriendDialog);
                     }
                 });
                 addFriendDialog.show(fragmentManager,"addFriendDialogByFloatingActionButton");
@@ -269,19 +242,25 @@ public class FriendFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    //添加账单方法
-    private void addFriend(String friendEmail) {
-        friendViewModel.addFriendInServer(friendEmail).observe(getViewLifecycleOwner(), new Observer<ReturnData<Friend>>() {
+    //添加好友方法
+    private void addFriend(String friendInfo,AddFriendDialog addFriendDialog) {
+        User user = MyApplication.getApplication().getUser();
+        if (friendInfo.equals(user.getName())
+                || friendInfo.equals(user.getEmail())
+                || friendInfo.equals(user.getUid())){
+            controller.navigate(R.id.userInfoFragment);
+            return;
+        }
+        friendViewModel.getFriendInfoInServerByFUid(friendInfo).observe(getViewLifecycleOwner(), new Observer<ReturnData<FindFriendInfo>>() {
             @Override
-            public void onChanged(ReturnData<Friend> friendReturnData) {
-                if (friendReturnData.getCode() == RCodeEnum.OK.getCode()) {
-                    Toast.makeText(getContext(),"添加好友成功",Toast.LENGTH_SHORT).show();
-                    Log.d("imageView", "onChanged: " + friendReturnData.getData().toString());
-                    friendItemAdapter.addFriend(friendReturnData.getData());
-                    friendViewModel.addFriendsInDB(friendReturnData.getData());
+            public void onChanged(ReturnData<FindFriendInfo> findFriendInfoReturnData) {
+                if (findFriendInfoReturnData == null) return;
+                if (findFriendInfoReturnData.getCode() == RCodeEnum.OK.getCode()) {
+                    addFriendDialog.dismiss();
+                    ((MainActivity)requireActivity()).putDataInToMap("friendInfo",findFriendInfoReturnData.getData());
+                    controller.navigate(R.id.action_friendFragment_to_friendInfoFragment);
                 }else {
-                    Toast.makeText(getContext(),friendReturnData.getMsg(),Toast.LENGTH_SHORT).show();
-                    Log.d("imageView",friendReturnData.getCode() + friendReturnData.getMsg());
+                    Toast.makeText(getContext(),findFriendInfoReturnData.getMsg(),Toast.LENGTH_SHORT).show();
                 }
             }
         });

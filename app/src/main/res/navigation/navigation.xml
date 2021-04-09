@@ -115,7 +115,11 @@
     <fragment
         android:id="@+id/friendInfoFragment"
         android:name="com.demo.androidapp.view.FriendInfoFragment"
-        android:label="好友信息" />
+        android:label="好友信息" >
+        <action
+            android:id="@+id/action_friendInfoFragment_to_chatFragment"
+            app:destination="@id/chatFragment" />
+    </fragment>
     <fragment
         android:id="@+id/clockStartFragment"
         android:name="com.demo.androidapp.view.ClockStartFragment"
@@ -135,5 +139,5 @@
     <fragment
         android:id="@+id/shareFragment"
         android:name="com.demo.androidapp.view.ShareFragment"
-        android:label="ShareFragment" />
+        android:label="分享" />
 </navigation>

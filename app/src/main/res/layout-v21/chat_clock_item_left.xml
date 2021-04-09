@@ -19,6 +19,8 @@
             android:id="@+id/chatItemImageView"
             android:layout_width="30dp"
             android:layout_height="30dp"
+            android:scaleType="centerCrop"
+            app:shapeAppearance="@style/circleImageStyle"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 

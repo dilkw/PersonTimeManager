@@ -128,7 +128,7 @@ public class ClipImgFragment extends Fragment implements View.OnClickListener {
                     Log.d("imageView", "onClick: bitmap为空");
                     break;
                 }
-                clipimgFragmentBinding.clipImageView.setImageBitmap(bitmap);
+                //clipimgFragmentBinding.clipImageView.setImageBitmap(bitmap);
                 uploadImg(bitmap);
                 Log.d("imageView", "onClick: bitmap不为空");
                 break;
@@ -142,7 +142,7 @@ public class ClipImgFragment extends Fragment implements View.OnClickListener {
             case R.id.clipImgFragmentCancelBtn: {
                 Log.d("imageView", "onClick: 取消按钮点击");
                 clipimgFragmentBinding.clipImgFragmentClipImgView.setCancelClip();
-                clipimgFragmentBinding.clipImageView.setImageBitmap(null);
+                //clipimgFragmentBinding.clipImageView.setImageBitmap(null);
                 break;
             }
             default:{

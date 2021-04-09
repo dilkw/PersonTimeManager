@@ -9,6 +9,7 @@
             type="com.demo.androidapp.viewmodel.FriendInfoViewModel" />
         <import type="com.demo.androidapp.model.common.StateEnum" />
         <import type="com.demo.androidapp.util.DateTimeUtil"/>
+        <import type="android.view.View"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -109,7 +110,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="100dp"
                     android:layout_marginLeft="100dp"
-                    android:text="@={friendInfoViewModel.friendListReturnLiveData.data.user.name}"
+                    android:text="@={friendInfoViewModel.findFriendInfoMutableLiveData.user.name}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -137,7 +138,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="100dp"
                     android:layout_marginLeft="100dp"
-                    android:text="@={friendInfoViewModel.friendListReturnLiveData.data.user.email}"
+                    android:text="@={friendInfoViewModel.findFriendInfoMutableLiveData.user.email}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -165,7 +166,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="100dp"
                     android:layout_marginLeft="100dp"
-                    android:text="@{DateTimeUtil.longToStrYMDHM(friendInfoViewModel.friendListReturnLiveData.data.user.created_at)}"
+                    android:text="@{DateTimeUtil.longToStrYMDHM(friendInfoViewModel.findFriendInfoMutableLiveData.user.created_at)}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -174,16 +175,26 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="60dp">
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/friendInfoFragmentSendMsgBtn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="发信息"
+                    android:visibility="@{friendInfoViewModel.userInfoLiveData.isFriend ? View.VISIBLE : View.GONE}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/deleteOrAddFriendButton"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:text="@{friendInfoViewModel.userInfoLiveData.data.isFriend ? friendInfoViewModel.deleteFriendStr : friendInfoViewModel.addFriendStr}"
+                    android:layout_height="wrap_content"
+                    android:text="@{friendInfoViewModel.userInfoLiveData.isFriend ? friendInfoViewModel.deleteFriendStr : friendInfoViewModel.addFriendStr}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toBottomOf="@+id/friendInfoFragmentSendMsgBtn" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </LinearLayout>

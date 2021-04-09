@@ -86,7 +86,6 @@ public class AddFriendDialog extends DialogFragment implements View.OnClickListe
                     return;
                 }
                 enterListener.enterBtnOnClicked();
-                dismiss();
                 break;
             }
             case R.id.addFriendDialogCloseImgBtn: {

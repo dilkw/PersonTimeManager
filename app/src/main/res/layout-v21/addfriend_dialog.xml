@@ -66,7 +66,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="#00000000"
-                    android:hint="请输入好友ID" />
+                    android:hint="请输入好友ID/邮箱/用户名" />
             </com.google.android.material.textfield.TextInputLayout>
 
 

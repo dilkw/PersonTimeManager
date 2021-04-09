@@ -12,7 +12,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="400dp">
+            android:layout_height="350dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -92,10 +92,11 @@
 
             <Button
                 android:id="@+id/resetEmailGetCodeButton"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:text="获取验证码"
                 android:textSize="10sp"
+                android:enabled="false"
                 app:layout_constraintBottom_toBottomOf="@+id/resetEmailDialogCodeInputLayout"
                 app:layout_constraintEnd_toEndOf="@+id/resetEmailDialogNewEmailTextInputLayout"
                 app:layout_constraintStart_toEndOf="@+id/resetEmailDialogCodeInputLayout"
@@ -105,8 +106,13 @@
                 android:id="@+id/resetEmailEnterBtn"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginRight="10dp"
                 android:layout_marginBottom="20dp"
                 android:text="@string/btn_enter"
+                android:enabled="false"
                 app:cornerRadius="15dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

@@ -8,6 +8,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.demo.androidapp.model.FindFriendInfo;
 import com.demo.androidapp.model.common.RCodeEnum;
 import com.demo.androidapp.model.common.ReturnData;
 import com.demo.androidapp.model.entity.Bill;
@@ -54,28 +55,13 @@ public class FriendViewModel extends AndroidViewModel {
     }
 
 
-    //根据用户id从本地数据库清空该用户的时钟列表
-    public void deleteClocksByUidInDB(List<Friend> friends) {
+    //根据用户id从本地数据库清空删除好友
+    public void deleteFriendByUidInDB(Friend friend) {
         //在数据库中没有数据时尝试从无服务器中获取
-        if (friends == null || friends.size() == 0) {
+        if (friend == null) {
             return;
         }
-        Friend[] friendArray = new Friend[friends.size()];
-        friends.toArray(friendArray);
-        friendRepository.deleteFriendsByUidInDB(friendArray);
-    }
-
-    //根据好友id从服务器中删除好友（多个删除）
-    public LiveData<ReturnData<Object>> deleteFriendsByIdsInServer(List<Friend> friends) {
-        Log.d("imageView", "deleteTasksByUidInServer: 删除任务");
-        if (friends == null || friends.size() == 0) {
-            return new MutableLiveData<>(new ReturnData<>(RCodeEnum.DATA_ERROR));
-        }
-        long[] friendIds = new long[friends.size()];
-        for (int i =0 ; i < friends.size() ; i++) {
-            friendIds[i] = friends.get(i).getId();
-        }
-        return friendRepository.deleteFriendsByIdsInServer(Arrays.toString(friendIds));
+        friendRepository.deleteFriendByUidInDB(friend);
     }
 
     //数据库添加好友
@@ -86,11 +72,11 @@ public class FriendViewModel extends AndroidViewModel {
     }
 
     //服务器添加好友
-    public LiveData<ReturnData<Friend>> addFriendInServer(String friendEmail) {
-        if (friendEmail == null || friendEmail.equals("")) {
+    public LiveData<ReturnData<Friend>> addFriendInServer(String fid) {
+        if (fid == null || fid.equals("")) {
             return new MutableLiveData<>(new ReturnData<>(RCodeEnum.DATA_ERROR));
         }
-        return friendRepository.addFriendToServer(friendEmail);
+        return friendRepository.addFriendToServer(fid);
     }
 
     //数据库更新好友
@@ -98,6 +84,15 @@ public class FriendViewModel extends AndroidViewModel {
         //在数据库中没有数据时尝试从无服务器中获取
         if (friends.length == 0) return;
         friendRepository.updateFriendsInDB(friends);
+    }
+
+    //数据库更新好友
+    public LiveData<ReturnData<FindFriendInfo>> getFriendInfoInServerByFUid(String fUid) {
+        //在数据库中没有数据时尝试从无服务器中获取
+        if (fUid == null || fUid.equals("")) {
+            return new MutableLiveData<>(new ReturnData<>(RCodeEnum.DATA_ERROR));
+        }
+        return friendRepository.getFriendInfoByUid(fUid);
     }
 
 }

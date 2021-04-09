@@ -45,25 +45,6 @@ public class FriendItemAdapter extends RecyclerView.Adapter<FriendItemAdapter.My
         return editModelSelectedFriends;
     }
 
-    //长按Item时弹出编辑菜单，取消按钮（删除所选择的）
-    public void cancelFriend() {
-        isShow = false;
-        allChecked = false;
-        notifyDataSetChanged();
-    }
-    //长按Item时弹出编辑菜单，删除按钮（删除所选择的）
-    public void deleteSelectedFriends() {
-        allChecked = false;
-        if (editModelSelectedFriends.size() == 0)return ;
-        friends.removeAll(Objects.requireNonNull(editModelSelectedFriends));
-        notifyDataSetChanged();
-    }
-    //长按Item时弹出编辑菜单，全选按钮
-    public void selectedAllFriends() {
-        allChecked = true;
-        notifyDataSetChanged();
-    }
-
     //添加账单
     public void addFriend(Friend friend) {
         this.friends.add(friend);
@@ -85,11 +66,6 @@ public class FriendItemAdapter extends RecyclerView.Adapter<FriendItemAdapter.My
         this.friends.clear();
         if (friends == null || friends.size() == 0)return ;
         this.friends.addAll(friends);
-        notifyDataSetChanged();
-    }
-
-    public void setCheckBoxIsShow() {
-        isShow = true;
         notifyDataSetChanged();
     }
 
@@ -115,22 +91,6 @@ public class FriendItemAdapter extends RecyclerView.Adapter<FriendItemAdapter.My
         Log.d("imageView", "onBindViewHolder: " + friend.toString());
         holder.friendItemFNameTextView.setText(friend.getFname());
         Glide.with(MyApplication.getMyApplicationContext()).load(friend.getFimgurl() + DateTimeUtil.getRandom()).into(holder.friendItemImageView);
-        //holder.friendItemImageView.setImageResource(R.drawable.background);
-        holder.itemFriendCheckBox.setVisibility(isShow ? View.VISIBLE : View.GONE);
-        holder.itemFriendCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    editModelSelectedFriends.add(friends.get(position));
-                }else {
-                    editModelSelectedFriends.remove(friends.get(position));
-                }
-            }
-        });
-        if (isShow) {
-            holder.itemFriendCheckBox.setChecked(allChecked);
-        }
-
         holder.friendItemImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -167,14 +127,12 @@ public class FriendItemAdapter extends RecyclerView.Adapter<FriendItemAdapter.My
         public View itemView;
         public TextView friendItemFNameTextView;
         public ShapeableImageView friendItemImageView;
-        public CheckBox itemFriendCheckBox;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
             this.itemView = itemView;
             this.friendItemFNameTextView = itemView.findViewById(R.id.friendItemFNameTextView);
             this.friendItemImageView = itemView.findViewById(R.id.friendItemImageView);
-            this.itemFriendCheckBox = itemView.findViewById(R.id.itemFriend_checkBox);
         }
     }
 

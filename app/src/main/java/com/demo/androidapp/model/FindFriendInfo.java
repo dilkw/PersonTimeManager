@@ -2,13 +2,13 @@ package com.demo.androidapp.model;
 
 import com.demo.androidapp.model.entity.User;
 
-public class FriendListItem {
+public class FindFriendInfo {
 
     private User user;
 
     private boolean is_friend;
 
-    public FriendListItem(User user, boolean is_friend) {
+    public FindFriendInfo(User user, boolean is_friend) {
         this.user = user;
         this.is_friend = is_friend;
     }

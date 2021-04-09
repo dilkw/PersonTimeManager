@@ -8,22 +8,20 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.demo.androidapp.model.FriendListItem;
+import com.demo.androidapp.model.FindFriendInfo;
 import com.demo.androidapp.model.common.RCodeEnum;
 import com.demo.androidapp.model.common.ReturnData;
 import com.demo.androidapp.model.entity.Friend;
-import com.demo.androidapp.model.entity.User;
-import com.demo.androidapp.repository.AuthRepository;
 import com.demo.androidapp.repository.FriendRepository;
 
-import java.util.List;
+import java.util.Objects;
 
 
 public class FriendInfoViewModel extends AndroidViewModel {
 
     private FriendRepository friendRepository;
 
-    public LiveData<ReturnData<FriendListItem>> friendListReturnLiveData;
+    public MutableLiveData<FindFriendInfo> findFriendInfoMutableLiveData;
 
     public String deleteFriendStr = "删除好友";
 
@@ -33,31 +31,32 @@ public class FriendInfoViewModel extends AndroidViewModel {
         super(application);
         Log.d("imageView", "UserInfoViewModel:-=-=-=-=-= " + application.getClass().getName());
         friendRepository = new FriendRepository(application);
-        friendListReturnLiveData = new MutableLiveData<>();
+        findFriendInfoMutableLiveData = new MutableLiveData<>();
     }
 
     //服务器获取用户信息
-    public LiveData<ReturnData<FriendListItem>> getFriendInfoByUid(String fuid) {
-        return this.friendListReturnLiveData = friendRepository.getFriendInfoByUid(fuid);
+    public LiveData<ReturnData<FindFriendInfo>> getFriendInfoByUid(String fuid) {
+        return friendRepository.getFriendInfoByUid(fuid);
     }
 
     //删除好友
-    public LiveData<ReturnData<Object>> deleteFriend(long id) {
-        Log.d("imageView", "deleteFriend: " + id);
-        if (friendListReturnLiveData == null || id == 0) return new MutableLiveData<>(new ReturnData<>(RCodeEnum.DATA_ERROR));
-        return friendRepository.deleteFriendsByIdsInServer("[" + id + "]");
+    public LiveData<ReturnData<Object>> deleteFriend() {
+        String fUid = Objects.requireNonNull(findFriendInfoMutableLiveData.getValue()).getUser().getUid();
+        if (fUid == null || fUid.equals("")) return new MutableLiveData<>(new ReturnData<>(RCodeEnum.DATA_ERROR));
+        Log.d("imageView", "deleteFriend: " + fUid);
+        return friendRepository.deleteFriendByFIdInServer(fUid);
     }
 
     //添加好友
     public LiveData<ReturnData<Friend>> addFriend() {
+        if (findFriendInfoMutableLiveData.getValue() == null) return new MutableLiveData<>(new ReturnData<>(RCodeEnum.DATA_ERROR));
         Log.d("imageView", "addFriend: ");
-        if (friendListReturnLiveData == null) return new MutableLiveData<>(new ReturnData<>(RCodeEnum.DATA_ERROR));
-        return friendRepository.addFriendToServer(friendListReturnLiveData.getValue().getData().getUser().getEmail());
+        return friendRepository.addFriendToServer(findFriendInfoMutableLiveData.getValue().getUser().getUid());
     }
 
     //获取returnLiveData
-    public LiveData<ReturnData<FriendListItem>> getUserInfoLiveData() {
-        return friendListReturnLiveData;
+    public LiveData<FindFriendInfo> getUserInfoLiveData() {
+        return findFriendInfoMutableLiveData;
     }
 
 }
