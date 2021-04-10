@@ -4,6 +4,8 @@ import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -34,7 +36,10 @@ import com.demo.androidapp.databinding.ClockstartFragmentBinding;
 import com.demo.androidapp.model.common.RCodeEnum;
 import com.demo.androidapp.model.common.ReturnData;
 import com.demo.androidapp.model.entity.Clock;
+import com.demo.androidapp.util.DateTimeUtil;
 import com.demo.androidapp.viewmodel.ClockStartViewModel;
+
+import java.time.LocalDateTime;
 
 public class ClockStartFragment extends Fragment implements View.OnClickListener {
 
@@ -105,6 +110,7 @@ public class ClockStartFragment extends Fragment implements View.OnClickListener
         });
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private void initView() {
         if (clockStartViewModel.clockLiveData.getValue() == null) {
             Log.d("imageView", "initView:null");
@@ -115,11 +121,12 @@ public class ClockStartFragment extends Fragment implements View.OnClickListener
                 .ofFloat(clockstartFragmentBinding.clockCountDown,"progress",progress,0);
         objectAnimator.setDuration(1000 * progress);
         //设置动画执行次数（ValueAnimator.INFINITE为无限）
-        objectAnimator.setRepeatCount(ValueAnimator.RESTART);
+        objectAnimator.setRepeatCount(0);
         //当动画执行次数大于零或是无限（ValueAnimator.INFINITE）时setRepeatMode才有效
-        objectAnimator.setRepeatMode(ValueAnimator.RESTART);
+        //objectAnimator.setRepeatMode(ValueAnimator.RESTART);
         objectAnimator.setInterpolator(new LinearInterpolator());
         objectAnimator.start();
+        objectAnimator.pause();
     }
 
     public void setListener() {
@@ -129,15 +136,28 @@ public class ClockStartFragment extends Fragment implements View.OnClickListener
 
         objectAnimator.addListener(new Animator.AnimatorListener() {
             @Override
-            public void onAnimationStart(Animator animation) {
-
-            }
-
+            public void onAnimationStart(Animator animation) { }
             @Override
             public void onAnimationEnd(Animator animation) {
-                updateClockIsComplete();
+                AlertDialog alertDialog = new AlertDialog.Builder(requireContext())
+                        .setTitle("提示")
+                        .setMessage("当前时钟任务已结束，是否保存并更新状态？若不保存当前计时清零")
+                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                controller.navigateUp();
+                            }
+                        })
+                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                            @RequiresApi(api = Build.VERSION_CODES.O)
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                updateClockIsComplete();
+                            }
+                        })
+                        .create();
+                alertDialog.show();
             }
-
             @Override
             public void onAnimationCancel(Animator animation) {
 
@@ -146,6 +166,31 @@ public class ClockStartFragment extends Fragment implements View.OnClickListener
             @Override
             public void onAnimationRepeat(Animator animation) {
 
+            }
+        });
+
+        clockstartFragmentBinding.clockStartFragmentToolBar.setNavigationOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+            @Override
+            public void onClick(View v) {
+                objectAnimator.pause();
+                AlertDialog alertDialog = new AlertDialog.Builder(requireContext())
+                        .setTitle("提示")
+                        .setMessage("当前时钟任务未结束，退出后将当前计时清零，下次任务开始将重新计时，确定退出？")
+                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                objectAnimator.resume();
+                            }
+                        })
+                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                controller.navigateUp();
+                            }
+                        })
+                        .create();
+                alertDialog.show();
             }
         });
     }
@@ -158,11 +203,7 @@ public class ClockStartFragment extends Fragment implements View.OnClickListener
             case R.id.clockStartFragmentStartBtn: {
                 Log.d("imageView", "onClick: 开始按钮点击");
                 objectAnimator.resume();
-                break;
-            }
-            case R.id.clockStartFragmentStopBtn: {
-                Log.d("imageView", "onClick: 暂停按钮点击");
-                objectAnimator.pause();
+                clockstartFragmentBinding.clockStartFragmentStartBtn.setEnabled(false);
                 break;
             }
             default:{
@@ -172,9 +213,11 @@ public class ClockStartFragment extends Fragment implements View.OnClickListener
     }
 
     //完成时更新时钟状态（改为完成状态）
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void updateClockIsComplete() {
         Clock clock = clockStartViewModel.clockLiveData.getValue();
         clock.setState(true);
+        clock.setComplete_time(DateTimeUtil.localDateTimeToLong(LocalDateTime.now()) / 1000);
         clockStartViewModel.upDateClockInfoInServer(clock).observe(getViewLifecycleOwner(), new Observer<ReturnData<Object>>() {
             @Override
             public void onChanged(ReturnData<Object> objectReturnData) {

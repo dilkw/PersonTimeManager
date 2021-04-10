@@ -123,7 +123,7 @@
     <fragment
         android:id="@+id/clockStartFragment"
         android:name="com.demo.androidapp.view.ClockStartFragment"
-        android:label="ClockStartFragment" />
+        android:label="时钟倒计时" />
     <fragment
         android:id="@+id/clipImgFragment"
         android:name="com.demo.androidapp.view.ClipImgFragment"

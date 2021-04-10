@@ -133,6 +133,7 @@ public class ShareFragment extends Fragment implements View.OnClickListener {
 
         //导航栏Menu菜单，搜索框监听事件
         SearchView searchView = (SearchView) (shareFragmentBinding.shareFragmentToolBar.getMenu().findItem(R.id.shareSearch).getActionView());
+        searchView.setIconified(false);
         //导航栏查询监听
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override

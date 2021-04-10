@@ -83,6 +83,7 @@ public class ClockItemAdapter extends RecyclerView.Adapter<ClockItemAdapter.MyVi
     public void addClock(Clock clock) {
         if (clock == null) {
             Log.d("imageView", "addClock: clock为空");
+            return;
         }
         this.clocks.add(clock);
         notifyDataSetChanged();
@@ -118,6 +119,8 @@ public class ClockItemAdapter extends RecyclerView.Adapter<ClockItemAdapter.MyVi
         holder.checkBox.setVisibility(isShow ? View.VISIBLE : View.GONE);
         holder.clockAlertTimeTextView.setText(clock.isAlert() ? DateTimeUtil.longToStrYMDHM(clock.getAlert_time()) : "");
         holder.clockItemAlertImg.setVisibility(clock.isAlert() ? View.VISIBLE : View.GONE);
+        holder.clockItemStateTextView.setText(clock.isState() ?
+                "完成时间:" + DateTimeUtil.longToStrYMDHM(clock.getComplete_time()) : "未完成");
         if (clock.isState()) {
             holder.clockItemStateImageView.setVisibility(View.VISIBLE);
             holder.clockStartButton.setEnabled(false);
@@ -126,9 +129,9 @@ public class ClockItemAdapter extends RecyclerView.Adapter<ClockItemAdapter.MyVi
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    editModelSelectedClocks.add(clocks.get(position));
+                    editModelSelectedClocks.add(clock);
                 }else {
-                    editModelSelectedClocks.remove(clocks.get(position));
+                    editModelSelectedClocks.remove(clock);
                 }
             }
         });
@@ -179,6 +182,7 @@ public class ClockItemAdapter extends RecyclerView.Adapter<ClockItemAdapter.MyVi
         public TextView clockAlertTimeTextView;
         public ImageView clockItemAlertImg;
         public ImageView clockItemStateImageView;
+        public TextView clockItemStateTextView;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -190,6 +194,7 @@ public class ClockItemAdapter extends RecyclerView.Adapter<ClockItemAdapter.MyVi
             this.clockAlertTimeTextView = itemView.findViewById(R.id.clockAlertTimeTextView);
             this.clockItemAlertImg = itemView.findViewById(R.id.clockItemAlertImg);
             this.clockItemStateImageView = itemView.findViewById(R.id.clockItemStateImageView);
+            this.clockItemStateTextView = itemView.findViewById(R.id.clockItemStateTextView);
         }
     }
 
