@@ -112,9 +112,7 @@ public class FriendInfoFragment extends Fragment implements View.OnClickListener
     public void setListener() {
         friendinfoFragmentBinding.deleteOrAddFriendButton.setOnClickListener(this);
         friendinfoFragmentBinding.friendInfoImageView.setOnClickListener(this);
-        if (Objects.requireNonNull(friendInfoViewModel.findFriendInfoMutableLiveData.getValue()).getIsFriend()) {
-            friendinfoFragmentBinding.friendInfoFragmentSendMsgBtn.setOnClickListener(this);
-        }
+        friendinfoFragmentBinding.friendInfoFragmentSendMsgBtn.setOnClickListener(this);
     }
 
     @SuppressLint({"NonConstantResourceId", "ResourceAsColor"})

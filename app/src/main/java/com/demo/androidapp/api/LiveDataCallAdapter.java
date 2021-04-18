@@ -64,16 +64,9 @@ public class LiveDataCallAdapter<T> implements CallAdapter<T, LiveData<T>> {
                     public void onResponse(@NotNull Call<T> call, @NotNull Response<T> response) {
                         Log.d("imageView", "onResponse1:================ " + response.getClass().getName());
                         T body = response.body();
-//                        if (response.code() == 401) {
-//                            try {
-//                                MyApplication.getApplication().reSignIn();
-//                            } catch (IOException e) {
-//                                e.printStackTrace();
-//                            }
-//                            MyLiveData.this.call.cancel();
-//                            MyLiveData.this.onActive();
-//                            return;
-//                        }
+                        if (body == null) {
+                            body = (T) (new ReturnData<>(200, response.message(),null));
+                        }
                         postValue(body);
                     }
                     @Override
@@ -81,27 +74,6 @@ public class LiveDataCallAdapter<T> implements CallAdapter<T, LiveData<T>> {
                         postValue((T) new ReturnData<>(201, t.getMessage(),null));
                     }
                 });
-//            }else {
-//                callClone.enqueue(new Callback<T>() {
-//                    @Override
-//                    public void onResponse(@NotNull Call<T> call, @NotNull Response<T> response) {
-//                        Log.d("imageView", "onResponse2:================ " + response.getClass().getName());
-//                        Log.d("imageView", "onResponse2:================ " + response.body().toString());
-//                        T body = response.body();
-//                        postValue(body);
-//                    }
-//
-//                    @Override
-//                    public void onFailure(Call<T> call, Throwable t) {
-//                        Log.d("imageView", "onFailure2:======= ");
-////                        if (isApiResponse) {
-//                            postValue((T) new ReturnData<>(201, t.getMessage(),null));
-////                        } else {
-////                            postValue(null);
-////                        }
-//                    }
-//                });
-//                callClone.cancel();
             }
         }
     }

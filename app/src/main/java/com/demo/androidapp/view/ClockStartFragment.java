@@ -132,7 +132,7 @@ public class ClockStartFragment extends Fragment implements View.OnClickListener
     public void setListener() {
         Log.d("imageView", "setListener: ");
         clockstartFragmentBinding.clockStartFragmentStartBtn.setOnClickListener(this);
-        clockstartFragmentBinding.clockStartFragmentStopBtn.setOnClickListener(this);
+        //clockstartFragmentBinding.clockStartFragmentStopBtn.setOnClickListener(this);
 
         objectAnimator.addListener(new Animator.AnimatorListener() {
             @Override

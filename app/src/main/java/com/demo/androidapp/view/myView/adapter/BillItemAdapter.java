@@ -86,6 +86,9 @@ public class BillItemAdapter extends RecyclerView.Adapter<BillItemAdapter.MyView
     public BillItemAdapter(List<Bill> bills) {
         Log.d("imageView", "TasksItemAdapter: 数据长度：" + bills.size());
         this.bills = bills;
+        if (this.bills == null) {
+            this.bills = new ArrayList<>();
+        }
         editModelSelectedBills = new ArrayList<>();
     }
 
