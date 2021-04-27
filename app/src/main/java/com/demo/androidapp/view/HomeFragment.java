@@ -135,6 +135,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Swi
                 switch (rCodeEnum) {
                     case OK: {
                         Log.d("imageView", "onChanged: 成功");
+                        if (returnListObjectReturnData.getData() == null)break;
                         taskList = returnListObjectReturnData.getData().getItems();
                         tasksItemAdapter.setTasks(taskList);
                         tasksItemAdapter.notifyDataSetChanged();
