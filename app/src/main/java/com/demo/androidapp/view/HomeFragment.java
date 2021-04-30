@@ -357,7 +357,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Swi
                         tasksItemAdapter.setTasks(returnListObjectReturnData.getData().getItems());
                         tasksItemAdapter.notifyDataSetChanged();
                     }
-                    Toast.makeText(getContext(),"刷新成功",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(),"刷新成功",Toast.LENGTH_SHORT).show();
                 }
                 homeFragmentBinding.homeFragmentSwipeRefreshLayout.setRefreshing(false);
             }

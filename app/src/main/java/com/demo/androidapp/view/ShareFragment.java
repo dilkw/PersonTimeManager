@@ -60,8 +60,6 @@ public class ShareFragment extends Fragment implements View.OnClickListener {
 
     private LiveData<List<Task>> tasksLiveData;
 
-    private AppBarConfiguration appBarConfiguration;
-
     private String type = "";
 
     public static ShareFragment newInstance() {
@@ -82,8 +80,6 @@ public class ShareFragment extends Fragment implements View.OnClickListener {
         navHostFragment = (NavHostFragment)fragmentManager.findFragmentById(R.id.fragment);
         assert navHostFragment != null;
         controller = navHostFragment.getNavController();
-        appBarConfiguration = new AppBarConfiguration.Builder(controller.getGraph()).build();
-        NavigationUI.setupWithNavController(shareFragmentBinding.shareFragmentToolBar,controller,appBarConfiguration);
         return shareFragmentBinding.getRoot();
     }
 
@@ -129,13 +125,13 @@ public class ShareFragment extends Fragment implements View.OnClickListener {
 
     public void setListener() {
         Log.d("imageView", "setListener: ");
-        //导航栏Menu菜单监听事件
-
-        //导航栏Menu菜单，搜索框监听事件
-        SearchView searchView = (SearchView) (shareFragmentBinding.shareFragmentToolBar.getMenu().findItem(R.id.shareSearch).getActionView());
-        searchView.setIconified(false);
-        //导航栏查询监听
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        shareFragmentBinding.shareFragmentSearchView.setQueryHint("搜索");
+        //shareFragmentBinding.shareFragmentSearchView.onActionViewExpanded();
+        shareFragmentBinding.shareFragmentSearchView.clearFocus();
+        //搜索框监听事件
+        //shareFragmentBinding.shareFragmentSearchView.setIconified(false);
+        //查询监听
+        shareFragmentBinding.shareFragmentSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 return false;
@@ -152,10 +148,6 @@ public class ShareFragment extends Fragment implements View.OnClickListener {
                     clocksLiveData.observe(getViewLifecycleOwner(), new Observer<List<Clock>>() {
                         @Override
                         public void onChanged(List<Clock> clocks) {
-                            if (clocks == null || clocks.size() == 0) {
-                                return;
-                            }
-                            Log.d("imageView", clocks.get(0).toString());
                             clockItemAdapter.setClocks(clocks);
                             clockItemAdapter.notifyDataSetChanged();
                         }
@@ -176,7 +168,7 @@ public class ShareFragment extends Fragment implements View.OnClickListener {
                 return true;
             }
         });
-        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+        shareFragmentBinding.shareFragmentSearchView.setOnCloseListener(new SearchView.OnCloseListener() {
             @Override
             public boolean onClose() {
                 if (type.equals("clock")) {
@@ -188,6 +180,7 @@ public class ShareFragment extends Fragment implements View.OnClickListener {
                         @Override
                         public void onChanged(List<Clock> clocks) {
                             clockItemAdapter.setClocks(clocks);
+                            clockItemAdapter.addSelectClockInStart(clockItemAdapter.getEditModelSelectedClocks());
                             clockItemAdapter.notifyDataSetChanged();
                         }
                     });
@@ -208,50 +201,42 @@ public class ShareFragment extends Fragment implements View.OnClickListener {
             }
         });
 
-        //对menu菜单设置监听
-        shareFragmentBinding.shareFragmentToolBar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-            @SuppressLint("NonConstantResourceId")
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.shareCancel:{
-                        Log.d("imageView", "取消分享");
-                        if (type.equals("clock")) {
-                            clockItemAdapter.cancelTask();
-                        }else if (type.equals("task")) {
-                            tasksItemAdapter.cancelTask();
-                        }
-                        controller.navigateUp();
-                        break;
-                    }
-                    case R.id.shareEnter:{
-                        Log.d("imageView", "确定分享");
-                        if (type.equals("clock")) {
-                            List<Clock> clocks = clockItemAdapter.getEditModelSelectedClocks();
-                            ((MainActivity)requireActivity()).putDataInToMap("clocks",clocks);
-                            ((MainActivity)requireActivity()).putDataInToMap("shareType","clock");
-                        }else if (type.equals("task")) {
-                            List<Task> tasks = tasksItemAdapter.getEditModelSelectedTasks();
-                            ((MainActivity)requireActivity()).putDataInToMap("tasks",tasks);
-                            ((MainActivity)requireActivity()).putDataInToMap("shareType","task");
-                        }
-                        controller.navigateUp();
-                        break;
-                    }
-                    default:{
-                        break;
-                    }
-                }
-                return false;
-            }
-        });
+        shareFragmentBinding.shareFragmentCancelBtn.setOnClickListener(this);
+        shareFragmentBinding.shareFragmentEnterBtn.setOnClickListener(this);
     }
 
     @SuppressLint({"NonConstantResourceId", "ResourceAsColor"})
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void onClick(View v) {
-
+        switch (v.getId()) {
+            case R.id.shareFragmentCancelBtn: {
+                Log.d("imageView", "取消分享");
+                if (type.equals("clock")) {
+                    clockItemAdapter.cancelTask();
+                }else if (type.equals("task")) {
+                    tasksItemAdapter.cancelTask();
+                }
+                controller.navigateUp();
+                break;
+            }
+            case R.id.shareFragmentEnterBtn: {
+                Log.d("imageView", "确定分享");
+                if (type.equals("clock")) {
+                    List<Clock> clocks = clockItemAdapter.getEditModelSelectedClocks();
+                    ((MainActivity)requireActivity()).putDataInToMap("clocks",clocks);
+                    ((MainActivity)requireActivity()).putDataInToMap("shareType","clock");
+                }else if (type.equals("task")) {
+                    List<Task> tasks = tasksItemAdapter.getEditModelSelectedTasks();
+                    ((MainActivity)requireActivity()).putDataInToMap("tasks",tasks);
+                    ((MainActivity)requireActivity()).putDataInToMap("shareType","task");
+                }
+                controller.navigateUp();
+                break;
+            }
+            default:{
+                break;
+            }
+        }
     }
 }

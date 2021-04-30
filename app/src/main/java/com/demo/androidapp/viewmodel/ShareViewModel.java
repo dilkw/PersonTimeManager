@@ -36,7 +36,7 @@ public class ShareViewModel extends AndroidViewModel {
         return clockRepository.getAllClocksLiveDataInDB();
     }
 
-    //通过模糊查询出与关键子相似的时钟
+    //通过模糊查询出与关键字相似的时钟
     public LiveData<List<Clock>> getClocksLiveDataByPatternInDB(String pattern) {
         return clockRepository.getClocksLiveDataByPatternInDB(pattern);
     }

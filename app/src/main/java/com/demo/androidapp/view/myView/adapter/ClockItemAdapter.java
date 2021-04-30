@@ -44,6 +44,12 @@ public class ClockItemAdapter extends RecyclerView.Adapter<ClockItemAdapter.MyVi
         return editModelSelectedClocks;
     }
 
+    //从头部开始添加时钟
+    public void addSelectClockInStart(List<Clock> clocks) {
+        if (clocks == null || clocks.size() == 0)return;
+        this.clocks.addAll(0,clocks);
+    }
+
     //长按Item时弹出编辑菜单，取消按钮（删除所选择的）
     public void cancelTask() {
         isShow = false;

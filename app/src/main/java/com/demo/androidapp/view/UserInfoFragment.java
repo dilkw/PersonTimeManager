@@ -70,8 +70,6 @@ public class UserInfoFragment extends Fragment implements View.OnClickListener {
 
     private NavController controller;
 
-    private LiveData<Boolean> isMe;
-
     private AppBarConfiguration appBarConfiguration;
 
     public static UserInfoFragment newInstance() {
