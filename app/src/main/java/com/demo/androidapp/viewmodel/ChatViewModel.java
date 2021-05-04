@@ -48,6 +48,7 @@ public class ChatViewModel extends AndroidViewModel {
 
     //将好友分享的任务保存到自己服务器的任务列表中
     public LiveData<ReturnData<Task>> saveShareTaskToServer(Task task) {
+        Log.d("imageView", "share saveShareTaskToServer: " + task.toString());
         return taskRepository.addTasksToServer(task);
     }
 

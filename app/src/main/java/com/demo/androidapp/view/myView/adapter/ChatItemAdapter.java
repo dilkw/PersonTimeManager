@@ -55,6 +55,18 @@ public class ChatItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         notifyDataSetChanged();
     }
 
+    public void addChatItemModelsInStart(List<ChatItemModel> chatItemModels) {
+        Log.d("imageView", "addChatItemModel: " + chatItemModels.toString());
+        this.chatItemModels.addAll(0,chatItemModels);
+        notifyDataSetChanged();
+    }
+
+    public void addChatItemModelsInStart(ChatItemModel chatItemModel) {
+        Log.d("imageView", "addChatItemModel: " + chatItemModel.toString());
+        this.chatItemModels.add(0,chatItemModel);
+        notifyDataSetChanged();
+    }
+
     public void addChatItemModel(ChatItemModel chatItemModel) {
         Log.d("imageView", "addChatItemModel: " + chatItemModel.toString());
         this.chatItemModels.add(chatItemModel);

@@ -128,6 +128,11 @@ public class DateTimeUtil {
         return string;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public static long getCurrentTimeToLong() {
+        return localDateTimeToLong(LocalDateTime.now());
+    }
+
     @SuppressLint("DefaultLocale")
     public static String secondToHMS(long second) {
         long h = second / (60 * 60);
