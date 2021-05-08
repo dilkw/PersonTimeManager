@@ -89,8 +89,10 @@ public class BillFragment extends Fragment implements View.OnClickListener {
             public void onChanged(ReturnData<ReturnListObject<Bill>> listReturnData) {
                 RCodeEnum rCodeEnum = RCodeEnum.returnRCodeEnumByCode(listReturnData.getCode());
                 if (rCodeEnum == RCodeEnum.OK) {
+                    Log.d("imageView", "onChanged: 数据长度" + listReturnData.getData().getTotal());
                     billItemAdapter.setBills(listReturnData.getData().getItems());
                     billViewModel.deleteAllBillsAndAdd(listReturnData.getData().getItems());
+                    Log.d("imageView", "onChanged: " + listReturnData.getData().getItems().get(0).toString());
                 }else {
                     Toast.makeText(getContext(),rCodeEnum.getMessage(),Toast.LENGTH_SHORT);
                 }
@@ -133,7 +135,7 @@ public class BillFragment extends Fragment implements View.OnClickListener {
         //导航栏Menu菜单监听事件
         //导航栏Menu菜单，搜索框监听事件
         SearchView searchView = (SearchView) (billFragmentBinding.billFragmentToolBar.getMenu().findItem(R.id.billSearch).getActionView());
-        searchView.setMaxWidth(500);
+        //searchView.setMaxWidth(500);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -150,12 +152,12 @@ public class BillFragment extends Fragment implements View.OnClickListener {
                 billsLiveData.observe(getViewLifecycleOwner(), new Observer<List<Bill>>() {
                     @Override
                     public void onChanged(List<Bill> bills) {
-                        if (bills == null || bills.size() == 0) {
-                            return;
-                        }
-                        Log.d("imageView", bills.get(0).toString());
+//                        if (bills == null || bills.size() == 0) {
+//                            return;
+//                        }
+                        //Log.d("imageView", bills.get(0).toString());
                         billItemAdapter.setBills(bills);
-                        billItemAdapter.notifyDataSetChanged();
+                        //billItemAdapter.notifyDataSetChanged();
                     }
                 });
                 return true;
@@ -184,18 +186,18 @@ public class BillFragment extends Fragment implements View.OnClickListener {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {
-                    case R.id.billAdd:{
-                        AddBillDialog addBillDialog = new AddBillDialog();
-                        addBillDialog.setEnterClicked(new AddBillDialog.EnterListener() {
-                            @RequiresApi(api = Build.VERSION_CODES.O)
-                            @Override
-                            public void enterBtnOnClicked() {
-                                addBill(addBillDialog.getBill());
-                            }
-                        });
-                        addBillDialog.show(fragmentManager,"addBillDialogByMenu");
-                        break;
-                    }
+//                    case R.id.billAdd:{
+//                        AddBillDialog addBillDialog = new AddBillDialog();
+//                        addBillDialog.setEnterClicked(new AddBillDialog.EnterListener() {
+//                            @RequiresApi(api = Build.VERSION_CODES.O)
+//                            @Override
+//                            public void enterBtnOnClicked() {
+//                                addBill(addBillDialog.getBill());
+//                            }
+//                        });
+//                        addBillDialog.show(fragmentManager,"addBillDialogByMenu");
+//                        break;
+//                    }
                     default:{
                         break;
                     }

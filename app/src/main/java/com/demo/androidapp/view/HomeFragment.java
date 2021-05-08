@@ -236,10 +236,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Swi
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {
-                    case R.id.more: {
-                        Log.d("imageView", "onMenuItemClick: more");
-                        break;
-                    }
+//                    case R.id.more: {
+//                        Log.d("imageView", "onMenuItemClick: more");
+//                        break;
+//                    }
                     default:{
                         break;
                     }

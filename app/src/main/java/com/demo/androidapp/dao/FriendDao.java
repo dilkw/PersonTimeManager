@@ -47,4 +47,7 @@ public interface FriendDao {
     @Query("DELETE FROM friend WHERE uid = :uid ")
     void deleteAllFriendsByUid(String uid);
 
+    @Query("DELETE FROM friend")
+    void deleteAllFriendsByUid();
+
 }

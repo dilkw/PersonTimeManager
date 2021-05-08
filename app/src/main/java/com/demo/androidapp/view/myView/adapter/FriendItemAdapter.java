@@ -64,7 +64,10 @@ public class FriendItemAdapter extends RecyclerView.Adapter<FriendItemAdapter.My
 
     public void setFriends(List<Friend> friends) {
         this.friends.clear();
-        if (friends == null || friends.size() == 0)return ;
+        if (friends == null || friends.size() == 0) {
+            notifyDataSetChanged();
+            return;
+        }
         this.friends.addAll(friends);
         notifyDataSetChanged();
     }

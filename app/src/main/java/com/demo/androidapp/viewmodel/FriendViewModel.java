@@ -95,4 +95,14 @@ public class FriendViewModel extends AndroidViewModel {
         return friendRepository.getFriendInfoByUid(fUid);
     }
 
+    public void deleteAllFriendsAndAdd(List<Friend> friends){
+        Log.d("imageView", "deleteAllTaskAndAddInDB: ");
+        if (friends == null || friends.size() == 0) {
+            return;
+        }
+        Friend[] friendArray = new Friend[friends.size()];
+        friends.toArray(friendArray);
+        friendRepository.deleteAllFriendsAndAdd(friendArray);
+    }
+
 }

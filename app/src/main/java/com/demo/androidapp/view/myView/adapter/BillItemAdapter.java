@@ -61,6 +61,9 @@ public class BillItemAdapter extends RecyclerView.Adapter<BillItemAdapter.MyView
 
     //添加账单
     public void addBill(Bill bill) {
+        if (bill == null) {
+            return;
+        }
         this.bills.add(bill);
         notifyDataSetChanged();
     }
@@ -74,6 +77,10 @@ public class BillItemAdapter extends RecyclerView.Adapter<BillItemAdapter.MyView
 
     public void setBills(List<Bill> bills) {
         this.bills.clear();
+        if (bills == null) {
+            notifyDataSetChanged();
+            return;
+        }
         this.bills = bills;
         notifyDataSetChanged();
     }
@@ -83,12 +90,14 @@ public class BillItemAdapter extends RecyclerView.Adapter<BillItemAdapter.MyView
         notifyDataSetChanged();
     }
 
+    public BillItemAdapter(){
+        Log.d("imageView", "BillItemAdapter(): ");
+    }
+
     public BillItemAdapter(List<Bill> bills) {
+        Log.d("imageView", "BillItemAdapter(List<Bill>): ");
         Log.d("imageView", "TasksItemAdapter: 数据长度：" + bills.size());
         this.bills = bills;
-        if (this.bills == null) {
-            this.bills = new ArrayList<>();
-        }
         editModelSelectedBills = new ArrayList<>();
     }
 

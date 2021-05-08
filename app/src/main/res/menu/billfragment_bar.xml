@@ -8,18 +8,18 @@
         android:title="BillSearch"
         app:actionViewClass="android.widget.SearchView"
         app:showAsAction="always"/>
-    <item
-        android:id="@+id/billAdd"
-        android:icon="@drawable/ic_addclock_btnic_24"
-        android:title="添加"
-        android:contentDescription="@string/addTask_DeleteImgContentDescription"
-        app:showAsAction="ifRoom" />
+<!--    <item-->
+<!--        android:id="@+id/billAdd"-->
+<!--        android:icon="@drawable/ic_addclock_btnic_24"-->
+<!--        android:title="添加"-->
+<!--        android:contentDescription="@string/addTask_DeleteImgContentDescription"-->
+<!--        app:showAsAction="ifRoom" />-->
 
-    <item
-        android:id="@+id/billDeleteAll"
-        android:icon="@drawable/ic_bill_delete_all"
-        android:title="删除所有"
-        android:contentDescription="@string/addTask_DeleteImgContentDescription"
-        app:showAsAction="ifRoom" />
+<!--    <item-->
+<!--        android:id="@+id/billDeleteAll"-->
+<!--        android:icon="@drawable/ic_bill_delete_all"-->
+<!--        android:title="删除所有"-->
+<!--        android:contentDescription="@string/addTask_DeleteImgContentDescription"-->
+<!--        app:showAsAction="ifRoom" />-->
 
 </menu>

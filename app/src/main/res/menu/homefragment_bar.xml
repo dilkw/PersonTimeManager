@@ -8,10 +8,10 @@
         android:title="TaskSearch"
         app:actionViewClass="android.widget.SearchView"
         app:showAsAction="always"/>
-    <item
-        android:id="@+id/more"
-        android:contentDescription="@string/addTask_DeleteImgContentDescription"
-        android:title="454f5d6s"
-        app:showAsAction="never" />
+<!--    <item-->
+<!--        android:id="@+id/more"-->
+<!--        android:contentDescription="@string/addTask_DeleteImgContentDescription"-->
+<!--        android:title="454f5d6s"-->
+<!--        app:showAsAction="never" />-->
 
 </menu>

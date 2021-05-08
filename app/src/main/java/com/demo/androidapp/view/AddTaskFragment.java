@@ -155,21 +155,21 @@ public class AddTaskFragment extends Fragment implements View.OnClickListener {
                         }
                         break;
                     }
-                    case R.id.addTaskAddAlertTimeBtn:{
-                        DateTimePickerDialog dateTimePickerDialog = new DateTimePickerDialog();
-                        dateTimePickerDialog.setEnterClicked(new DateTimePickerDialog.EnterListener() {
-                            @RequiresApi(api = Build.VERSION_CODES.O)
-                            @Override
-                            public void enterBtnOnClicked(String dateTimeStr) {
-                                String date = dateTimePickerDialog.getSelectTimeString();
-                                addTaskViewModel.taskMutableLiveData.getValue().setAlert(true);
-                                addTaskFragmentBinding.alertTimeLinearLayout.setVisibility(View.VISIBLE);
-                                addTaskViewModel.alertOfTaskMutableLiveData.getValue().setAlertTime(date);
-                                addTaskFragmentBinding.addTaskAlertTimeTextView.setText(date);
-                            }
-                        });
-                        dateTimePickerDialog.show(fragmentManager,"alertTimeSetDialog");
-                    }
+//                    case R.id.addTaskAddAlertTimeBtn:{
+//                        DateTimePickerDialog dateTimePickerDialog = new DateTimePickerDialog();
+//                        dateTimePickerDialog.setEnterClicked(new DateTimePickerDialog.EnterListener() {
+//                            @RequiresApi(api = Build.VERSION_CODES.O)
+//                            @Override
+//                            public void enterBtnOnClicked(String dateTimeStr) {
+//                                String date = dateTimePickerDialog.getSelectTimeString();
+//                                addTaskViewModel.taskMutableLiveData.getValue().setAlert(true);
+//                                addTaskFragmentBinding.alertTimeLinearLayout.setVisibility(View.VISIBLE);
+//                                addTaskViewModel.alertOfTaskMutableLiveData.getValue().setAlertTime(date);
+//                                addTaskFragmentBinding.addTaskAlertTimeTextView.setText(date);
+//                            }
+//                        });
+//                        dateTimePickerDialog.show(fragmentManager,"alertTimeSetDialog");
+//                    }
                 }
                 return false;
             }

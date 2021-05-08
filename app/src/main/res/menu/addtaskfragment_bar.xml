@@ -11,12 +11,12 @@
         app:showAsAction="ifRoom" />
 
     <!--添加提醒时间-->
-    <item
-        android:id="@+id/addTaskAddAlertTimeBtn"
-        android:icon="@drawable/ic_addtask_alert_24"
-        android:title="@string/addTaskFragmentToolBarSaveBtnTitle"
-        android:contentDescription="@string/addTaskAlertTimeSelectTimeImgBtnImgContentDescription"
-        app:showAsAction="ifRoom" />
+<!--    <item-->
+<!--        android:id="@+id/addTaskAddAlertTimeBtn"-->
+<!--        android:icon="@drawable/ic_addtask_alert_24"-->
+<!--        android:title="@string/addTaskFragmentToolBarSaveBtnTitle"-->
+<!--        android:contentDescription="@string/addTaskAlertTimeSelectTimeImgBtnImgContentDescription"-->
+<!--        app:showAsAction="ifRoom" />-->
 
 <!--    <item-->
 <!--        android:id="@+id/more"-->

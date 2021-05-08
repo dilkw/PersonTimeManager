@@ -102,6 +102,8 @@ public class FriendFragment extends Fragment implements View.OnClickListener {
                 RCodeEnum rCodeEnum = RCodeEnum.returnRCodeEnumByCode(listReturnData.getCode());
                 if (rCodeEnum == RCodeEnum.OK) {
                     friendItemAdapter.setFriends(listReturnData.getData().getItems());
+                    //friendViewModel.deleteFriendByUidInDB();
+                    friendViewModel.deleteAllFriendsAndAdd(listReturnData.getData().getItems());
                 }else {
                     Toast.makeText(getContext(),rCodeEnum.getMessage(),Toast.LENGTH_SHORT);
                 }
@@ -112,7 +114,7 @@ public class FriendFragment extends Fragment implements View.OnClickListener {
     }
     public void setListener() {
         Log.d("imageView", "setListener: ");
-        friendFragmentBinding.friendMyFloatingActionButton.setOnClickListener(this);
+        //friendFragmentBinding.friendMyFloatingActionButton.setOnClickListener(this);
         friendItemAdapter.setItemLongOnClickListener(new FriendItemAdapter.ItemLongOnClickListener() {
             @Override
             public void itemLongOnClick() {
@@ -162,10 +164,10 @@ public class FriendFragment extends Fragment implements View.OnClickListener {
                 friendsLiveData.observe(getViewLifecycleOwner(), new Observer<List<Friend>>() {
                     @Override
                     public void onChanged(List<Friend> friends) {
-                        if (friends == null || friends.size() == 0) {
-                            return;
-                        }
-                        Log.d("imageView", friends.get(0).toString());
+//                        if (friends == null || friends.size() == 0) {
+//                            return;
+//                        }
+                        //Log.d("imageView", friends.get(0).toString());
                         friendItemAdapter.setFriends(friends);
                         friendItemAdapter.notifyDataSetChanged();
                     }
@@ -183,6 +185,7 @@ public class FriendFragment extends Fragment implements View.OnClickListener {
                 friendsLiveData.observe(getViewLifecycleOwner(), new Observer<List<Friend>>() {
                     @Override
                     public void onChanged(List<Friend> friends) {
+                        Log.d("imageView", "onChanged: " + friends.size());
                         friendItemAdapter.setFriends(friends);
                         friendItemAdapter.notifyDataSetChanged();
                     }
@@ -221,20 +224,20 @@ public class FriendFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.friendMyFloatingActionButton: {
-                Log.d("imageView", "onClick: 添加按钮");
-                AddFriendDialog addFriendDialog = new AddFriendDialog();
-                addFriendDialog.setEnterClicked(new AddFriendDialog.EnterListener() {
-                    @RequiresApi(api = Build.VERSION_CODES.O)
-                    @Override
-                    public void enterBtnOnClicked() {
-                        String friendEmail = addFriendDialog.getFriendEmail();
-                        addFriend(friendEmail,addFriendDialog);
-                    }
-                });
-                addFriendDialog.show(fragmentManager,"addFriendDialogByFloatingActionButton");
-                break;
-            }
+//            case R.id.friendMyFloatingActionButton: {
+//                Log.d("imageView", "onClick: 添加按钮");
+//                AddFriendDialog addFriendDialog = new AddFriendDialog();
+//                addFriendDialog.setEnterClicked(new AddFriendDialog.EnterListener() {
+//                    @RequiresApi(api = Build.VERSION_CODES.O)
+//                    @Override
+//                    public void enterBtnOnClicked() {
+//                        String friendEmail = addFriendDialog.getFriendEmail();
+//                        addFriend(friendEmail,addFriendDialog);
+//                    }
+//                });
+//                addFriendDialog.show(fragmentManager,"addFriendDialogByFloatingActionButton");
+//                break;
+//            }
             default:{
                 Log.d("imageView", "onClick: ");
                 break;

@@ -15,6 +15,7 @@ import com.demo.androidapp.dao.FriendDao;
 import com.demo.androidapp.model.FindFriendInfo;
 import com.demo.androidapp.model.common.RCodeEnum;
 import com.demo.androidapp.model.common.ReturnData;
+import com.demo.androidapp.model.entity.Bill;
 import com.demo.androidapp.model.entity.Friend;
 import com.demo.androidapp.model.returnObject.ReturnListObject;
 
@@ -76,11 +77,11 @@ public class FriendRepository {
             public void onResponse(Call<ReturnData<ReturnListObject<Friend>>> call, Response<ReturnData<ReturnListObject<Friend>>> response) {
                 Log.d("imageView", "FriendRepository: 获取好友列表成功");
                 returnDataLiveData.postValue(new ReturnData<List<Friend>>(response.body().getCode(),response.body().getMsg(),response.body().getData().getItems()));
-                if (response.body().getData().getTotal() > 0) {
-                    Friend[] friends = new Friend[response.body().getData().getTotal()];
-                    response.body().getData().getItems().toArray(friends);
-                    deleteALLFriendsAndAdd(friends);
-                }
+//                if (response.body().getData().getTotal() > 0) {
+//                    Friend[] friends = new Friend[response.body().getData().getTotal()];
+//                    response.body().getData().getItems().toArray(friends);
+//                    deleteALLFriendsAndAdd(friends);
+//                }
             }
             @Override
             public void onFailure(Call<ReturnData<ReturnListObject<Friend>>> call, Throwable t) {
@@ -94,6 +95,12 @@ public class FriendRepository {
     //根据cookie在服务器中获取好友列表,cookie在发送请求的时候自动添加到header中
     public LiveData<ReturnData<ReturnListObject<Friend>>> getAllFriendsLiveDataByUidInServer() {
         return api.getAllFriendsLiveData();
+    }
+
+    //在本地数据库中删除所有数据并更新数据
+    public void deleteAllFriendsAndAdd(Friend... friends) {
+        Log.d("imageView", "数据库删除数据");
+        new FriendRepository.DeleteALLFriendsAndAdd(friendDao,this).execute(friends);
     }
 
     //根据uid在本地数据库中获取好友列表
@@ -218,7 +225,7 @@ public class FriendRepository {
 
     //删除并更新数据
     private void deleteALLFriendsAndAdd(Friend ... friends) {
-        new DeleteALLFriendsAndAdd(friendDao,this).equals(friends);
+        new DeleteALLFriendsAndAdd(friendDao,this).execute(friends);
     }
     //删除并更新数据
     public static class DeleteALLFriendsAndAdd extends AsyncTask<Friend,Void,Void> {
@@ -238,13 +245,14 @@ public class FriendRepository {
         protected Void doInBackground(Friend... friends) {
             this.friends = friends;
             friendDao.deleteAllFriendsByUid(MyApplication.getApplication().getUser().getUid());
+            //friendDao.deleteAllFriendsByUid();
             return null;
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            friendRepository.addFriendsToDB(friends);
+            friendRepository.addFriendsToDB(this.friends);
         }
     }
 }
