@@ -52,7 +52,7 @@ public class Task {
     @ColumnInfo(name = "alert")
     private boolean alert;
 
-    //结束时间
+    //提醒时间
     @ColumnInfo(name = "alert_time")
     private long alert_time;
 

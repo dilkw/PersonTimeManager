@@ -28,7 +28,7 @@ import retrofit2.Response;
 
 public class FriendRepository {
 
-    private Api api;
+    private final Api api;
 
     private FriendDao friendDao;
 
